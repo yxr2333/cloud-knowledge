@@ -1,0 +1,8 @@
+# Project exclude paths
+/cloud-comment/target/
+/cloud-commons/target/
+/cloud-eureka-server/target/
+/cloud-gateway/target/
+/cloud-resource/target/
+/cloud-user/target/
+/cloud-wish/target/
