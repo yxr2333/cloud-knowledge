@@ -1,5 +1,6 @@
 package com.sheep.cloud.response;
 
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -13,6 +14,7 @@ import java.io.Serializable;
  * @datetime 2022/7/30 Saturday
  */
 @Data
+@Builder
 @NoArgsConstructor
 public class ApiResult implements Serializable {
 
