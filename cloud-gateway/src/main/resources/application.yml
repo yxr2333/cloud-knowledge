@@ -14,24 +14,28 @@ spring:
         locator:
           enabled: true
       routes:
+        # 评论模块
         - id: cloud-comment-service
           uri: lb://cloud-comment-service
-          # 断言，路由匹配
           predicates:
             - Path=/comment/**
+          # 资源模块
         - id: cloud-resource-service
           uri: lb://cloud-resource-service
-          # 断言，路由匹配
           predicates:
             - Path=/resource/**
+          # 用户模块
         - id: cloud-user-service
           uri: lb://cloud-user-service
-          # 断言，路由匹配
           predicates:
             - Path=/user/**
+        - id: cloud-user-service-mail
+          uri: lb://cloud-user-service
+          predicates:
+            - Path=/mail/**
+          # 心愿墙模块
         - id: cloud-wish-service
           uri: lb://cloud-wish-service
-          # 断言，路由匹配
           predicates:
             - Path=/wish/**
 eureka:

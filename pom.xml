@@ -36,9 +36,15 @@
         <eureka.version>2.2.1.RELEASE</eureka.version>
         <feign.version>2.2.1.RELEASE</feign.version>
         <gateway.version>2.2.1.RELEASE</gateway.version>
+        <modelmapper.version>3.1.0</modelmapper.version>
     </properties>
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>org.modelmapper</groupId>
+                <artifactId>modelmapper</artifactId>
+                <version>${modelmapper.version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>

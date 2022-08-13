@@ -4,6 +4,7 @@ import com.sheep.cloud.entity.ILabelsEntity;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.List;
 
@@ -18,7 +19,10 @@ import java.util.List;
 @NoArgsConstructor
 public class IUsersModifyInfoVO implements Serializable {
 
+
+    @NotNull(message = "用户编号不能为空")
     private Integer id;
+
     private String username;
     private String avatar;
     private String description;

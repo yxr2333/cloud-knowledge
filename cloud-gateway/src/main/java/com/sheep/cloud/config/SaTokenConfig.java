@@ -21,7 +21,12 @@ public class SaTokenConfig {
     public SaReactorFilter saReactorFilter() {
         return new SaReactorFilter()
                 .addInclude("/**")
-                .addExclude("/favicon.ico", "/user/login", "/user/register")
+                .addExclude(
+                        "/favicon.ico",
+                        "/user/login",
+                        "/user/register",
+                        "/user/find/list/**",
+                        "/mail/sendResetCode")
                 .setAuth(obj -> {
                     SaRouter.match("/**", "/user/login", r -> StpUtil.checkLogin());
                 })

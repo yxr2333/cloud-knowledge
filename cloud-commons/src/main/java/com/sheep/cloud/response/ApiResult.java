@@ -111,6 +111,15 @@ public class ApiResult implements Serializable {
         return b ? success() : error();
     }
 
+
+    public static ApiResult warning(String msg, Object data) {
+        return new ApiResult(CODE_WARNING, msg, data);
+    }
+
+    public static ApiResult warning(String msg) {
+        return new ApiResult(CODE_WARNING, msg, null);
+    }
+
     @Override
     public String toString() {
         return "ApiResult{" +

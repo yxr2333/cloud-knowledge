@@ -1,9 +1,6 @@
 package com.sheep.cloud.service;
 
-import com.sheep.cloud.request.IUsersLoginVO;
-import com.sheep.cloud.request.IUsersModifyInfoVO;
-import com.sheep.cloud.request.IUsersRegisterVO;
-import com.sheep.cloud.request.IUsersResetPasswordVO;
+import com.sheep.cloud.request.*;
 import com.sheep.cloud.response.ApiResult;
 
 import javax.servlet.http.HttpServletRequest;
@@ -71,17 +68,62 @@ public interface UserService {
     /**
      * 通过用户名模糊查询用户
      *
-     * @param name 用户名
+     * @param name     用户名
+     * @param pageNum  页码
+     * @param pageSize 页大小
      * @return 查询结果
      */
-    ApiResult getAllLikeName(String name);
+    ApiResult getAllLikeName(String name, Integer pageNum, Integer pageSize);
 
     /**
      * 给用户添加积分
      *
-     * @param score 积分
-     * @param id    用户id
+     * @param vo 添加积分信息
      * @return 添加结果
      */
-    ApiResult addScore(Integer score, Integer id);
+    ApiResult addScore(IUsersAddScoreVO vo);
+
+
+    /**
+     * 获取所有用户
+     *
+     * @param pageNum  页码
+     * @param pageSize 页大小
+     * @return 查询结果
+     */
+    ApiResult getAll(Integer pageNum, Integer pageSize);
+
+
+    /**
+     * 查询收藏记录
+     *
+     * @param uid 用户id
+     * @return 查询结果
+     */
+    ApiResult findCollectList(Integer uid);
+
+    /**
+     * 查询发布记录
+     *
+     * @param uid 用户id
+     * @return 查询结果
+     */
+    ApiResult findPublishList(Integer uid);
+
+    /**
+     * 查询心愿墙发表记录
+     *
+     * @param uid 用户id
+     * @return 查询结果
+     */
+    ApiResult findWishList(Integer uid);
+
+
+    /**
+     * 查询积分记录
+     *
+     * @param uid 用户id
+     * @return 查询结果
+     */
+    ApiResult findScoreList(Integer uid);
 }
