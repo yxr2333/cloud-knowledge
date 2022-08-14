@@ -7,8 +7,6 @@
     <file url="file://$PROJECT_DIR$/cloud-commons/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/cloud-eureka-server/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/cloud-eureka-server/src/main/resources" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/cloud-eureka/src/main/java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/cloud-eureka/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/cloud-gateway/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/cloud-gateway/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/cloud-resource/src/main/java" charset="UTF-8" />
@@ -17,7 +15,5 @@
     <file url="file://$PROJECT_DIR$/cloud-user/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/cloud-wish/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/cloud-wish/src/main/resources" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/src/main/java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/src/main/resources" charset="UTF-8" />
   </component>
 </project>
