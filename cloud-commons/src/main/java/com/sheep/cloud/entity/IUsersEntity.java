@@ -50,7 +50,7 @@ public class IUsersEntity {
     private String description;
 
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "t_labels_users", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "label_id"))
     private List<ILabelsEntity> labels;
 }

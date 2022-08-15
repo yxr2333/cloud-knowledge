@@ -4,11 +4,15 @@ import com.sheep.cloud.request.*;
 import com.sheep.cloud.response.ApiResult;
 import com.sheep.cloud.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created By Intellij IDEA
@@ -70,6 +74,24 @@ public class UserController {
         }
         return userService.getAllLikeName("%" + name + "%", pageNum - 1, pageSize);
     }
+
+    @GetMapping("/findAllByLabelId")
+    public ApiResult findAllByLabelId(
+            @RequestParam(value = "label", required = false) int[] labels,
+            @RequestParam(value = "pageNum", required = false) Integer pageNum,
+            @RequestParam(value = "pageSize", required = false) Integer pageSize) {
+        if (pageNum == null || pageSize == null) {
+            pageNum = 1;
+            pageSize = 10;
+        }
+        // labels数组转集合
+        List<Integer> labelIds = Arrays.stream(labels).boxed().collect(Collectors.toList());
+        if (CollectionUtils.isEmpty(labelIds)) {
+            return userService.getAll(pageNum - 1, pageSize);
+        }
+        return userService.findAllByLabelId(labelIds, pageNum - 1, pageSize);
+    }
+
 
     @PostMapping("/addScore")
     public ApiResult addScore(@RequestBody @Valid IUsersAddScoreVO vo) {

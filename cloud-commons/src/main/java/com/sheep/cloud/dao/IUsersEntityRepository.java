@@ -1,11 +1,13 @@
 package com.sheep.cloud.dao;
 
+import com.sheep.cloud.entity.ILabelsEntity;
 import com.sheep.cloud.entity.IUsersEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
+import java.util.Collection;
 import java.util.Optional;
 
 /**
@@ -37,4 +39,14 @@ public interface IUsersEntityRepository extends JpaRepository<IUsersEntity, Inte
      * @return 用户信息
      */
     Page<IUsersEntity> findAllByUsernameLike(String username, Pageable pageable);
+
+    /**
+     * 通过用户标签查询用户的信息
+     *
+     * @param labels   标签
+     * @param pageable 分页条件
+     * @return 用户信息
+     */
+    Page<IUsersEntity> findDistinctAllByLabelsIn(Collection<ILabelsEntity> labels, Pageable pageable);
+
 }

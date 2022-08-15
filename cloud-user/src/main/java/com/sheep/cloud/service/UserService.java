@@ -4,6 +4,7 @@ import com.sheep.cloud.request.*;
 import com.sheep.cloud.response.ApiResult;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  * Created By Intellij IDEA
@@ -126,4 +127,15 @@ public interface UserService {
      * @return 查询结果
      */
     ApiResult findScoreList(Integer uid);
+
+
+    /**
+     * 根据标签查询用户
+     *
+     * @param labelId  标签id
+     * @param pageNum  页码
+     * @param pageSize 页大小
+     * @return 查询结果
+     */
+    ApiResult findAllByLabelId(List<Integer> labelId, Integer pageNum, Integer pageSize);
 }

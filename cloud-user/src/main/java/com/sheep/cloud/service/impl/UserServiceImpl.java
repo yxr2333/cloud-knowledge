@@ -19,14 +19,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -45,6 +43,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private ModelMapper modelMapper;
+
+    @Autowired
+    private ILabelsEntityRepository labelsEntityRepository;
 
     @Autowired
     private IScoreListEntityRepository scoreListEntityRepository;
@@ -208,6 +209,7 @@ public class UserServiceImpl implements UserService {
     public ApiResult getOne(Integer id) {
         IUsersEntity entity = usersEntityRepository.findById(id).orElseThrow(() -> new RuntimeException("用户不存在"));
         // 数据脱敏后返回
+
         IUsersBaseInfoDTO result = modelMapper.map(entity, IUsersBaseInfoDTO.class);
         return ApiResult.success(result);
     }
@@ -330,4 +332,32 @@ public class UserServiceImpl implements UserService {
             return ApiResult.success(queryResult);
         }
     }
+
+    /**
+     * 根据标签查询用户
+     *
+     * @param labelId  标签id
+     * @param pageNum  页码
+     * @param pageSize 页大小
+     * @return 查询结果
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public ApiResult findAllByLabelId(List<Integer> labelId, Integer pageNum, Integer pageSize) {
+        ArrayList<ILabelsEntity> labels = new ArrayList<>();
+        // 根据标签编号查询标签
+        labelId.forEach(id -> {
+            ILabelsEntity labelsEntity = labelsEntityRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("标签不存在"));
+            labels.add(labelsEntity);
+        });
+
+        PageRequest pageable = PageRequest.of(pageNum, pageSize);
+
+        // 查出符合条件的用户
+        Page<IUsersEntity> page = usersEntityRepository.findDistinctAllByLabelsIn(labels, pageable);
+        return getApiResult(page);
+//        return ApiResult.success(page.getContent());
+    }
+
 }
