@@ -1,9 +1,11 @@
 package com.sheep.cloud.service;
 
-import com.sheep.cloud.entity.IResourcesEntity;
 import com.sheep.cloud.request.IResourceAddVO;
 import com.sheep.cloud.request.IResourceModifyVO;
+import com.sheep.cloud.request.IResourcePaymentVO;
 import com.sheep.cloud.response.ApiResult;
+
+import java.util.List;
 
 public interface ResourceService {
     /**
@@ -38,5 +40,21 @@ public interface ResourceService {
      */
     ApiResult findOne(Integer id);
 
+    /**
+     * 设置资源付费
+     *
+     * @param vo 资源付费信息
+     * @return 修改结果
+     */
+    ApiResult payment(IResourcePaymentVO vo);
 
+    /**
+     * 根据标签划分资源
+     *
+     * @param labels     标签
+     * @param pageNum  页码
+     * @param pageSize 页大小
+     * @return 查询结果
+     */
+    ApiResult label(List<Integer> labels, Integer pageNum, Integer pageSize);
 }
