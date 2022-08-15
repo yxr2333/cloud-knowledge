@@ -1,26 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="Encoding">
-    <file url="file://$PROJECT_DIR$" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/cloud-comment" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/cloud-comment/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/cloud-comment/src/main/resources" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/cloud-commons" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/cloud-commons/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/cloud-commons/src/main/resources" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/cloud-eureka-server" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/cloud-eureka-server/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/cloud-eureka-server/src/main/resources" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/cloud-gateway" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/cloud-gateway/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/cloud-gateway/src/main/resources" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/cloud-resource" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/cloud-resource/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/cloud-resource/src/main/resources" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/cloud-user" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/cloud-user/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/cloud-user/src/main/resources" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/cloud-wish" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/cloud-wish/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/cloud-wish/src/main/resources" charset="UTF-8" />
   </component>
