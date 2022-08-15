@@ -2,6 +2,8 @@ package com.sheep.cloud.controller;
 
 
 import com.sheep.cloud.entity.IResourcesEntity;
+import com.sheep.cloud.request.IResourceAddVO;
+import com.sheep.cloud.request.IResourceModifyVO;
 import com.sheep.cloud.response.ApiResult;
 import com.sheep.cloud.service.ResourceService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,8 +18,8 @@ public class ResourceController {
     private ResourceService resourceService;
 
     @PostMapping("/add")
-    public ApiResult addOne(@RequestBody @Valid IResourcesEntity iResourcesEntity) {
-        return resourceService.addOne(iResourcesEntity);
+    public ApiResult addOne(@RequestBody @Valid IResourceAddVO vo) {
+        return resourceService.addOne(vo);
     }
 
     @DeleteMapping("/{id}")
@@ -26,8 +28,8 @@ public class ResourceController {
     }
 
     @PostMapping("/modifyResource")
-    public ApiResult modifyResource(@RequestBody @Valid IResourcesEntity iResourcesEntity) {
-        return resourceService.modifyResource(iResourcesEntity);
+    public ApiResult modifyResource(@RequestBody @Valid IResourceModifyVO vo) {
+        return resourceService.modifyResource(vo);
     }
 
     @GetMapping("/find/one")
