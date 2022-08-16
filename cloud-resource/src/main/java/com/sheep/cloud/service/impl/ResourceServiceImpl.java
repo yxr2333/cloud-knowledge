@@ -1,18 +1,27 @@
 package com.sheep.cloud.service.impl;
 
+import com.sheep.cloud.dao.ILabelsEntityRepository;
 import com.sheep.cloud.dao.IResourcesEntityRepository;
 import com.sheep.cloud.dao.IUsersEntityRepository;
+import com.sheep.cloud.entity.ILabelsEntity;
 import com.sheep.cloud.entity.IResourcesEntity;
 import com.sheep.cloud.request.IResourceAddVO;
 import com.sheep.cloud.request.IResourceModifyVO;
+import com.sheep.cloud.request.IResourcePaymentVO;
 import com.sheep.cloud.response.ApiResult;
+import com.sheep.cloud.response.PageData;
 import com.sheep.cloud.service.ResourceService;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -24,6 +33,11 @@ public class ResourceServiceImpl implements ResourceService {
 
     @Autowired
     private IUsersEntityRepository usersEntityRepository;
+    @Autowired
+    private ILabelsEntityRepository iLabelsEntityRepository;
+
+    @Autowired
+    private ModelMapper modelMapper;
     /**
      * 发布资源
      *
@@ -39,6 +53,7 @@ public class ResourceServiceImpl implements ResourceService {
         iResourcesEntity.setName(vo.getName());
         iResourcesEntity.setDescription(vo.getDescription());
         iResourcesEntity.setLink(vo.getLink());
+        iResourcesEntity.setLabels(vo.getLabels());
         iResourcesEntity.setIcon(vo.getIcon());
         iResourcesEntity.setPublishUser(usersEntityRepository.getOne(vo.getPublishUser()));
         iResourcesEntityRepository.save(iResourcesEntity);
@@ -72,7 +87,7 @@ public class ResourceServiceImpl implements ResourceService {
     public ApiResult modifyResource(IResourceModifyVO vo) {
         IResourcesEntity iResourcesEntity = iResourcesEntityRepository
                 .findById(vo.getId())
-                .orElseThrow(() -> new RuntimeException("改资源不存在！"));
+                .orElseThrow(() -> new RuntimeException("该资源不存在！"));
 
         if (StringUtils.hasText(vo.getName())) {
             iResourcesEntity.setName(vo.getName());
@@ -111,6 +126,63 @@ public class ResourceServiceImpl implements ResourceService {
             return ApiResult.success(list);
         }
     }
+
+    /**
+     * 设置资源付费
+     *
+     * @param vo 资源付费信息
+     * @return 修改结果
+     */
+    @Override
+    public ApiResult payment(IResourcePaymentVO vo) {
+        IResourcesEntity iResourcesEntity = iResourcesEntityRepository
+                .findById(vo.getId())
+                .orElseThrow(() -> new RuntimeException("该资源不存在！"));
+
+        if (vo.getIsPaid()) {
+            if (StringUtils.hasText(vo.getPassword())) {
+                iResourcesEntity.setIsPaid(vo.getIsPaid());
+                iResourcesEntity.setPassword(vo.getPassword());
+            } else {
+                return ApiResult.warning("付费资源需设置资源访问密码！");
+            }
+        } else {
+            iResourcesEntity.setIsPaid(vo.getIsPaid());
+            iResourcesEntity.setPassword("");
+        }
+        iResourcesEntityRepository.save(iResourcesEntity);
+        return ApiResult.success("资源付费修改成功！");
+    }
+
+    /**
+     * 根据标签划分资源
+     *
+     * @param labelId    标签
+     * @param pageNum  页码
+     * @param pageSize 页大小
+     * @return 查询结果
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public ApiResult label(List<Integer> labelId, Integer pageNum, Integer pageSize) {
+        ArrayList<ILabelsEntity> labels = new ArrayList<>();
+        // 根据标签编号查询标签
+        labelId.forEach(id -> {
+            ILabelsEntity labelsEntity = iLabelsEntityRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("标签不存在"));
+            labels.add(labelsEntity);
+        });
+        PageRequest pageable = PageRequest.of(pageNum, pageSize);
+        Page<IResourcesEntity> page = iResourcesEntityRepository.findDistinctAllByLabelsIn(labels, pageable);
+
+        PageData.PageDataBuilder<IResourcesEntity> builder = PageData.builder();
+        return ApiResult.success(builder.totalPage(page.getTotalPages())
+                .totalNum(page.getTotalElements())
+                .data(page.getContent())
+                .build());
+    }
+
+
 
 
 }

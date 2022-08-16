@@ -1,13 +1,15 @@
 package com.sheep.cloud.request;
 
 
-import com.sheep.cloud.entity.IUsersEntity;
+
+import com.sheep.cloud.entity.ILabelsEntity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -25,4 +27,7 @@ public class IResourceAddVO  implements Serializable {
     private String icon;
     @NotNull(message = "请先进行登录！")
     private Integer publishUser;
+
+    @NotNull(message = "资源标签不能为空")
+    private List<ILabelsEntity> labels;
 }

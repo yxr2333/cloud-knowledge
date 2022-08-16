@@ -6,16 +6,7 @@
 /cloud-resource/target/
 /cloud-user/target/
 /cloud-wish/target/
-<<<<<<< HEAD
-<<<<<<< HEAD
 
-=======
-<<<<<<< HEAD
+.idea
+.idea/**
 
-=======
->>>>>>> 0f4bf0d (添加：完成评论角模块)
->>>>>>> 116a605 (新增：完成评论角模块)
-=======
-
->>>>>>> upstream/master
-.idea/
