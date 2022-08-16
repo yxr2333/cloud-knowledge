@@ -1,10 +1,7 @@
 package com.sheep.cloud.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
@@ -24,6 +21,7 @@ import java.util.List;
 @Setter
 @Entity
 @Table(name = "t_wishes", schema = "summer_training")
+@ToString
 public class IWishesEntity {
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -45,9 +43,7 @@ public class IWishesEntity {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime publishTime;
 
-    @ManyToMany
-    @JoinTable(name = "t_wishes_resources", joinColumns = @JoinColumn(name = "wish_id"), inverseJoinColumns = @JoinColumn(name = "resource_id"))
-    private List<IResourcesEntity> resources;
+    private Boolean isFinished;
 
     @ManyToMany
     @JoinTable(name = "t_wishes_labels", joinColumns = @JoinColumn(name = "wish_id"), inverseJoinColumns = @JoinColumn(name = "label_id"))

@@ -7,4 +7,5 @@
 /cloud-user/target/
 /cloud-wish/target/
 
-.idea/
+.idea
+.idea/**
