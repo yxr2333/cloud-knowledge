@@ -11,6 +11,7 @@ import com.sheep.cloud.response.ApiResult;
 public interface CommentService {
     /*
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
      * @Description: 发表评论
      * @param commentsEntity
@@ -27,6 +28,8 @@ public interface CommentService {
 
     /*
 >>>>>>> 116a605 (新增：完成评论角模块)
+=======
+>>>>>>> upstream/master
      * @Description:根据id删除评论
      * @param id
      * @return: com.sheep.cloud.response.ApiResult
@@ -42,6 +45,9 @@ public interface CommentService {
 
     /*
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> upstream/master
      * @Description: 发表评论
      * @param commentsEntity
      * @return: com.sheep.cloud.response.ApiResult
@@ -60,6 +66,7 @@ public interface CommentService {
      */
     ApiResult collectById(Integer id);
 }
+<<<<<<< HEAD
 =======
      * @Description: 根据资源id查询评论
      * @param resource_id
@@ -75,3 +82,5 @@ public interface CommentService {
     ApiResult getReplyByCommentId(Integer comment_id);
 }
 >>>>>>> 116a605 (新增：完成评论角模块)
+=======
+>>>>>>> upstream/master

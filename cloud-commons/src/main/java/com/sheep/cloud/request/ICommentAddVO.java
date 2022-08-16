@@ -11,6 +11,7 @@ import lombok.*;
 @NoArgsConstructor
 public class ICommentAddVO {
 <<<<<<< HEAD
+<<<<<<< HEAD
     String content;
     Integer publishUser;
     Integer resourceId;
@@ -19,4 +20,9 @@ public class ICommentAddVO {
     private Integer publishUser;
     private Integer resourceId;
 >>>>>>> 116a605 (新增：完成评论角模块)
+=======
+    String content;
+    Integer publishUser;
+    Integer resourceId;
+>>>>>>> upstream/master
 }

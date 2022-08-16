@@ -2,6 +2,7 @@ package com.sheep.cloud.controller;
 
 import com.sheep.cloud.request.ICommentAddVO;
 <<<<<<< HEAD
+<<<<<<< HEAD
 import com.sheep.cloud.request.IReplyAddVO;
 import com.sheep.cloud.response.ApiResult;
 import com.sheep.cloud.service.CommentService;
@@ -13,6 +14,11 @@ import com.sheep.cloud.service.CommentPlatformService;
 import com.sheep.cloud.service.CommentService;
 import jdk.nashorn.internal.objects.annotations.Getter;
 >>>>>>> 116a605 (新增：完成评论角模块)
+=======
+import com.sheep.cloud.request.IReplyAddVO;
+import com.sheep.cloud.response.ApiResult;
+import com.sheep.cloud.service.CommentService;
+>>>>>>> upstream/master
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,6 +35,7 @@ public class CommentController {
     private CommentService commentService;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
     @Autowired
     private CommentPlatformService commentPlatformService;
@@ -44,6 +51,8 @@ public class CommentController {
     }
 
 >>>>>>> 116a605 (新增：完成评论角模块)
+=======
+>>>>>>> upstream/master
     @DeleteMapping("/deleteComment/{id}")
     public ApiResult deleteComment(@PathVariable(value = "id") Integer id){
         return commentService.deleteCommentById(id);
@@ -55,6 +64,9 @@ public class CommentController {
     }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> upstream/master
     @PostMapping("/addComment")
     public ApiResult addContent(ICommentAddVO iCommentAddVo){
         return commentService.insertComment(iCommentAddVo);
@@ -70,6 +82,7 @@ public class CommentController {
         return commentService.collectById(id);
     }
 }
+<<<<<<< HEAD
 =======
     @GetMapping("/getComment")
     public ApiResult getComment(Integer resource_id){
@@ -97,3 +110,5 @@ public class CommentController {
     }
 }
 >>>>>>> 116a605 (新增：完成评论角模块)
+=======
+>>>>>>> upstream/master

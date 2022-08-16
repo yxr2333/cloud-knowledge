@@ -19,12 +19,15 @@
 
     <dependencies>
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
         <dependency>
             <groupId>org.modelmapper</groupId>
             <artifactId>modelmapper</artifactId>
         </dependency>
 >>>>>>> 116a605 (新增：完成评论角模块)
+=======
+>>>>>>> upstream/master
         <!--openfeign-->
         <dependency>
             <groupId>org.springframework.cloud</groupId>

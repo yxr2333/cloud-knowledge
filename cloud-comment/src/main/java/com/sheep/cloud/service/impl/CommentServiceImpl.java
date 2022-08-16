@@ -10,6 +10,7 @@ import com.sheep.cloud.request.ICommentAddVO;
 import com.sheep.cloud.request.IReplyAddVO;
 import com.sheep.cloud.response.ApiResult;
 <<<<<<< HEAD
+<<<<<<< HEAD
 import com.sheep.cloud.service.CommentService;
 =======
 import com.sheep.cloud.response.ICommentGetInfoDTO;
@@ -17,11 +18,15 @@ import com.sheep.cloud.response.IReplyGetInfoDTO;
 import com.sheep.cloud.service.CommentService;
 import org.modelmapper.ModelMapper;
 >>>>>>> 116a605 (新增：完成评论角模块)
+=======
+import com.sheep.cloud.service.CommentService;
+>>>>>>> upstream/master
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+<<<<<<< HEAD
 <<<<<<< HEAD
 import java.util.Date;
 =======
@@ -29,6 +34,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 >>>>>>> 116a605 (新增：完成评论角模块)
+=======
+import java.util.Date;
+>>>>>>> upstream/master
 
 /**
  * @author ALEX
@@ -42,6 +50,9 @@ public class CommentServiceImpl implements CommentService {
     @Autowired
     private IRepliesEntityRepository repliesEntityRepository;
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> upstream/master
 
     @Override
     public ApiResult deleteCommentById(Integer id) {
@@ -74,6 +85,7 @@ public class CommentServiceImpl implements CommentService {
     public ApiResult insertComment(ICommentAddVO commentAddVo) {
         ICommentsEntity comment = new ICommentsEntity();
         comment.setCollect(0);
+<<<<<<< HEAD
 =======
     @Autowired
     private ModelMapper modelMapper;
@@ -87,6 +99,8 @@ public class CommentServiceImpl implements CommentService {
     public ApiResult insertComment(ICommentAddVO commentAddVo) {
         ICommentsEntity comment = new ICommentsEntity();
 >>>>>>> 116a605 (新增：完成评论角模块)
+=======
+>>>>>>> upstream/master
         comment.setContent(commentAddVo.getContent());
 
         IUsersEntity iUsersEntity = new IUsersEntity();
@@ -103,6 +117,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
     /*
      * @Description: 发表回复
@@ -110,6 +125,8 @@ public class CommentServiceImpl implements CommentService {
      * @return: com.sheep.cloud.response.ApiResult
      */
 >>>>>>> 116a605 (新增：完成评论角模块)
+=======
+>>>>>>> upstream/master
     @Override
     public ApiResult insertReply(IReplyAddVO replyAddVO) {
         IRepliesEntity reply = new IRepliesEntity();
@@ -133,6 +150,9 @@ public class CommentServiceImpl implements CommentService {
     }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> upstream/master
     @Override
     public ApiResult collectById(Integer id) {
         Integer rows = commentsEntityRepository.collectById(id);
@@ -142,6 +162,7 @@ public class CommentServiceImpl implements CommentService {
             return ApiResult.success("点赞成功");
     }
 }
+<<<<<<< HEAD
 =======
     /*
      * @Description: 根据评论id删除评论
@@ -213,3 +234,5 @@ public class CommentServiceImpl implements CommentService {
     }
 }
 >>>>>>> 116a605 (新增：完成评论角模块)
+=======
+>>>>>>> upstream/master

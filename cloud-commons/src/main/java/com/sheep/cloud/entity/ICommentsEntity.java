@@ -2,9 +2,12 @@ package com.sheep.cloud.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 import com.fasterxml.jackson.annotation.JsonIgnore;
 >>>>>>> 116a605 (新增：完成评论角模块)
+=======
+>>>>>>> upstream/master
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -40,9 +43,12 @@ public class ICommentsEntity {
 
     @Basic
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
     @JsonIgnore
 >>>>>>> 116a605 (新增：完成评论角模块)
+=======
+>>>>>>> upstream/master
     @Column(name = "collect")
     private Integer collect;
 
@@ -60,8 +66,13 @@ public class ICommentsEntity {
     @JoinColumn(name = "user_id", referencedColumnName = "uid")
     private IUsersEntity publishUser;
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 
 =======
 >>>>>>> 116a605 (新增：完成评论角模块)
+=======
+
+
+>>>>>>> upstream/master
 }
