@@ -10,7 +10,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ICommentAddVO {
-    String content;
-    Integer publishUser;
-    Integer resourceId;
+    private String content;
+    private Integer publishUser;
+    private Integer resourceId;
 }

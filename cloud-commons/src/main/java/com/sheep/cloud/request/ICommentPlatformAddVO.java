@@ -6,14 +6,12 @@ import lombok.NoArgsConstructor;
 
 /**
  * @author ALEX
- * @since 2022/8/14 8:28
+ * @since 2022/8/15 13:20
  */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class IReplyAddVO {
+public class ICommentPlatformAddVO {
     private String content;
-    private Integer commentId;
-    private Integer lastReplyId;
-    private Integer replyUser;
+    private Integer publishUser;
 }

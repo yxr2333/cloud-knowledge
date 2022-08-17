@@ -1,6 +1,8 @@
 package com.sheep.cloud.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jdk.nashorn.internal.ir.annotations.Ignore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -35,6 +37,7 @@ public class ICommentsEntity {
     private String content;
 
     @Basic
+    @JsonIgnore
     @Column(name = "collect")
     private Integer collect;
 
