@@ -10,6 +10,7 @@ import com.sheep.cloud.service.ResourceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.persistence.criteria.CriteriaBuilder;
 import javax.validation.Valid;
 import java.util.Arrays;
 import java.util.List;
@@ -56,4 +57,29 @@ public class ResourceController {
         return resourceService.label(labels, pageNum - 1, pageSize);
     }
 
+    @PostMapping("/add/collect")
+    public ApiResult addCollect(@RequestParam Integer uid, @RequestParam Integer rid) {
+        return resourceService.addCollect(uid, rid);
+    }
+
+    @DeleteMapping("/collect/{id}")
+    public ApiResult deleteCollectById(@PathVariable Integer id) {
+        return resourceService.deleteCollectById(id);
+    }
+
+    @DeleteMapping("/delete/collect")
+    public ApiResult deleteByResourceIdAndUserUid(@RequestParam Integer uid, @RequestParam Integer rid) {
+        return resourceService.deleteByResourceIdAndUserUid(uid,rid);
+    }
+
+    @GetMapping("/find/collect")
+    public ApiResult findCollectById(Integer uid) {
+        return resourceService.findAllByListIn(uid);
+    }
+
+
+    @GetMapping("/count")
+    public ApiResult countDistinctByLabelsId(@RequestParam Integer id) {
+        return resourceService.countDistinctByLabelsId(id);
+    }
 }
