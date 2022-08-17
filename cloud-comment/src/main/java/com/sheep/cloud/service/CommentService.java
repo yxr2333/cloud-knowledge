@@ -10,6 +10,20 @@ import com.sheep.cloud.response.ApiResult;
  */
 public interface CommentService {
     /*
+     * @Description: 发表评论
+     * @param commentsEntity
+     * @return: com.sheep.cloud.response.ApiResult
+     */
+    ApiResult insertComment(ICommentAddVO commentAddVo);
+
+    /*
+     * @Description: 发表回复
+     * @param replyAddVO
+     * @return: com.sheep.cloud.response.ApiResult
+     */
+    ApiResult insertReply(IReplyAddVO replyAddVO);
+
+    /*
      * @Description:根据id删除评论
      * @param id
      * @return: com.sheep.cloud.response.ApiResult
@@ -24,21 +38,16 @@ public interface CommentService {
     ApiResult deleteReplyById(Integer id);
 
     /*
-     * @Description: 发表评论
-     * @param commentsEntity
+     * @Description: 根据资源id查询评论
+     * @param resource_id
      * @return: com.sheep.cloud.response.ApiResult
      */
-    ApiResult insertComment(ICommentAddVO commentAddVo);
+    ApiResult getCommentByResourceId(Integer resource_id);
+
     /*
-     * @Description: 发表回复
-     * @param replyAddVO
+     * @Description: 根据评论id获取回复
+     * @param comment_id
      * @return: com.sheep.cloud.response.ApiResult
      */
-    ApiResult insertReply(IReplyAddVO replyAddVO);
-    /*
-     * @Description: 点赞
-     * @param
-     * @return: com.sheep.cloud.response.ApiResult
-     */
-    ApiResult collectById(Integer id);
+    ApiResult getReplyByCommentId(Integer comment_id);
 }
