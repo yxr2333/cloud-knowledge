@@ -1,8 +1,10 @@
 package com.sheep.cloud.service.impl;
 
+import com.sheep.cloud.dao.ICollectListsEntityRepository;
 import com.sheep.cloud.dao.ILabelsEntityRepository;
 import com.sheep.cloud.dao.IResourcesEntityRepository;
 import com.sheep.cloud.dao.IUsersEntityRepository;
+import com.sheep.cloud.entity.ICollectListsEntity;
 import com.sheep.cloud.entity.ILabelsEntity;
 import com.sheep.cloud.entity.IResourcesEntity;
 import com.sheep.cloud.request.IResourceAddVO;
@@ -21,6 +23,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
+
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -33,11 +37,17 @@ public class ResourceServiceImpl implements ResourceService {
 
     @Autowired
     private IUsersEntityRepository usersEntityRepository;
+
     @Autowired
     private ILabelsEntityRepository iLabelsEntityRepository;
 
     @Autowired
+    private ICollectListsEntityRepository iCollectListsEntityRepository;
+
+    @Autowired
     private ModelMapper modelMapper;
+    private Object LocalDate;
+
     /**
      * 发布资源
      *
@@ -182,7 +192,118 @@ public class ResourceServiceImpl implements ResourceService {
                 .build());
     }
 
+    /**
+     * 用户收藏资源
+     *
+     * @param uid   用户id
+     * @param rid  资源id
+     * @return 收藏结果
+     */
+    @Override
+    public ApiResult addCollect(Integer uid, Integer rid) {
+        if (!usersEntityRepository.existsById(uid)) {
+            return ApiResult.error("该用户不存在！");
+        }
+        if (!iResourcesEntityRepository.existsById(rid)) {
+            return ApiResult.error("该资源不存在！");
+        }
+        IResourcesEntity iResourcesEntity = iResourcesEntityRepository.getOne(rid);
+        if (iCollectListsEntityRepository.findICollectListsEntityIdByResourceIdAndUserUid(rid,uid) != null){
+            return ApiResult.warning("请不要重复收藏该资源！");
+        }
+        //收藏量加一
+        if (iResourcesEntity.getCollect() == null) {
+            iResourcesEntity.setCollect(1);
+        } else {
+            iResourcesEntity.setCollect(iResourcesEntity.getCollect() + 1);
+        }
+        iResourcesEntityRepository.save(iResourcesEntity);
+        ICollectListsEntity iCollectListsEntity = new ICollectListsEntity();
+        iCollectListsEntity.setUser(usersEntityRepository.getOne(uid));
+        iCollectListsEntity.setResource(iResourcesEntityRepository.getOne(rid));
+        iCollectListsEntity.setCreateTime(LocalDateTime.now());
+        iCollectListsEntityRepository.save(iCollectListsEntity);
+        return ApiResult.success("收藏成功！");
+    }
 
+    /**
+     * 通过id用户取消收藏资源
+     *
+     * @param id   收藏id
+     * @return 取消收藏结果
+     */
+    @Override
+    public ApiResult deleteCollectById(Integer id) {
+        if (iCollectListsEntityRepository.existsById(id)) {
+            ICollectListsEntity iCollectListsEntity = iCollectListsEntityRepository.getOne(id);
+            IResourcesEntity iResourcesEntity = iResourcesEntityRepository
+                    .findById(iCollectListsEntity.getResource().getId())
+                    .orElseThrow(() -> new RuntimeException("该资源不存在！"));
+            //收藏量减一
+            iResourcesEntity.setCollect(iResourcesEntity.getCollect() - 1);
+            iResourcesEntityRepository.save(iResourcesEntity);
+            iCollectListsEntityRepository.deleteById(id);
+            return ApiResult.success("取消收藏成功！");
+        } else {
+            return ApiResult.error("收藏不存在！");
+        }
+    }
 
+    /**
+     * 通过用户id和资源id取消收藏资源
+     *
+     * @param uid   用户id
+     * @param rid  资源id
+     * @return 收藏结果
+     */
+    @Override
+    @Transactional
+    public ApiResult deleteByResourceIdAndUserUid(Integer uid, Integer rid) {
+        if (!usersEntityRepository.existsById(uid)) {
+            return ApiResult.error("该用户不存在！");
+        }
+        iCollectListsEntityRepository.deleteByResourceIdAndUserUid(uid,rid);
+        IResourcesEntity iResourcesEntity = iResourcesEntityRepository
+                .findById(rid)
+                .orElseThrow(() -> new RuntimeException("该资源不存在！"));
+        if (iCollectListsEntityRepository.findICollectListsEntityIdByResourceIdAndUserUid(rid,uid) == null) {
+            return ApiResult.warning("请勿重复取消收藏！");
+        }
+        //收藏量减一
+        iResourcesEntity.setCollect(iResourcesEntity.getCollect() - 1);
+        iResourcesEntityRepository.save(iResourcesEntity);
+        iCollectListsEntityRepository.deleteByResourceIdAndUserUid(rid,uid);
+        return ApiResult.success("取消收藏成功！");
+    }
+
+    /**
+     * 查询用户收藏列表
+     *
+     * @param uid   用户id
+     * @return 查询结果
+     */
+    @Override
+    public ApiResult findAllByListIn(Integer uid) {
+        if (!usersEntityRepository.existsById(uid)) {
+            return ApiResult.error("该用户不存在！");
+        }
+        List<IResourcesEntity> list = iResourcesEntityRepository.findAllByUserId(uid);
+        if (CollectionUtils.isEmpty(list)) {
+            return ApiResult.warning("该用户暂无收藏记录！");
+        } else {
+            return ApiResult.success(list);
+        }
+    }
+
+    /**
+     * 查询指定标签下的资源个数
+     *
+     * @param id  标签id
+     * @return 查询结果
+     */
+    @Override
+    public ApiResult countDistinctByLabelsId(Integer id) {
+        return ApiResult.success(iResourcesEntityRepository.countDistinctByLabelsId(id));
+    }
 
 }

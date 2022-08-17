@@ -5,6 +5,7 @@ import com.sheep.cloud.request.IResourceModifyVO;
 import com.sheep.cloud.request.IResourcePaymentVO;
 import com.sheep.cloud.response.ApiResult;
 
+import javax.persistence.criteria.CriteriaBuilder;
 import java.util.List;
 
 public interface ResourceService {
@@ -57,4 +58,46 @@ public interface ResourceService {
      * @return 查询结果
      */
     ApiResult label(List<Integer> labels, Integer pageNum, Integer pageSize);
+
+    /**
+     * 用户收藏资源
+     *
+     * @param uid   用户id
+     * @param rid  资源id
+     * @return 收藏结果
+     */
+    ApiResult addCollect(Integer uid, Integer rid);
+
+    /**
+     * 通过id用户取消收藏资源
+     *
+     * @param id   收藏id
+     * @return 取消收藏结果
+     */
+    ApiResult deleteCollectById(Integer id);
+
+    /**
+     * 通过用户id和资源id取消收藏资源
+     *
+     * @param uid   用户id
+     * @param rid  资源id
+     * @return 收藏结果
+     */
+    ApiResult deleteByResourceIdAndUserUid(Integer uid, Integer rid);
+
+    /**
+     * 查询用户收藏列表
+     *
+     * @param uid   用户id
+     * @return 查询结果
+     */
+    ApiResult findAllByListIn(Integer uid);
+
+    /**
+     * 查询指定标签下的资源个数
+     *
+     * @param id  标签id
+     * @return 查询结果
+     */
+    ApiResult countDistinctByLabelsId(Integer id);
 }

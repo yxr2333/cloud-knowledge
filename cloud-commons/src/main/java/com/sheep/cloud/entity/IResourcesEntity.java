@@ -1,9 +1,6 @@
 package com.sheep.cloud.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.List;
@@ -15,6 +12,7 @@ import java.util.List;
  * @package com.sheep.cloud.entity
  * @datetime 2022/8/11 星期四
  */
+@ToString
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -57,6 +55,7 @@ public class IResourcesEntity {
 
 
     @ManyToMany
+    @ToString.Exclude
     @JoinTable(name = "t_resources_labels", joinColumns = @JoinColumn(name = "resource_id"), inverseJoinColumns = @JoinColumn(name = "label_id"))
     private List<ILabelsEntity> labels;
 }
