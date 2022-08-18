@@ -82,4 +82,20 @@ public class ResourceController {
     public ApiResult countDistinctByLabelsId(@RequestParam Integer id) {
         return resourceService.countDistinctByLabelsId(id);
     }
+
+    @GetMapping("/find/all")
+    public ApiResult findAllResources(@RequestParam(value = "order", required = false) int order,
+                                      @RequestParam(value = "pageNum", required = false) Integer pageNum,
+                                      @RequestParam(value = "pageSize", required = false) Integer pageSize) {
+        if (pageNum == null || pageSize == null) {
+            pageNum = 1;
+            pageSize = 10;
+        }
+        return resourceService.findAllResources(order,pageNum - 1, pageSize);
+    }
+
+//    @GetMapping("/find/all/collect")
+//    public ApiResult findAllResourcesOrderByCollect() {
+//        return resourceService.findAllResourcesOrderByCollect();
+//    }
 }

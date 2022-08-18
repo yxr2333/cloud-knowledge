@@ -3,6 +3,7 @@ package com.sheep.cloud.entity;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -48,6 +49,9 @@ public class IResourcesEntity {
     @Basic
     @Column(name = "password")
     private String password;
+    @Basic
+    @Column(name = "release_time")
+    private Date release_time;
 
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "uid")

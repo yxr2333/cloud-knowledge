@@ -100,4 +100,15 @@ public interface ResourceService {
      * @return 查询结果
      */
     ApiResult countDistinctByLabelsId(Integer id);
+
+    /**
+     * 查询所有资源
+     *
+     * @param order  排序规则（0：不排序、1：按收藏量排序、2按发布时间排序）
+     * @param pageNum  页码
+     * @param pageSize 页大小
+     * @return 查询结果
+     */
+    ApiResult findAllResources(int order,Integer pageNum, Integer pageSize);
+
 }
