@@ -59,6 +59,23 @@ public interface IResourcesEntityRepository extends JpaRepository<IResourcesEnti
     @Query("select count(distinct i) from IResourcesEntity i inner join i.labels labels where labels.id = ?1")
     int countDistinctByLabelsId(Integer id);
 
+    /**
+     * 按收藏量排序查询所有资源
+     *
+     * @param pageable 分页条件
+     * @return 查询结果
+     */
+    @Query("select i from IResourcesEntity i order by i.collect desc")
+    Page<IResourcesEntity> findAllOrderByCollect(Pageable pageable);
+
+    /**
+     * 按发布时间排序查询所有资源
+     *
+     * @param pageable 分页条件
+     * @return 查询结果
+     */
+    @Query("select i from IResourcesEntity i order by i.release_time desc")
+    Page<IResourcesEntity> findAllOrderByRelease_time(Pageable pageable);
 }
 
 
