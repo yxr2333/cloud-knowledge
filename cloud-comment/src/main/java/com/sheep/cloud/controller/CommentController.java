@@ -9,6 +9,8 @@ import com.sheep.cloud.service.CommentPlatformService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 /**
  * @author ALEX
  * @since 2022/8/13 15:24
@@ -25,12 +27,12 @@ public class CommentController {
     private CommentPlatformService commentPlatformService;
 
     @PostMapping("/addComment")
-    public ApiResult addContent(ICommentAddVO iCommentAddVo){
+    public ApiResult addContent(@RequestBody @Valid ICommentAddVO iCommentAddVo){
         return commentService.insertComment(iCommentAddVo);
     }
 
     @PostMapping("/addReply")
-    public ApiResult addReply(IReplyAddVO iReplyAddVO){
+    public ApiResult addReply(@RequestBody @Valid IReplyAddVO iReplyAddVO){
         return commentService.insertReply(iReplyAddVO);
     }
 
@@ -55,7 +57,7 @@ public class CommentController {
     }
 
     @PostMapping("/addPlatform")
-    public ApiResult getCommentFromPlatform(ICommentPlatformAddVO commentPlatformAddVO){
+    public ApiResult getCommentFromPlatform(@RequestBody @Valid ICommentPlatformAddVO commentPlatformAddVO){
         return commentPlatformService.insertComment(commentPlatformAddVO);
     }
 
