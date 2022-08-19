@@ -7,6 +7,7 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+
         <module name="cloud-user" />
         <module name="cloud-gateway" />
         <module name="cloud-commons" />
@@ -14,6 +15,7 @@
         <module name="cloud-comment" />
         <module name="cloud-eureka-server" />
         <module name="cloud-resource" />
+        <module name="cloud-gateway" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>

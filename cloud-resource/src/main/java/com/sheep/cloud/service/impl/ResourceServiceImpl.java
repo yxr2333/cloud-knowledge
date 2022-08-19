@@ -65,6 +65,7 @@ public class ResourceServiceImpl implements ResourceService {
         iResourcesEntity.setLink(vo.getLink());
         iResourcesEntity.setLabels(vo.getLabels());
         iResourcesEntity.setIcon(vo.getIcon());
+        iResourcesEntity.setRelease_time(LocalDateTime.now());
         iResourcesEntity.setPublishUser(usersEntityRepository.getOne(vo.getPublishUser()));
         iResourcesEntityRepository.save(iResourcesEntity);
         return ApiResult.success("发表成功！");
@@ -167,7 +168,7 @@ public class ResourceServiceImpl implements ResourceService {
     /**
      * 根据标签划分资源
      *
-     * @param labelId    标签
+     * @param labelId  标签
      * @param pageNum  页码
      * @param pageSize 页大小
      * @return 查询结果
@@ -195,8 +196,8 @@ public class ResourceServiceImpl implements ResourceService {
     /**
      * 用户收藏资源
      *
-     * @param uid   用户id
-     * @param rid  资源id
+     * @param uid 用户id
+     * @param rid 资源id
      * @return 收藏结果
      */
     @Override
@@ -208,7 +209,7 @@ public class ResourceServiceImpl implements ResourceService {
             return ApiResult.error("该资源不存在！");
         }
         IResourcesEntity iResourcesEntity = iResourcesEntityRepository.getOne(rid);
-        if (iCollectListsEntityRepository.findICollectListsEntityIdByResourceIdAndUserUid(rid,uid) != null){
+        if (iCollectListsEntityRepository.findICollectListsEntityIdByResourceIdAndUserUid(rid, uid) != null) {
             return ApiResult.warning("请不要重复收藏该资源！");
         }
         //收藏量加一
@@ -229,7 +230,7 @@ public class ResourceServiceImpl implements ResourceService {
     /**
      * 通过id用户取消收藏资源
      *
-     * @param id   收藏id
+     * @param id 收藏id
      * @return 取消收藏结果
      */
     @Override
@@ -252,8 +253,8 @@ public class ResourceServiceImpl implements ResourceService {
     /**
      * 通过用户id和资源id取消收藏资源
      *
-     * @param uid   用户id
-     * @param rid  资源id
+     * @param uid 用户id
+     * @param rid 资源id
      * @return 收藏结果
      */
     @Override
@@ -262,24 +263,24 @@ public class ResourceServiceImpl implements ResourceService {
         if (!usersEntityRepository.existsById(uid)) {
             return ApiResult.error("该用户不存在！");
         }
-        iCollectListsEntityRepository.deleteByResourceIdAndUserUid(uid,rid);
+        iCollectListsEntityRepository.deleteByResourceIdAndUserUid(uid, rid);
         IResourcesEntity iResourcesEntity = iResourcesEntityRepository
                 .findById(rid)
                 .orElseThrow(() -> new RuntimeException("该资源不存在！"));
-        if (iCollectListsEntityRepository.findICollectListsEntityIdByResourceIdAndUserUid(rid,uid) == null) {
+        if (iCollectListsEntityRepository.findICollectListsEntityIdByResourceIdAndUserUid(rid, uid) == null) {
             return ApiResult.warning("请勿重复取消收藏！");
         }
         //收藏量减一
         iResourcesEntity.setCollect(iResourcesEntity.getCollect() - 1);
         iResourcesEntityRepository.save(iResourcesEntity);
-        iCollectListsEntityRepository.deleteByResourceIdAndUserUid(rid,uid);
+        iCollectListsEntityRepository.deleteByResourceIdAndUserUid(rid, uid);
         return ApiResult.success("取消收藏成功！");
     }
 
     /**
      * 查询用户收藏列表
      *
-     * @param uid   用户id
+     * @param uid 用户id
      * @return 查询结果
      */
     @Override
@@ -298,12 +299,34 @@ public class ResourceServiceImpl implements ResourceService {
     /**
      * 查询指定标签下的资源个数
      *
-     * @param id  标签id
+     * @param id 标签id
      * @return 查询结果
      */
     @Override
     public ApiResult countDistinctByLabelsId(Integer id) {
         return ApiResult.success(iResourcesEntityRepository.countDistinctByLabelsId(id));
     }
+
+    @Override
+    public ApiResult findAllResources(int order, Integer pageNum, Integer pageSize) {
+        PageRequest pageable = PageRequest.of(pageNum, pageSize);
+        Page<IResourcesEntity> page = null;
+        if (order == 0) {
+            page = iResourcesEntityRepository.findAll(pageable);
+        } else if (order == 1) {
+            page = iResourcesEntityRepository.findAllOrderByCollect(pageable);
+        } else if (order == 2) {
+            page = iResourcesEntityRepository.findAllOrderByRelease_time(pageable);
+        } else {
+            return ApiResult.warning("请输入正确的排序规则！");
+        }
+        PageData.PageDataBuilder<IResourcesEntity> builder = PageData.builder();
+        return ApiResult.success(builder.totalPage(page.getTotalPages())
+                .totalNum(page.getTotalElements())
+                .data(page.getContent())
+                .build());
+    }
+
+
 
 }
