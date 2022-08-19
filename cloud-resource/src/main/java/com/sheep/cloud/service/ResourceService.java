@@ -5,7 +5,6 @@ import com.sheep.cloud.request.IResourceModifyVO;
 import com.sheep.cloud.request.IResourcePaymentVO;
 import com.sheep.cloud.response.ApiResult;
 
-import javax.persistence.criteria.CriteriaBuilder;
 import java.util.List;
 
 public interface ResourceService {

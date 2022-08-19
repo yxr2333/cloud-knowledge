@@ -18,7 +18,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -66,6 +65,7 @@ public class ResourceServiceImpl implements ResourceService {
         iResourcesEntity.setLink(vo.getLink());
         iResourcesEntity.setLabels(vo.getLabels());
         iResourcesEntity.setIcon(vo.getIcon());
+        iResourcesEntity.setRelease_time(LocalDateTime.now());
         iResourcesEntity.setPublishUser(usersEntityRepository.getOne(vo.getPublishUser()));
         iResourcesEntityRepository.save(iResourcesEntity);
         return ApiResult.success("发表成功！");
@@ -315,7 +315,7 @@ public class ResourceServiceImpl implements ResourceService {
             page = iResourcesEntityRepository.findAll(pageable);
         } else if (order == 1) {
             page = iResourcesEntityRepository.findAllOrderByCollect(pageable);
-        } else if (order == 3) {
+        } else if (order == 2) {
             page = iResourcesEntityRepository.findAllOrderByRelease_time(pageable);
         } else {
             return ApiResult.warning("请输入正确的排序规则！");
