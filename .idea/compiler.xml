@@ -10,9 +10,9 @@
         <module name="cloud-user" />
         <module name="cloud-gateway" />
         <module name="cloud-commons" />
+        <module name="cloud-wish" />
         <module name="cloud-comment" />
         <module name="cloud-eureka-server" />
-        <module name="cloud-wish" />
         <module name="cloud-resource" />
       </profile>
     </annotationProcessing>
