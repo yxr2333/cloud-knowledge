@@ -6,7 +6,6 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -57,7 +56,7 @@ public class IResourcesEntity {
     @Column(name = "release_time")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime release_time;
+    private LocalDateTime releaseTime;
 
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "uid")
