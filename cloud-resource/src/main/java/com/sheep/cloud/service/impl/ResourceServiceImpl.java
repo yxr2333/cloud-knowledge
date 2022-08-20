@@ -18,11 +18,11 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
-
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -65,7 +65,7 @@ public class ResourceServiceImpl implements ResourceService {
         iResourcesEntity.setLink(vo.getLink());
         iResourcesEntity.setLabels(vo.getLabels());
         iResourcesEntity.setIcon(vo.getIcon());
-        iResourcesEntity.setRelease_time(LocalDateTime.now());
+        iResourcesEntity.setReleaseTime(LocalDateTime.now());
         iResourcesEntity.setPublishUser(usersEntityRepository.getOne(vo.getPublishUser()));
         iResourcesEntityRepository.save(iResourcesEntity);
         return ApiResult.success("发表成功！");
@@ -307,26 +307,46 @@ public class ResourceServiceImpl implements ResourceService {
         return ApiResult.success(iResourcesEntityRepository.countDistinctByLabelsId(id));
     }
 
+    /**
+     * 查询所有资源
+     *
+     * @param order    排序规则（0：不排序、1：按收藏量排序、2按发布时间排序）
+     * @param pageNum  页码
+     * @param pageSize 页大小
+     * @return 查询结果
+     */
     @Override
-    public ApiResult findAllResources(int order, Integer pageNum, Integer pageSize) {
-        PageRequest pageable = PageRequest.of(pageNum, pageSize);
-        Page<IResourcesEntity> page = null;
+    public ApiResult findAllResources(List<Integer> labelId, int order, Integer pageNum, Integer pageSize) {
+        ArrayList<ILabelsEntity> labels = new ArrayList<>();
+        // 根据标签编号查询标签
+        labelId.forEach(id -> {
+            ILabelsEntity labelsEntity = iLabelsEntityRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("标签不存在"));
+            labels.add(labelsEntity);
+        });
+
+        Sort sort = null;
+        PageRequest pageable = null;
         if (order == 0) {
-            page = iResourcesEntityRepository.findAll(pageable);
+            pageable = PageRequest.of(pageNum, pageSize);
         } else if (order == 1) {
-            page = iResourcesEntityRepository.findAllOrderByCollect(pageable);
+            sort = Sort.by(Sort.Direction.DESC, "collect");
+            pageable = PageRequest.of(pageNum, pageSize, sort);
         } else if (order == 2) {
-            page = iResourcesEntityRepository.findAllOrderByRelease_time(pageable);
+            sort = Sort.by(Sort.Direction.DESC, "releaseTime");
+            pageable = PageRequest.of(pageNum, pageSize, sort);
         } else {
             return ApiResult.warning("请输入正确的排序规则！");
         }
+
+        Page<IResourcesEntity> page = iResourcesEntityRepository.findDistinctAllByLabelsIn(labels, pageable);
+
         PageData.PageDataBuilder<IResourcesEntity> builder = PageData.builder();
         return ApiResult.success(builder.totalPage(page.getTotalPages())
                 .totalNum(page.getTotalElements())
                 .data(page.getContent())
                 .build());
     }
-
 
 
 }

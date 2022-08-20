@@ -108,6 +108,6 @@ public interface ResourceService {
      * @param pageSize 页大小
      * @return 查询结果
      */
-    ApiResult findAllResources(int order,Integer pageNum, Integer pageSize);
+    ApiResult findAllResources(List<Integer> labelId, int order,Integer pageNum, Integer pageSize);
 
 }
