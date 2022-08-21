@@ -66,6 +66,14 @@ public class ResourceServiceImpl implements ResourceService {
         iResourcesEntity.setLabels(vo.getLabels());
         iResourcesEntity.setIcon(vo.getIcon());
         iResourcesEntity.setReleaseTime(LocalDateTime.now());
+        iResourcesEntity.setIsPaid(vo.getIsPaid());
+        if (vo.getIsPaid()) {
+            if (!StringUtils.isEmpty(vo.getPassword())) {
+                iResourcesEntity.setPassword(vo.getPassword());
+            } else {
+                return ApiResult.warning("付费资源需要设置资源访问密码！");
+            }
+        }
         iResourcesEntity.setPublishUser(usersEntityRepository.getOne(vo.getPublishUser()));
         iResourcesEntityRepository.save(iResourcesEntity);
         return ApiResult.success("发表成功！");
@@ -89,7 +97,7 @@ public class ResourceServiceImpl implements ResourceService {
     }
 
     /**
-     * 用户修改信息
+     * 修改资源信息
      *
      * @param vo 修改资源信息
      * @return 修改结果
@@ -311,12 +319,14 @@ public class ResourceServiceImpl implements ResourceService {
      * 查询所有资源
      *
      * @param order    排序规则（0：不排序、1：按收藏量排序、2按发布时间排序）
+     * @param isFree   资源筛选是否免费（0：免费，1：付费）
      * @param pageNum  页码
      * @param pageSize 页大小
      * @return 查询结果
      */
     @Override
-    public ApiResult findAllResources(List<Integer> labelId, int order, Integer pageNum, Integer pageSize) {
+    public ApiResult findAllResources(List<Integer> labelId, int order, boolean isFree, Integer pageNum, Integer pageSize) {
+
         ArrayList<ILabelsEntity> labels = new ArrayList<>();
         // 根据标签编号查询标签
         labelId.forEach(id -> {
@@ -324,6 +334,7 @@ public class ResourceServiceImpl implements ResourceService {
                     .orElseThrow(() -> new RuntimeException("标签不存在"));
             labels.add(labelsEntity);
         });
+
 
         Sort sort = null;
         PageRequest pageable = null;
@@ -339,7 +350,7 @@ public class ResourceServiceImpl implements ResourceService {
             return ApiResult.warning("请输入正确的排序规则！");
         }
 
-        Page<IResourcesEntity> page = iResourcesEntityRepository.findDistinctAllByLabelsIn(labels, pageable);
+        Page<IResourcesEntity> page = iResourcesEntityRepository.findDistinctAllByIsPaidAndAndLabelsIn(isFree, labels, pageable);
 
         PageData.PageDataBuilder<IResourcesEntity> builder = PageData.builder();
         return ApiResult.success(builder.totalPage(page.getTotalPages())

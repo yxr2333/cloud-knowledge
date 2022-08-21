@@ -82,17 +82,20 @@ public class ResourceController {
         return resourceService.countDistinctByLabelsId(id);
     }
 
+
     @GetMapping("/find/all")
-    public ApiResult findAllResources(@RequestParam(value = "id", required = false) Integer id,
-                                      @RequestParam(value = "order", required = false) int order,
-                                      @RequestParam(value = "pageNum", required = false) Integer pageNum,
-                                      @RequestParam(value = "pageSize", required = false) Integer pageSize) {
+    public ApiResult test(@RequestParam(value = "id", required = false) Integer id,
+                          @RequestParam(value = "order", required = false) int order,
+                          @RequestParam(value = "isFree", required = false) boolean isFree,
+                          @RequestParam(value = "pageNum", required = false) Integer pageNum,
+                          @RequestParam(value = "pageSize", required = false) Integer pageSize) {
         List<Integer> labels = Arrays.asList(id);
         if (pageNum == null || pageSize == null) {
             pageNum = 1;
             pageSize = 10;
         }
-        return resourceService.findAllResources(labels, order, pageNum - 1, pageSize);
+        return resourceService.findAllResources(labels, order, isFree, pageNum - 1, pageSize);
+
     }
 
 }

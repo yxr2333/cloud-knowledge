@@ -51,7 +51,7 @@ public interface ResourceService {
     /**
      * 根据标签划分资源
      *
-     * @param labels     标签
+     * @param labels   标签
      * @param pageNum  页码
      * @param pageSize 页大小
      * @return 查询结果
@@ -61,8 +61,8 @@ public interface ResourceService {
     /**
      * 用户收藏资源
      *
-     * @param uid   用户id
-     * @param rid  资源id
+     * @param uid 用户id
+     * @param rid 资源id
      * @return 收藏结果
      */
     ApiResult addCollect(Integer uid, Integer rid);
@@ -70,7 +70,7 @@ public interface ResourceService {
     /**
      * 通过id用户取消收藏资源
      *
-     * @param id   收藏id
+     * @param id 收藏id
      * @return 取消收藏结果
      */
     ApiResult deleteCollectById(Integer id);
@@ -78,8 +78,8 @@ public interface ResourceService {
     /**
      * 通过用户id和资源id取消收藏资源
      *
-     * @param uid   用户id
-     * @param rid  资源id
+     * @param uid 用户id
+     * @param rid 资源id
      * @return 收藏结果
      */
     ApiResult deleteByResourceIdAndUserUid(Integer uid, Integer rid);
@@ -87,7 +87,7 @@ public interface ResourceService {
     /**
      * 查询用户收藏列表
      *
-     * @param uid   用户id
+     * @param uid 用户id
      * @return 查询结果
      */
     ApiResult findAllByListIn(Integer uid);
@@ -95,19 +95,19 @@ public interface ResourceService {
     /**
      * 查询指定标签下的资源个数
      *
-     * @param id  标签id
+     * @param id 标签id
      * @return 查询结果
      */
     ApiResult countDistinctByLabelsId(Integer id);
 
+
     /**
      * 查询所有资源
      *
-     * @param order  排序规则（0：不排序、1：按收藏量排序、2按发布时间排序）
+     * @param order    排序规则（0：不排序、1：按收藏量排序、2按发布时间排序）
      * @param pageNum  页码
      * @param pageSize 页大小
      * @return 查询结果
      */
-    ApiResult findAllResources(List<Integer> labelId, int order,Integer pageNum, Integer pageSize);
-
+    ApiResult findAllResources(List<Integer> labelId, int order, boolean isFree, Integer pageNum, Integer pageSize);
 }

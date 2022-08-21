@@ -48,7 +48,6 @@ public interface IResourcesEntityRepository extends JpaRepository<IResourcesEnti
      * @param id 标签id
      * @return 查询结果
      */
-    @Query("select count(distinct i) from IResourcesEntity i inner join i.labels labels where labels.id = ?1")
     int countDistinctByLabelsId(Integer id);
 
     /**
@@ -77,6 +76,27 @@ public interface IResourcesEntityRepository extends JpaRepository<IResourcesEnti
      */
     @Query("select distinct i from IResourcesEntity i where i.labels in ?1")
     List<IResourcesEntity> myFind(Collections labels);
+
+//    /**
+//     * 根据标签划分资源
+//     *
+//     * @param labels   标签
+//     * @param isFree   是否付费
+//     * @param pageable 分页条件
+//     * @return 查询结果
+//     */
+//    @Query("select distinct i from IResourcesEntity i where i.isPaid = ?1 and exists (select a.id from i.labels a where a = ?2)")
+//    Page<IResourcesEntity> findPay(boolean isFree, ILabelsEntity labels, Pageable pageable);
+
+    /**
+     * 根据标签划分资源
+     *
+     * @param labels   标签
+     * @param isFree   是否付费
+     * @param pageable 分页条件
+     * @return 查询结果
+     */
+    Page<IResourcesEntity> findDistinctAllByIsPaidAndAndLabelsIn(boolean isFree, List<ILabelsEntity> labels, Pageable pageable);
 }
 
 

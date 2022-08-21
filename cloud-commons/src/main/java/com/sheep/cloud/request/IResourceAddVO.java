@@ -1,7 +1,6 @@
 package com.sheep.cloud.request;
 
 
-
 import com.sheep.cloud.entity.ILabelsEntity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -14,7 +13,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class IResourceAddVO  implements Serializable {
+public class IResourceAddVO implements Serializable {
     @NotNull(message = "资源名称不能为空")
     private String name;
 
@@ -25,6 +24,10 @@ public class IResourceAddVO  implements Serializable {
     private String link;
 
     private String icon;
+
+    @NotNull(message = "请设置资源是否付费")
+    private Boolean isPaid;
+    private String password;
     @NotNull(message = "请先进行登录！")
     private Integer publishUser;
 
