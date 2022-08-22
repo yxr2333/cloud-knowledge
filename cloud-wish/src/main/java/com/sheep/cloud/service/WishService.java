@@ -23,6 +23,14 @@ public interface WishService {
      */
     ApiResult publishWish(IWishPublishVO wishPublishVO);
 
+    /**
+     * 根据编号获取心愿信息
+     *
+     * @param id 心愿编号
+     * @return 心愿信息
+     */
+    ApiResult getWishById(Integer id);
+
 
     /**
      * 获取所有心愿
@@ -70,4 +78,15 @@ public interface WishService {
      * @return 完成结果
      */
     ApiResult helpFinishWish(IWishHelpFinishVO vo);
+
+    /**
+     * 通过内容和标签搜索
+     *
+     * @param content  内容
+     * @param labelIds 标签ids
+     * @param pageNum  页码
+     * @param pageSize 页容量
+     * @return 查询结果
+     */
+    ApiResult findWishesByContentAndLabels(String content, List<Integer> labelIds, Integer pageNum, Integer pageSize);
 }

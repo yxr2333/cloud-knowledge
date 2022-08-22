@@ -32,6 +32,7 @@ public interface IResourcesEntityRepository extends JpaRepository<IResourcesEnti
      * @return 查询结果
      */
     Page<IResourcesEntity> findDistinctAllByLabelsIn(List<ILabelsEntity> labels, Pageable pageable);
+//    /**
 
     /**
      * 查询用户收藏记录
@@ -97,6 +98,10 @@ public interface IResourcesEntityRepository extends JpaRepository<IResourcesEnti
      * @return 查询结果
      */
     Page<IResourcesEntity> findDistinctAllByIsPaidAndAndLabelsIn(boolean isFree, List<ILabelsEntity> labels, Pageable pageable);
+
+    Page<IResourcesEntity> findAllByIsPaidAndLabelsIn(boolean isPaid, List<ILabelsEntity> labels, Pageable pageable);
+
+    Page<IResourcesEntity> findAllByIsPaidAndNameLikeIgnoreCaseAndLabelsIn(boolean isPaid, String name, List<ILabelsEntity> labels, Pageable pageable);
 }
 
 

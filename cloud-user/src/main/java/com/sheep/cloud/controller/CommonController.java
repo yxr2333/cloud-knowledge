@@ -4,9 +4,10 @@ import com.sheep.cloud.response.ApiResult;
 import com.sheep.cloud.service.CommonService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 /**
  * Created By Intellij IDEA
@@ -22,9 +23,19 @@ public class CommonController {
 
     @Autowired
     private CommonService commonService;
-    
+
     @GetMapping("/labelCategoryMenu")
     public ApiResult getAllLabelCategoryMenu() {
         return commonService.getAllLabelCategoryMenu();
+    }
+
+    @GetMapping("/getAllLabels")
+    public ApiResult getAllLabels() {
+        return commonService.getAllLabels();
+    }
+
+    @PostMapping("/upload")
+    public ApiResult uploadImg(@RequestParam("file") MultipartFile file) throws IOException {
+        return commonService.uploadFile(file);
     }
 }

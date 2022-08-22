@@ -16,6 +16,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -98,7 +100,18 @@ public class WishServiceImpl implements WishService {
         Page<IWishesEntity> resultPage = wishesEntityRepository.findAll(pageable);
         PageData<IWishBaseInfoDTO> result = toResponseResult(resultPage);
         return ApiResult.success(result);
+    }
 
+    /**
+     * 根据编号获取心愿信息
+     *
+     * @param id 心愿编号
+     * @return 心愿信息
+     */
+    @Override
+    public ApiResult getWishById(Integer id) {
+        IWishesEntity entity = wishesEntityRepository.findById(id).orElseThrow(() -> new RuntimeException("不存在此心愿的信息"));
+        return ApiResult.success(entity);
     }
 
     private PageData<IWishBaseInfoDTO> toResponseResult(Page<IWishesEntity> resultPage) {
@@ -186,5 +199,33 @@ public class WishServiceImpl implements WishService {
         entity.setUsername(vo.getUsername());
         wishReplyListEntityRepository.save(entity);
         return ApiResult.success("帮助成功,谢谢你的贡献~");
+    }
+
+    /**
+     * 通过内容和标签搜索
+     *
+     * @param content  内容
+     * @param labelIds 标签ids
+     * @param pageNum  页码
+     * @param pageSize 页容量
+     * @return 查询结果
+     */
+    @Override
+    public ApiResult findWishesByContentAndLabels(String content, List<Integer> labelIds, Integer pageNum, Integer pageSize) {
+        List<ILabelsEntity> labels = labelsEntityRepository.findAllById(labelIds);
+        Sort sort = Sort.by(Sort.Direction.DESC, "publishTime");
+        PageRequest pageable = PageRequest.of(pageNum, pageSize, sort);
+        Page<IWishesEntity> page = null;
+        if (!StringUtils.hasText(content)) {
+            page = wishesEntityRepository.findAllByLabelsIn(labels, pageable);
+        } else if (CollectionUtils.isEmpty(labelIds)) {
+            content = "%" + content + "%";
+            page = wishesEntityRepository.findAllByContentLikeIgnoreCase(content, pageable);
+        } else {
+            content = "%" + content + "%";
+            page = wishesEntityRepository.findAllByContentLikeIgnoreCaseAndLabelsIn(content, labels, pageable);
+        }
+        PageData<IWishBaseInfoDTO> result = toResponseResult(page);
+        return ApiResult.success(result);
     }
 }

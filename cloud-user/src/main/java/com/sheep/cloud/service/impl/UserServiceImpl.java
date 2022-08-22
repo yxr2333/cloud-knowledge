@@ -18,6 +18,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -74,11 +75,12 @@ public class UserServiceImpl implements UserService {
         log.info("entity.getPassword():{}", entity.getPassword());
         if (password.equals(entity.getPassword())) {
             StpUtil.login(entity.getUid() + entity.getUsername());
-            Map<String, String> token = MapUtil.builder(new HashMap<String, String>(16))
+            Map<String, Object> result = MapUtil.builder(new HashMap<String, Object>(16))
                     .put("token", StpUtil.getTokenValue())
                     .put("tokenName", StpUtil.getTokenName())
+                    .put("userInfo", entity)
                     .build();
-            return ApiResult.success("登录成功", token);
+            return ApiResult.success("登录成功", result);
         } else {
             return ApiResult.error("用户名或密码错误");
         }
@@ -360,4 +362,22 @@ public class UserServiceImpl implements UserService {
 //        return ApiResult.success(page.getContent());
     }
 
+
+    @Override
+    public ApiResult findAllByNameAndLabelId(String name, List<Integer> labelId, Integer pageNum, Integer pageSize) {
+        List<ILabelsEntity> labels = labelsEntityRepository.findAllById(labelId);
+        Sort sort = Sort.by(Sort.Direction.ASC, "uid");
+        PageRequest pageable = PageRequest.of(pageNum, pageSize, sort);
+        Page<IUsersEntity> page = null;
+        if (!StringUtils.hasText(name)) {
+            page = usersEntityRepository.findAllByLabelsIn(labels, pageable);
+        } else if (CollectionUtils.isEmpty(labelId)) {
+            name = "%" + name + "%";
+            page = usersEntityRepository.findAllByUsernameLike(name, pageable);
+        } else {
+            name = "%" + name + "%";
+            page = usersEntityRepository.findAllByUsernameLikeAndLabelsIn(name, labels, pageable);
+        }
+        return getApiResult(page);
+    }
 }

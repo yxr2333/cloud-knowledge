@@ -7,5 +7,6 @@
 /cloud-user/target/
 /cloud-wish/target/
 
+/cloud-user/src/main/resources/cos.properties
 .idea
 .idea/**

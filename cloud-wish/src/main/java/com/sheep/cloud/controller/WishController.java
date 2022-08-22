@@ -9,6 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created By Intellij IDEA
@@ -28,6 +32,14 @@ public class WishController {
     @PostMapping("/publishWish")
     public ApiResult publishWish(@RequestBody @Valid IWishPublishVO wishPublishVO) {
         return wishService.publishWish(wishPublishVO);
+    }
+
+    @GetMapping("/get/one/{id}")
+    public ApiResult getOne(@PathVariable Integer id) {
+        if (id == null) {
+            return ApiResult.error("id不能为空");
+        }
+        return wishService.getWishById(id);
     }
 
     @GetMapping("/getWishListByUserId")
@@ -64,5 +76,25 @@ public class WishController {
     @PostMapping("/helpFinishWish")
     public ApiResult helpFinishWish(@RequestBody @Valid IWishHelpFinishVO vo) {
         return wishService.helpFinishWish(vo);
+    }
+
+    @GetMapping("/findByContentAndLabels")
+    public ApiResult findWishesByContentAndLabels(
+            @RequestParam(required = false) Integer pageNum,
+            @RequestParam(required = false) Integer pageSize,
+            @RequestParam(required = false) String content,
+            @RequestParam(required = false) int[] labels) {
+        if (pageNum == null || pageSize == null) {
+            pageNum = 1;
+            pageSize = 10;
+        }
+        if (content == null && (labels == null || labels.length == 0)) {
+            return wishService.getWishList(pageNum - 1, pageSize);
+        }
+        List<Integer> ids = new ArrayList<>();
+        if (labels != null && labels.length != 0) {
+            ids = Arrays.stream(labels).boxed().collect(Collectors.toList());
+        }
+        return wishService.findWishesByContentAndLabels(content, ids, pageNum - 1, pageSize);
     }
 }

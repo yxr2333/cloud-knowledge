@@ -1,14 +1,12 @@
 package com.sheep.cloud.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.sheep.cloud.entity.IRepliesEntity;
-import com.sheep.cloud.entity.IUsersEntity;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 /**
  * @author ALEX
@@ -21,7 +19,7 @@ public class IReplyGetInfoDTO implements Serializable {
     private String content;
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private Timestamp publishTime;
+    private LocalDateTime publishTime;
     private IReplySecondInfoDTO lastReplyId;
     private ICommentGetUserInfoDTO replyUser;
 }

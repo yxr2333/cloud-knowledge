@@ -29,12 +29,12 @@ public class ILabelsEntity {
     @Column(name = "name")
     private String name;
 
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnore
     @EqualsAndHashCode.Exclude
     @JoinColumn(name = "category_id", referencedColumnName = "id")
     private ILabelCategoryEntity category;
+
 
     @Override
     public boolean equals(Object o) {

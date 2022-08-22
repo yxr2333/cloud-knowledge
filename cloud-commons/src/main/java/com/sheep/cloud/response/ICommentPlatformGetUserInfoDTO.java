@@ -1,9 +1,11 @@
 package com.sheep.cloud.response;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 /**
  * @author ALEX
@@ -14,6 +16,8 @@ import java.sql.Timestamp;
 public class ICommentPlatformGetUserInfoDTO {
     private Integer id;
     private String content;
-    private Timestamp publishTime;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime publishTime;
     private ICommentGetUserInfoDTO publishUser;
 }

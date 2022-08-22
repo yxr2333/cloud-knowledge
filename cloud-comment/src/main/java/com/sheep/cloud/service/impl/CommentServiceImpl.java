@@ -9,16 +9,14 @@ import com.sheep.cloud.entity.IUsersEntity;
 import com.sheep.cloud.request.ICommentAddVO;
 import com.sheep.cloud.request.IReplyAddVO;
 import com.sheep.cloud.response.ApiResult;
-import com.sheep.cloud.service.CommentService;
 import com.sheep.cloud.response.ICommentGetInfoDTO;
 import com.sheep.cloud.response.IReplyGetInfoDTO;
+import com.sheep.cloud.service.CommentService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,13 +37,13 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public ApiResult deleteCommentById(Integer id) {
         //判断是否存在回复
-        if(commentsEntityRepository.existsById(id)) {
+        if (commentsEntityRepository.existsById(id)) {
             //存在回复则先删除回复再删除评论，回复不存在则直接删除评论
-            if (repliesEntityRepository.existsCommentById(id)!=0) {
+            if (repliesEntityRepository.existsCommentById(id) != 0) {
                 repliesEntityRepository.deleteCommentById(id);
                 commentsEntityRepository.deleteById(id);
                 return ApiResult.success("删除成功");
-            } else{
+            } else {
                 commentsEntityRepository.deleteById(id);
                 return ApiResult.success("删除成功");
             }
@@ -55,12 +53,12 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public ApiResult deleteReplyById(Integer id) {
-        if(repliesEntityRepository.existsById(id)){
+        if (repliesEntityRepository.existsById(id)) {
             repliesEntityRepository.deleteById(id);
             return ApiResult.success("删除成功");
-        }
-        else
+        } else {
             return ApiResult.error("删除失败");
+        }
     }
 
 
@@ -88,7 +86,6 @@ public class CommentServiceImpl implements CommentService {
     }
 
 
-
     /*
      * @Description: 发表回复
      * @param replyAddVO
@@ -98,7 +95,7 @@ public class CommentServiceImpl implements CommentService {
     public ApiResult insertReply(IReplyAddVO replyAddVO) {
         IRepliesEntity reply = new IRepliesEntity();
         reply.setContent(replyAddVO.getContent());
-        reply.setPublishTime(new Timestamp(new Date().getTime()));
+        reply.setPublishTime(LocalDateTime.now());
 
         ICommentsEntity iCommentsEntity = new ICommentsEntity();
         iCommentsEntity.setId(replyAddVO.getCommentId());
@@ -125,7 +122,7 @@ public class CommentServiceImpl implements CommentService {
     public ApiResult getCommentByResourceId(Integer resource_id) {
         List<ICommentsEntity> commentList = commentsEntityRepository.findCommentByResourceId(resource_id);
         ArrayList<ICommentGetInfoDTO> list = new ArrayList<>();
-        for(ICommentsEntity commentsEntity : commentList){
+        for (ICommentsEntity commentsEntity : commentList) {
             ICommentGetInfoDTO result = modelMapper.map(commentsEntity, ICommentGetInfoDTO.class);
             list.add(result);
         }
@@ -141,7 +138,7 @@ public class CommentServiceImpl implements CommentService {
     public ApiResult getReplyByCommentId(Integer comment_id) {
         List<IRepliesEntity> replyList = repliesEntityRepository.getReplyByCommentId(comment_id);
         ArrayList<IReplyGetInfoDTO> list = new ArrayList<>();
-        for(IRepliesEntity repliesEntity : replyList){
+        for (IRepliesEntity repliesEntity : replyList) {
             IReplyGetInfoDTO result = modelMapper.map(repliesEntity, IReplyGetInfoDTO.class);
             list.add(result);
         }

@@ -34,6 +34,14 @@ public class ResourceController {
         return resourceService.modifyResource(vo);
     }
 
+    @GetMapping("/find/id")
+    public ApiResult findByResourceId(@RequestParam(required = false) Integer id) {
+        if (id == null) {
+            return ApiResult.error("id不能为空");
+        }
+        return resourceService.findOneByResourceId(id);
+    }
+
     @GetMapping("/find/one")
     public ApiResult findOne(Integer id) {
         return resourceService.findOne(id);
@@ -96,6 +104,21 @@ public class ResourceController {
         }
         return resourceService.findAllResources(labels, order, isFree, pageNum - 1, pageSize);
 
+    }
+
+    @GetMapping("/find/dynamic")
+    public ApiResult findByDynamicSearch(
+            @RequestParam(required = false) Integer labelId,
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) Integer orderId,
+            @RequestParam(required = false) Boolean isFree,
+            @RequestParam(required = false) Integer pageNum,
+            @RequestParam(required = false) Integer pageSize) {
+        if (pageNum == null || pageSize == null) {
+            pageNum = 1;
+            pageSize = 10;
+        }
+        return resourceService.findByDynamicSearch(labelId, name, orderId, isFree, pageNum - 1, pageSize);
     }
 
 }

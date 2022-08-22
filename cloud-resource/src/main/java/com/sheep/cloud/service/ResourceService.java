@@ -110,4 +110,26 @@ public interface ResourceService {
      * @return 查询结果
      */
     ApiResult findAllResources(List<Integer> labelId, int order, boolean isFree, Integer pageNum, Integer pageSize);
+
+    /**
+     * 根据资源id查询资源
+     *
+     * @param id 资源id
+     * @return 查询结果
+     */
+    ApiResult findOneByResourceId(Integer id);
+
+    /**
+     * 复杂查询
+     *
+     * @param labelId  标签编号
+     * @param name     资源名称
+     * @param orderId  排序方式
+     * @param isFree   是否免费
+     * @param pageNum  页码
+     * @param pageSize 页容量
+     * @return 查询结果
+     */
+    ApiResult findByDynamicSearch(Integer labelId, String name, Integer orderId, Boolean isFree, Integer pageNum, Integer pageSize);
+
 }

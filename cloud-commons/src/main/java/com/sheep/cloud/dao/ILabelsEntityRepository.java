@@ -7,4 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * @author yxr
  */
 public interface ILabelsEntityRepository extends JpaRepository<ILabelsEntity, Integer> {
+    
 }

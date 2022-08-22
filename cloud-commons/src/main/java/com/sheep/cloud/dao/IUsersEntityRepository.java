@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -49,4 +50,8 @@ public interface IUsersEntityRepository extends JpaRepository<IUsersEntity, Inte
      */
     Page<IUsersEntity> findDistinctAllByLabelsIn(Collection<ILabelsEntity> labels, Pageable pageable);
 
+    Page<IUsersEntity> findAllByUsernameLikeAndLabelsIn(String username, List<ILabelsEntity> labels, Pageable pageable);
+
+
+    Page<IUsersEntity> findAllByLabelsIn(List<ILabelsEntity> labels, Pageable pageable);
 }

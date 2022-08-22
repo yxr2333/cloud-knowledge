@@ -31,7 +31,10 @@ public class ILabelCategoryEntity {
     @Column(name = "name")
     private String name;
 
-    
+    @Column(length = 30)
+    private String iconName;
+
+
     @OneToMany(mappedBy = "category", fetch = FetchType.EAGER)
     private List<ILabelsEntity> labels;
 }

@@ -26,6 +26,7 @@ import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -360,4 +361,55 @@ public class ResourceServiceImpl implements ResourceService {
     }
 
 
+    /**
+     * 根据资源id查询资源
+     *
+     * @param id 资源id
+     * @return 查询结果
+     */
+    @Override
+    public ApiResult findOneByResourceId(Integer id) {
+        IResourcesEntity entity = iResourcesEntityRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("该资源不存在！"));
+        return ApiResult.success(entity);
+    }
+
+    /**
+     * 复杂查询
+     *
+     * @param labelId  标签编号
+     * @param name     资源名称
+     * @param orderId  排序方式
+     * @param isFree   是否免费
+     * @param pageNum  页码
+     * @param pageSize 页容量
+     * @return 查询结果
+     */
+    @Override
+    public ApiResult findByDynamicSearch(Integer labelId, String name, Integer orderId, Boolean isFree, Integer pageNum, Integer pageSize) {
+        if (labelId == null) {
+            return ApiResult.error("请选择资源分类");
+        }
+        List<Integer> labelIds = Arrays.asList(labelId);
+        List<ILabelsEntity> labels = iLabelsEntityRepository.findAllById(labelIds);
+        Sort sort = null;
+        if (orderId == 0) {
+            sort = Sort.by(Sort.Direction.DESC, "releaseTime");
+        } else {
+            sort = Sort.by(Sort.Direction.DESC, "collect");
+        }
+        PageRequest pageable = PageRequest.of(pageNum, pageSize, sort);
+        Page<IResourcesEntity> page = null;
+        if (!StringUtils.hasText(name)) {
+            page = iResourcesEntityRepository.findAllByIsPaidAndLabelsIn(!isFree, labels, pageable);
+        } else {
+            name = "%" + name + "%";
+            page = iResourcesEntityRepository.findAllByIsPaidAndNameLikeIgnoreCaseAndLabelsIn(!isFree, name, labels, pageable);
+        }
+        PageData.PageDataBuilder<IResourcesEntity> builder = PageData.builder();
+        return ApiResult.success(builder.totalPage(page.getTotalPages())
+                .totalNum(page.getTotalElements())
+                .data(page.getContent())
+                .build());
+    }
 }

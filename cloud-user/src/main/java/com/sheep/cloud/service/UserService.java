@@ -138,4 +138,6 @@ public interface UserService {
      * @return 查询结果
      */
     ApiResult findAllByLabelId(List<Integer> labelId, Integer pageNum, Integer pageSize);
+
+    ApiResult findAllByNameAndLabelId(String name, List<Integer> labelId, Integer pageNum, Integer pageSize);
 }

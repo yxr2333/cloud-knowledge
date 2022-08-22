@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -116,6 +117,26 @@ public class UserController {
     @GetMapping("/find/list/collect")
     public ApiResult findCollectList(Integer uid) {
         return userService.findCollectList(uid);
+    }
+
+    @GetMapping("/findAllByNameAndLabelId")
+    public ApiResult findAllByNameAndLabelId(
+            @RequestParam(required = false) Integer pageNum,
+            @RequestParam(required = false) Integer pageSize,
+            @RequestParam(required = false) int[] labelIds,
+            @RequestParam(required = false) String name) {
+        if (pageNum == null || pageSize == null) {
+            pageNum = 1;
+            pageSize = 10;
+        }
+        if (name == null && (labelIds == null || labelIds.length == 0)) {
+            return userService.getAll(pageNum - 1, pageSize);
+        }
+        List<Integer> ids = new ArrayList<>();
+        if (labelIds != null && labelIds.length != 0) {
+            ids = Arrays.stream(labelIds).boxed().collect(Collectors.toList());
+        }
+        return userService.findAllByNameAndLabelId(name, ids, pageNum - 1, pageSize);
     }
 
 }
