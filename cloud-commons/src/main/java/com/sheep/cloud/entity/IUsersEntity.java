@@ -39,6 +39,7 @@ public class IUsersEntity {
     @Basic
     @Column(name = "email")
     private String email;
+
     @Basic
     @Column(name = "avatar")
     private String avatar;

@@ -68,7 +68,8 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public ApiResult doLogin(IUsersLoginVO dto) {
-        IUsersEntity entity = usersEntityRepository.findIUsersEntityByUsername(dto.getUsername()).orElseThrow(() -> new RuntimeException("用户不存在"));
+        IUsersEntity entity = usersEntityRepository
+                .findIUsersEntityByUsername(dto.getUsername()).orElseThrow(() -> new RuntimeException("用户不存在"));
         String salt = entity.getSalt();
         String password = SecureUtil.md5(dto.getPassword() + salt);
         log.info("password:{}", password);
@@ -97,13 +98,11 @@ public class UserServiceImpl implements UserService {
         if (usersEntityRepository.existsByUsername(dto.getUsername())) {
             throw new RuntimeException("用户名已存在");
         }
-        String randomString = RandomUtil.randomString(10);
-        String salt = Base64.encode(randomString);
-        String password = SecureUtil.md5(dto.getPassword() + salt);
+        String salt = userRegister(dto);
         // 将dto转换为entity
         IUsersEntity entity = new IUsersEntity();
         entity.setUsername(dto.getUsername());
-        entity.setPassword(password);
+        entity.setPassword(dto.getPassword());
         entity.setSalt(salt);
         entity.setEmail(dto.getEmail());
         entity.setDescription(dto.getDescription() == null ? "" : dto.getDescription());
@@ -111,6 +110,25 @@ public class UserServiceImpl implements UserService {
         return ApiResult.success("注册成功");
     }
 
+    private String userRegister(IUsersRegisterVO vo) {
+        String randomString = RandomUtil.randomString(10);
+        String salt = Base64.encode(randomString);
+        String password = SecureUtil.md5(vo.getPassword() + salt);
+        vo.setPassword(password);
+        return salt;
+    }
+
+    /**
+     * 远程调用用户注册
+     *
+     * @param registerVO 用户注册信息
+     * @return 注册结果
+     */
+    @Override
+    public ApiResult remoteMakeUserRegister(IUsersRegisterVO registerVO) {
+        String salt = userRegister(registerVO);
+        return ApiResult.success(salt, registerVO);
+    }
 
     /**
      * 用户重置密码

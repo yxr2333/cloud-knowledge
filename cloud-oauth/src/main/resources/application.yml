@@ -1,0 +1,62 @@
+server:
+  port: 8009
+spring:
+  application:
+    name: cloud-oauth2-service
+  redis:
+    database: 5
+    host: localhost
+    port: 6379
+    connect-timeout: 2000
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource            # 当前数据源操作类型
+    driver-class-name: com.mysql.cj.jdbc.Driver           # mysql驱动包
+    url: jdbc:mysql://localhost:3306/summer_training?useUnicode=true&characterEncoding=utf-8&useSSL=false
+    username: root
+    password: 123456
+  jpa:
+    hibernate:
+      ddl-auto: update
+    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+    show-sql: true
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
+        dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+mybatis:
+  mapperLocations: classpath:mapper/*.xml
+  type-aliases-package: com.sheep.cloud.entity    # 所有Entity别名类所在包
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://localhost:7001/eureka/
+  instance:
+    instance-id: oauth2-service-8009
+    prefer-ip-address: true
+sa-token:
+  # token 名称 (同时也是cookie名称)
+  token-name: token
+  # token 有效期，单位s 默认30天, -1代表永不过期
+  timeout: 2592000
+  # token 临时有效期 (指定时间内无操作就视为token过期) 单位: 秒
+  activity-timeout: -1
+  # 是否允许同一账号并发登录 (为true时允许一起登录, 为false时新登录挤掉旧登录)
+  is-concurrent: true
+  # 在多人登录同一账号时，是否共用一个token (为true时所有登录共用一个token, 为false时每次登录新建一个token)
+  is-share: false
+  # token风格
+  token-style: random-64
+  # 是否输出操作日志
+  is-log: true
+  is-read-cookie: true
+  is-read-body: false
+  is-read-head: true
+  oauth2:
+    is-code: true
+    is-implicit: true
+    is-password: true
+    is-client: true

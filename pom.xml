@@ -15,6 +15,8 @@
         <module>cloud-wish</module>
         <module>cloud-comment</module>
         <module>cloud-gateway</module>
+        <module>cloud-oauth</module>
+        <module>cloud-sell</module>
     </modules>
     <packaging>pom</packaging>
     <properties>
@@ -38,9 +40,23 @@
         <gateway.version>2.2.1.RELEASE</gateway.version>
         <modelmapper.version>3.1.0</modelmapper.version>
         <tencent.cos.sdk.version>5.6.89</tencent.cos.sdk.version>
+        <jedis.version>4.2.3</jedis.version>
+        <knife4j.version>2.0.9</knife4j.version>
+        <dingtalk.version>1.4.35</dingtalk.version>
     </properties>
+
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>com.aliyun</groupId>
+                <artifactId>dingtalk</artifactId>
+                <version>${dingtalk.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>cn.dev33</groupId>
+                <artifactId>sa-token-oauth2</artifactId>
+                <version>${satoken.version}</version>
+            </dependency>
             <dependency>
                 <groupId>com.qcloud</groupId>
                 <artifactId>cos_api</artifactId>
@@ -145,6 +161,16 @@
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-starter-gateway</artifactId>
                 <version>${gateway.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>redis.clients</groupId>
+                <artifactId>jedis</artifactId>
+                <version>${jedis.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.xiaoymin</groupId>
+                <artifactId>knife4j-spring-boot-starter</artifactId>
+                <version>${knife4j.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

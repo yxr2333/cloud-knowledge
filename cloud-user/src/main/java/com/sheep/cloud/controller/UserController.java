@@ -35,6 +35,11 @@ public class UserController {
         return userService.doLogin(vo);
     }
 
+    @PostMapping("/register/remote")
+    public ApiResult doRemoteRegister(@RequestBody @Valid IUsersRegisterVO vo) {
+        return userService.remoteMakeUserRegister(vo);
+    }
+    
     @PostMapping("/register")
     public ApiResult doRegister(@RequestBody @Valid IUsersRegisterVO vo) {
         return userService.doRegister(vo);
@@ -59,7 +64,6 @@ public class UserController {
     public ApiResult getOne(@RequestParam(value = "id", required = false) Integer id) {
         return userService.getOne(id);
     }
-
 
     @GetMapping("/getAllLikeName")
     public ApiResult getAllLikeName(

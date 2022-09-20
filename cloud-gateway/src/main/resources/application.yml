@@ -42,6 +42,10 @@ spring:
           uri: lb://cloud-wish-service
           predicates:
             - Path=/wish/**
+        - id: cloud-sell-service
+          uri: lb://cloud-sell-service
+          predicates:
+            - Path=/sell/**
 eureka:
   instance:
     prefer-ip-address: true

@@ -24,7 +24,10 @@ public class SaTokenConfig {
                 .addExclude(
                         "/favicon.ico",
                         "/user/login",
+                        "/api/app/go/**",
                         "/user/register",
+                        "/sell/**/**/**/**/**/**/**/**/**",
+                        "/user/resetPassword",
                         "/user/find/list/**",
                         "/mail/sendResetCode")
                 .setAuth(obj -> {

@@ -33,6 +33,15 @@ public interface UserService {
     ApiResult doRegister(IUsersRegisterVO registerVO);
 
     /**
+     * 远程调用用户注册
+     *
+     * @param registerVO 用户注册信息
+     * @return 注册结果
+     */
+    ApiResult remoteMakeUserRegister(IUsersRegisterVO registerVO);
+
+
+    /**
      * 用户重置密码
      *
      * @param request         请求对象
