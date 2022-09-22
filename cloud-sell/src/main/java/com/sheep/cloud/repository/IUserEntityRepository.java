@@ -12,4 +12,6 @@ public interface IUserEntityRepository extends JpaRepository<IUserEntity, Intege
     Boolean existsByDingAppId(String openId);
 
     Boolean existsByUsername(String username);
+
+    Optional<IUserEntity> findDistinctByUsername(String username);
 }

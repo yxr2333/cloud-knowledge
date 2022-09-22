@@ -30,4 +30,8 @@ public class ResetPasswordVO {
 
     @Length(min = 5, max = 5, message = "验证码长度必须为5")
     private String code;
+    
+
+    @Length(min = 10, max = 10, message = "请求标识符长度必须为10")
+    private String requestKey;
 }

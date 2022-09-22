@@ -1,11 +1,15 @@
 package com.sheep.cloud.controller;
 
+import cn.hutool.core.util.RandomUtil;
+import cn.hutool.extra.mail.MailUtil;
 import com.sheep.cloud.dto.request.BindDingAccountParam;
 import com.sheep.cloud.dto.request.IUsersRegisterVO;
+import com.sheep.cloud.dto.request.ResetPasswordVO;
 import com.sheep.cloud.dto.response.ApiResult;
-import com.sheep.cloud.service.IRemoteMailService;
+import com.sheep.cloud.dto.response.VerifyCodeData;
 import com.sheep.cloud.service.IRemoteUserService;
 import com.sheep.cloud.service.IUserService;
+import com.sheep.cloud.utils.RedisUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
@@ -31,13 +35,15 @@ import java.security.NoSuchAlgorithmException;
 @Api(tags = "用户模块")
 public class IUserController {
 
-    @Autowired
-    private IRemoteUserService remoteUserService;
+    private static final String FIND_PWD_MAIL_TITLE = "验证找回密码";
+
 
     @Autowired
-    private IRemoteMailService remoteMailService;
+    private IRemoteUserService remoteUserService;
     @Autowired
     private IUserService userService;
+    @Autowired
+    private RedisUtil redisUtil;
 
     @ApiImplicitParam(name = "vo", value = "用户注册信息", required = true, dataType = "IUsersRegisterVO")
     @ApiOperation(value = "测试远程调用", notes = "测试远程调用")
@@ -54,6 +60,7 @@ public class IUserController {
     }
 
     @ApiImplicitParam(name = "code", value = "钉钉授权码", required = true, dataType = "String")
+    @ApiOperation(value = "通过钉钉授权码登录", notes = "通过钉钉授权码登录")
     @PostMapping("/ding/doLogin")
     public ApiResult doDingLogin(@RequestParam(required = false) String code) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException {
         if (!StringUtils.hasText(code)) {
@@ -72,7 +79,23 @@ public class IUserController {
     @ApiImplicitParam(name = "email", value = "邮箱", required = true, dataType = "String")
     @ApiOperation(value = "发送找回密码的邮件", notes = "发送找回密码的邮件")
     @PostMapping("/mail/send/pwd")
-    public ApiResult sendResetPasswordMail(HttpServletRequest request, String email) {
-        return remoteMailService.sendResetCode(request, email);
+    public ApiResult sendResetPasswordMail(HttpServletRequest request, @RequestParam(value = "email") String email) {
+        if (!StringUtils.hasText(email)) {
+            return ApiResult.error("请输入邮箱");
+        }
+        String verifyCode = RandomUtil.randomString(5).toUpperCase();
+        String requestCode = RandomUtil.randomString(10).toUpperCase();
+        VerifyCodeData data = new VerifyCodeData(verifyCode, requestCode);
+        // 验证码三分钟内有效
+        redisUtil.set(requestCode, verifyCode, 180);
+        MailUtil.send(email, FIND_PWD_MAIL_TITLE, "您正在找回密码,验证码为:" + verifyCode + "\n验证码有效时间3分钟，请及时处理", false);
+        return ApiResult.success("邮件发送成功", data);
+    }
+
+    @ApiImplicitParam(name = "vo", value = "重置密码参数", required = true, dataType = "ResetPasswordVO")
+    @ApiOperation(value = "重置密码", notes = "重置密码")
+    @PostMapping("/mail/reset/pwd")
+    public ApiResult resetPassword(HttpServletRequest request, @RequestBody @Valid ResetPasswordVO vo) {
+        return userService.resetPassword(request, vo);
     }
 }

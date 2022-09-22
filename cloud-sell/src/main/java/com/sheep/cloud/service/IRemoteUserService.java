@@ -17,7 +17,7 @@ import javax.validation.Valid;
  * @package com.sheep.cloud.service
  * @datetime 2022/9/16 星期五
  */
-@FeignClient(value = "CLOUD-USER-SERVICE")
+@FeignClient(value = "CLOUD-USER-SERVICE", contextId = "CLOUD-USER-SERVICE")
 @RequestMapping("/user")
 public interface IRemoteUserService {
 
