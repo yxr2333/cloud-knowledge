@@ -72,6 +72,3 @@ server:
   port: 7080
   servlet:
     context-path: /sell
-dingtalk:
-  appKey: dingzemty9xbi1l2rj7i
-  appSecret: eSgz_HavwD4FRbXyZDVs7F_SAWSNJWFdRgLW0M3jqrXyzINcTd_s-AfP5GmoMjB2
