@@ -25,7 +25,7 @@ public class IOAuth2GrantEntity {
     @Column(name = "id")
     private int id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "client_id", referencedColumnName = "id")
     private IAppClientsEntity client;
 
@@ -33,7 +33,7 @@ public class IOAuth2GrantEntity {
     @Column(name = "open_id")
     private String openId;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "login_id", referencedColumnName = "uid")
     private IUsersEntity user;
 }

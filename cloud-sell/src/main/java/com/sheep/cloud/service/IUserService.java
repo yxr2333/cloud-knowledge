@@ -1,10 +1,7 @@
 package com.sheep.cloud.service;
 
 
-import com.sheep.cloud.dto.request.BindDingAccountParam;
-import com.sheep.cloud.dto.request.IUsersRegisterVO;
-import com.sheep.cloud.dto.request.ResetPasswordVO;
-import com.sheep.cloud.dto.request.UserLoginParam;
+import com.sheep.cloud.dto.request.*;
 import com.sheep.cloud.dto.response.ApiResult;
 
 import javax.servlet.http.HttpServletRequest;
@@ -55,4 +52,21 @@ public interface IUserService {
      * @return 登录结果
      */
     ApiResult doLogin(UserLoginParam param);
+
+
+    /**
+     * 通过主站登录
+     *
+     * @param code 主站授权码
+     * @return 登录结果
+     */
+    ApiResult doMainWebLogin(String code);
+
+    /**
+     * 绑定主站账号
+     *
+     * @param param 参数
+     * @return 绑定结果
+     */
+    ApiResult doBindMainWebAccount(BindMainWebAccountParam param);
 }

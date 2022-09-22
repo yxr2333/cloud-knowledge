@@ -72,3 +72,7 @@ server:
   port: 7080
   servlet:
     context-path: /sell
+knife4j:
+  basic:
+    username: admin
+    password: admin

@@ -2,9 +2,7 @@ package com.sheep.cloud.controller;
 
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.extra.mail.MailUtil;
-import com.sheep.cloud.dto.request.BindDingAccountParam;
-import com.sheep.cloud.dto.request.IUsersRegisterVO;
-import com.sheep.cloud.dto.request.ResetPasswordVO;
+import com.sheep.cloud.dto.request.*;
 import com.sheep.cloud.dto.response.ApiResult;
 import com.sheep.cloud.dto.response.VerifyCodeData;
 import com.sheep.cloud.service.IRemoteUserService;
@@ -36,8 +34,7 @@ import java.security.NoSuchAlgorithmException;
 public class IUserController {
 
     private static final String FIND_PWD_MAIL_TITLE = "验证找回密码";
-
-
+    
     @Autowired
     private IRemoteUserService remoteUserService;
     @Autowired
@@ -97,5 +94,26 @@ public class IUserController {
     @PostMapping("/mail/reset/pwd")
     public ApiResult resetPassword(HttpServletRequest request, @RequestBody @Valid ResetPasswordVO vo) {
         return userService.resetPassword(request, vo);
+    }
+
+    @ApiImplicitParam(name = "param", value = "登录参数", required = true, dataType = "UserLoginParam")
+    @ApiOperation(value = "用户登录", notes = "用户登录")
+    @PostMapping("/login")
+    public ApiResult doLogin(@RequestBody @Valid UserLoginParam param) {
+        return userService.doLogin(param);
+    }
+
+    @PostMapping("/main/doLogin")
+    @ApiImplicitParam(name = "code", value = "主站授权码", required = true, dataType = "String")
+    @ApiOperation(value = "通过主站授权码登录", notes = "通过主站授权码登录")
+    public ApiResult doMainWebLogin(@RequestParam(required = false) String code) {
+        return userService.doMainWebLogin(code);
+    }
+
+    @ApiOperation(value = "绑定主站账号", notes = "绑定主站账号")
+    @ApiImplicitParam(name = "param", value = "绑定主站账号参数", required = true, dataType = "BindMainWebAccountParam")
+    @PostMapping("/main/bindAccount")
+    public ApiResult doBindMainWebAccount(@RequestBody @Valid BindMainWebAccountParam param) {
+        return userService.doBindMainWebAccount(param);
     }
 }

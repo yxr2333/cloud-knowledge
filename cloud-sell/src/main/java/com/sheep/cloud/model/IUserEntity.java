@@ -21,6 +21,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 @Entity
 @Table(name = "t_users")
+@Builder
 public class IUserEntity implements Serializable {
 
     @Id

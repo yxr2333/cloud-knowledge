@@ -10,15 +10,13 @@ import cn.hutool.http.HttpStatus;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.sheep.cloud.common.CommonFields;
-import com.sheep.cloud.dto.request.BindDingAccountParam;
-import com.sheep.cloud.dto.request.IUsersRegisterVO;
-import com.sheep.cloud.dto.request.ResetPasswordVO;
-import com.sheep.cloud.dto.request.UserLoginParam;
+import com.sheep.cloud.dto.request.*;
 import com.sheep.cloud.dto.response.ApiResult;
 import com.sheep.cloud.dto.response.DingUserInfo;
 import com.sheep.cloud.dto.response.TokenInfo;
 import com.sheep.cloud.model.IUserEntity;
 import com.sheep.cloud.repository.IUserEntityRepository;
+import com.sheep.cloud.service.IRemoteOAuth2Service;
 import com.sheep.cloud.service.IRemoteUserService;
 import com.sheep.cloud.service.IUserService;
 import com.sheep.cloud.utils.RedisUtil;
@@ -52,6 +50,7 @@ import java.util.Properties;
 public class IUserServiceImpl implements IUserService {
 
     private final IRemoteUserService remoteUserService;
+    private final IRemoteOAuth2Service auth2Service;
     private final IUserEntityRepository userEntityRepository;
     private final SignatureUtil signatureUtil;
     private final RedisUtil redisUtil;
@@ -198,11 +197,9 @@ public class IUserServiceImpl implements IUserService {
             // 判断账号密码是否匹配
             IUserEntity entity = checkPassword(vo.getUsername(), vo.getPassword());
             if (entity != null) {
-                String randomString = RandomUtil.randomString(10);
-                String newSalt = Base64.encode(randomString);
-                String newPwd = SecureUtil.md5(vo.getNewPassword() + newSalt);
-                entity.setSalt(newSalt);
-                entity.setPassword(newPwd);
+                HashMap<String, String> map = makeSalt(vo.getNewPassword());
+                entity.setSalt(map.get("salt"));
+                entity.setPassword(map.get("password"));
                 userEntityRepository.save(entity);
                 // 删除验证码
                 redisUtil.delete(requestKey);
@@ -213,6 +210,16 @@ public class IUserServiceImpl implements IUserService {
         } else {
             return ApiResult.error("验证码错误");
         }
+    }
+
+    private HashMap<String, String> makeSalt(String password) {
+        String randomString = RandomUtil.randomString(10);
+        String salt = Base64.encode(randomString);
+        String encodedPassword = SecureUtil.md5(password + salt);
+        HashMap<String, String> map = new HashMap<>(2);
+        map.put("salt", salt);
+        map.put("password", encodedPassword);
+        return map;
     }
 
     /**
@@ -252,6 +259,86 @@ public class IUserServiceImpl implements IUserService {
             return entity;
         } else {
             return null;
+        }
+    }
+
+    /**
+     * 通过主站登录
+     *
+     * @param code 主站授权码
+     * @return 登录结果
+     */
+    @Override
+    public ApiResult doMainWebLogin(String code) {
+        if (!StringUtils.hasText(code)) {
+            return ApiResult.error("授权码不能为空");
+        }
+        HttpResponse response = HttpRequest.get(CommonFields.MAIN_WEB_USER_APPID_URL + "&code=" + code).execute();
+        if (!response.isOk()) {
+            return ApiResult.error("暂时无法获取用户信息");
+        } else {
+            // body就是data
+            JSONObject data = JSONUtil.parseObj(response.body());
+            log.info("获取到的用户信息: {}", data);
+            if (data.getInt("code") == HttpStatus.HTTP_OK) {
+                String accessToken = data.getJSONObject("data").getStr("access_token");
+                String openId = data.getJSONObject("data").getStr("openid");
+                Optional<IUserEntity> optional = userEntityRepository.findByMainAccountAppId(openId);
+                if (!optional.isPresent()) {
+                    HashMap<String, String> map = new HashMap<>(2);
+                    map.put("access_token", accessToken);
+                    map.put("openid", openId);
+                    return ApiResult.notBind("未绑定主站账号", map);
+                } else {
+                    IUserEntity entity = optional.get();
+                    StpUtil.login(entity.getId() + "");
+                    String tokenName = StpUtil.getTokenInfo().getTokenName();
+                    String tokenValue = StpUtil.getTokenInfo().getTokenValue();
+                    TokenInfo tokenInfo = new TokenInfo(tokenName, tokenValue);
+                    return ApiResult.success("登录成功", tokenInfo);
+                }
+            } else {
+                return ApiResult.error("统一认证中心暂不能处理");
+            }
+        }
+    }
+
+    /**
+     * 绑定主站账号
+     *
+     * @param param 参数
+     * @return 绑定结果
+     */
+    @Override
+    public ApiResult doBindMainWebAccount(BindMainWebAccountParam param) {
+        if (userEntityRepository.existsByMainAccountAppId(param.getOpenid())) {
+            return ApiResult.error("该主站账号已被绑定");
+        }
+        if (userEntityRepository.existsByUsername(param.getUsername())) {
+            return ApiResult.error("该用户名已被注册");
+        }
+        if (userEntityRepository.existsByEmail(param.getEmail())) {
+            return ApiResult.error("该邮箱已被其他账户使用");
+        }
+        ApiResult result = auth2Service.oauth2UserInfo(param.getAccessToken());
+        if (result.code == HttpStatus.HTTP_OK) {
+            Integer uid = JSONUtil.parseObj(result.data).getInt("uid");
+            HashMap<String, String> map = makeSalt(param.getPassword());
+            IUserEntity entity = IUserEntity.builder()
+                    .isBindMainAccount(true)
+                    .mainAccountId(uid)
+                    .mainAccountAppId(param.getOpenid())
+                    .username(param.getUsername())
+                    .password(map.get("password"))
+                    .salt(map.get("salt"))
+                    .email(param.getEmail())
+                    .description(param.getDescription())
+                    .isBanned(false)
+                    .build();
+            userEntityRepository.save(entity);
+            return ApiResult.success("绑定成功");
+        } else {
+            return result;
         }
     }
 }

@@ -41,6 +41,6 @@ public class IScoreListEntity {
     private LocalDateTime createTime;
 
     @Basic
-    @Column(name = "desc")
+    @Column(name = "description")
     private String desc;
 }

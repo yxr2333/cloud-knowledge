@@ -2,6 +2,7 @@ package com.sheep.cloud.config;
 
 import cn.dev33.satoken.oauth2.logic.SaOAuth2Template;
 import cn.dev33.satoken.oauth2.model.SaClientModel;
+import cn.hutool.core.util.RandomUtil;
 import com.sheep.cloud.dao.IAppClientsEntityRepository;
 import com.sheep.cloud.dao.IOAuth2GrantEntityRepository;
 import com.sheep.cloud.entity.IAppClientsEntity;
@@ -43,13 +44,19 @@ public class SaOAuth2TemplateImpl extends SaOAuth2Template {
 
     @Override
     public String getOpenid(String clientId, Object loginId) {
-        if (loginId instanceof String) {
-            IOAuth2GrantEntity entity = auth2GrantEntityRepository.findByClientIdAndUserUid(Integer.parseInt(clientId), Integer.parseInt((String) loginId));
+        Optional<IOAuth2GrantEntity> optional = auth2GrantEntityRepository
+                .findByClientIdAndUserUid(Integer.parseInt(clientId), Integer.parseInt(loginId.toString()));
+        if (optional.isPresent()) {
+            IOAuth2GrantEntity entity = optional.get();
+            if (entity.getOpenId() == null) {
+                String openId = RandomUtil.randomString(32);
+                entity.setOpenId(openId);
+                auth2GrantEntityRepository.save(entity);
+                return openId;
+            }
             return entity.getOpenId();
-        } else if (loginId instanceof Integer) {
-            IOAuth2GrantEntity entity = auth2GrantEntityRepository.findByClientIdAndUserUid(Integer.parseInt(clientId), (Integer) loginId);
-            return entity.getOpenId();
+        } else {
+            return "";
         }
-        return "";
     }
 }

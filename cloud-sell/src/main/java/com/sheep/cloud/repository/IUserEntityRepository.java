@@ -13,5 +13,11 @@ public interface IUserEntityRepository extends JpaRepository<IUserEntity, Intege
 
     Boolean existsByUsername(String username);
 
+    Boolean existsByEmail(String mail);
+
+    Boolean existsByMainAccountAppId(String appId);
+
+    Optional<IUserEntity> findByMainAccountAppId(String appId);
+
     Optional<IUserEntity> findDistinctByUsername(String username);
 }

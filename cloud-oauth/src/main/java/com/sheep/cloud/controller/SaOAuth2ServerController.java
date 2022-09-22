@@ -6,8 +6,15 @@ import cn.dev33.satoken.oauth2.logic.SaOAuth2Handle;
 import cn.dev33.satoken.oauth2.logic.SaOAuth2Util;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.dev33.satoken.util.SaResult;
+import cn.hutool.core.util.RandomUtil;
 import cn.hutool.http.HttpStatus;
+import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
+import com.sheep.cloud.dao.IAppClientsEntityRepository;
+import com.sheep.cloud.dao.IOAuth2GrantEntityRepository;
 import com.sheep.cloud.dao.IUsersEntityRepository;
+import com.sheep.cloud.entity.IAppClientsEntity;
+import com.sheep.cloud.entity.IOAuth2GrantEntity;
 import com.sheep.cloud.entity.IUsersEntity;
 import com.sheep.cloud.request.IUsersLoginVO;
 import com.sheep.cloud.response.ApiResult;
@@ -16,6 +23,7 @@ import com.sheep.cloud.service.RemoteUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -39,6 +47,11 @@ public class SaOAuth2ServerController {
     private IUsersEntityRepository usersEntityRepository;
 
     @Autowired
+    private IOAuth2GrantEntityRepository auth2GrantEntityRepository;
+
+    @Autowired
+    private IAppClientsEntityRepository appClientsEntityRepository;
+    @Autowired
     private RemoteUserService remoteUserService;
 
     @Autowired
@@ -60,8 +73,9 @@ public class SaOAuth2ServerController {
 
         return SaOAuth2Handle.serverRequest();
     }
-    
+
     @Autowired
+    @Transactional(rollbackFor = Exception.class)
     public void setSaOAuth2Config(SaOAuth2Config config) {
         config.
                 setNotLoginView(() -> new ModelAndView("login.html"))
@@ -73,9 +87,33 @@ public class SaOAuth2ServerController {
                     log.info(vo.toString());
                     ApiResult result = remoteUserService.doLogin(vo);
                     log.info(result.toString());
-                    IUsersEntity user = modelMapper.map(result.data, IUsersEntity.class);
+                    JSONObject userInfo = JSONUtil.parseObj(result.data).getJSONObject("userInfo");
+                    IUsersEntity user = modelMapper.map(userInfo, IUsersEntity.class);
+                    System.out.println("user:" + user);
                     if (result.code == HttpStatus.HTTP_OK) {
+                        log.info("远程调用成功");
                         StpUtil.login(String.valueOf(user.getUid()));
+                        log.info("user_id:" + user.getUid());
+                        Optional<IOAuth2GrantEntity> optional =
+                                auth2GrantEntityRepository.findByClientIdAndUserUid(1, user.getUid());
+                        if (!optional.isPresent()) {
+                            log.info("表中没有数据");
+                            IOAuth2GrantEntity entity = new IOAuth2GrantEntity();
+                            IAppClientsEntity appClient = appClientsEntityRepository.getOne(1);
+                            entity.setClient(appClient);
+                            usersEntityRepository.save(user);
+                            entity.setUser(user);
+                            entity.setOpenId(RandomUtil.randomString(32));
+                            auth2GrantEntityRepository.save(entity);
+                        } else {
+                            IOAuth2GrantEntity entity = optional.get();
+                            if (entity.getOpenId() == null) {
+                                String openId = RandomUtil.randomString(32);
+                                entity.setOpenId(openId);
+                                auth2GrantEntityRepository.save(entity);
+                            }
+                        }
+                        log.info("user_id:" + user.getUid());
                         return SaResult.ok();
                     } else {
                         return SaResult.error(result.msg);
