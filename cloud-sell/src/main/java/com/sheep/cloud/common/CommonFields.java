@@ -18,4 +18,13 @@ public class CommonFields {
 
     public static final String MAIN_WEB_USER_APPID_URL = "http://localhost:8009/oauth2/token?grant_type=authorization_code&client_id=1&client_secret=M2U5ZklRTVlDVzJHQkxU";
 
+    public static final String ORDER_QUEUE_NAME = "sell.order.queue";
+
+    public static final String ORDER_EXCHANGE_NAME = "sell.order.exchange";
+
+    public static final String ORDER_ROUTING_KEY = "sell.order.routingkey";
+
+    public static final String FIND_PWD_MAIL_TITLE = "验证找回密码";
+    public static final String ORDER_OVERTIME_MAIL_TITLE = "订单超时提醒";
+
 }

@@ -2,6 +2,7 @@ package com.sheep.cloud.controller;
 
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.extra.mail.MailUtil;
+import com.sheep.cloud.common.CommonFields;
 import com.sheep.cloud.dto.request.*;
 import com.sheep.cloud.dto.response.ApiResult;
 import com.sheep.cloud.dto.response.VerifyCodeData;
@@ -33,8 +34,7 @@ import java.security.NoSuchAlgorithmException;
 @Api(tags = "用户模块")
 public class IUserController {
 
-    private static final String FIND_PWD_MAIL_TITLE = "验证找回密码";
-    
+
     @Autowired
     private IRemoteUserService remoteUserService;
     @Autowired
@@ -42,17 +42,17 @@ public class IUserController {
     @Autowired
     private RedisUtil redisUtil;
 
-    @ApiImplicitParam(name = "vo", value = "用户注册信息", required = true, dataType = "IUsersRegisterVO")
+    @ApiImplicitParam(name = "vo", value = "用户注册信息", required = true, dataType = "IUsersRegisterParam")
     @ApiOperation(value = "测试远程调用", notes = "测试远程调用")
     @PostMapping("/test")
-    public ApiResult doRemoteRegister(@RequestBody @Valid IUsersRegisterVO vo) {
+    public ApiResult doRemoteRegister(@RequestBody @Valid IUsersRegisterParam vo) {
         return remoteUserService.doRemoteRegister(vo);
     }
 
-    @ApiImplicitParam(name = "vo", value = "用户注册信息", required = true, dataType = "IUsersRegisterVO")
+    @ApiImplicitParam(name = "vo", value = "用户注册信息", required = true, dataType = "IUsersRegisterParam")
     @ApiOperation(value = "用户本站注册", notes = "用户本站注册")
     @PostMapping("/doRegister")
-    public ApiResult doRegister(@RequestBody @Valid IUsersRegisterVO vo) {
+    public ApiResult doRegister(@RequestBody @Valid IUsersRegisterParam vo) {
         return userService.doRegister(vo);
     }
 
@@ -85,14 +85,15 @@ public class IUserController {
         VerifyCodeData data = new VerifyCodeData(verifyCode, requestCode);
         // 验证码三分钟内有效
         redisUtil.set(requestCode, verifyCode, 180);
-        MailUtil.send(email, FIND_PWD_MAIL_TITLE, "您正在找回密码,验证码为:" + verifyCode + "\n验证码有效时间3分钟，请及时处理", false);
+        String content = "您正在找回密码,验证码为:" + verifyCode + "\n验证码有效时间3分钟，请及时处理";
+        MailUtil.send(email, CommonFields.FIND_PWD_MAIL_TITLE, content, false);
         return ApiResult.success("邮件发送成功", data);
     }
 
     @ApiImplicitParam(name = "vo", value = "重置密码参数", required = true, dataType = "ResetPasswordVO")
     @ApiOperation(value = "重置密码", notes = "重置密码")
     @PostMapping("/mail/reset/pwd")
-    public ApiResult resetPassword(HttpServletRequest request, @RequestBody @Valid ResetPasswordVO vo) {
+    public ApiResult resetPassword(HttpServletRequest request, @RequestBody @Valid ResetPasswordParam vo) {
         return userService.resetPassword(request, vo);
     }
 

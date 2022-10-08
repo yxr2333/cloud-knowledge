@@ -68,13 +68,13 @@ public class IUserServiceImpl implements IUserService {
     }
 
     @Override
-    public ApiResult doRegister(IUsersRegisterVO vo) {
+    public ApiResult doRegister(IUsersRegisterParam vo) {
         ApiResult result = remoteUserService.doRemoteRegister(vo);
         if (result.code == HttpStatus.HTTP_OK
                 && StringUtils.hasText(result.msg)
-                && result.data instanceof IUsersRegisterVO) {
+                && result.data instanceof IUsersRegisterParam) {
             log.info("远程调用成功");
-            IUsersRegisterVO data = (IUsersRegisterVO) result.data;
+            IUsersRegisterParam data = (IUsersRegisterParam) result.data;
             IUserEntity entity = new IUserEntity();
             entity.setUsername(data.getUsername());
             entity.setPassword(data.getPassword());
@@ -152,7 +152,7 @@ public class IUserServiceImpl implements IUserService {
         if (userEntityRepository.existsByUsername(param.getUsername())) {
             return ApiResult.error("该用户名已经被使用");
         }
-        IUsersRegisterVO remoteParam = new IUsersRegisterVO(param.getUsername(), param.getPassword(), param.getEmail(), param.getDescription());
+        IUsersRegisterParam remoteParam = new IUsersRegisterParam(param.getUsername(), param.getPassword(), param.getEmail(), param.getDescription());
         // 远程调用注册接口
         ApiResult remoteRegisterResult = remoteUserService.doRemoteRegister(remoteParam);
         log.info("远程调用注册接口返回结果:{}", remoteRegisterResult);
@@ -186,7 +186,7 @@ public class IUserServiceImpl implements IUserService {
      * @return 重置结果
      */
     @Override
-    public ApiResult resetPassword(HttpServletRequest request, ResetPasswordVO vo) {
+    public ApiResult resetPassword(HttpServletRequest request, ResetPasswordParam vo) {
         String requestKey = vo.getRequestKey();
         Object o = redisUtil.get(requestKey);
         if (o == null) {

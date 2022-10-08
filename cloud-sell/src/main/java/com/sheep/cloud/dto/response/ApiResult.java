@@ -82,7 +82,7 @@ public class ApiResult implements Serializable {
     }
 
     public static ApiResult success(Object data) {
-        return new ApiResult(CODE_SUCCESS, null, data);
+        return new ApiResult(CODE_SUCCESS, "success", data);
     }
 
     public static ApiResult error() {

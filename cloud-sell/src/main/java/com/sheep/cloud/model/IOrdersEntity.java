@@ -23,6 +23,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Entity
 @Table(name = "t_orders")
+@Builder
 public class IOrdersEntity implements Serializable {
 
     /*
@@ -67,6 +68,7 @@ public class IOrdersEntity implements Serializable {
     @Basic
     private Double discountPercent;
 
+    // 交易模式（0：普通交易，1：秒杀交易）
     @Basic
     @Column(nullable = false)
     private Integer sellType;
@@ -83,6 +85,10 @@ public class IOrdersEntity implements Serializable {
     @Column(nullable = false)
     private String sellerName;
 
+    @Basic
+    @Column(nullable = false)
+    private String sellerMail;
+
     @ManyToOne
     @JoinColumn(name = "buyer_id", referencedColumnName = "id")
     private IUserEntity buyer;
@@ -93,7 +99,14 @@ public class IOrdersEntity implements Serializable {
 
     @Basic
     @Column(nullable = false)
+    private String buyerMail;
+
+    @Basic
+    @Column(nullable = false)
     private Integer orderStatus;
+
+    @Basic
+    private String orderStatusDescription;
 
     @Column(nullable = false)
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")

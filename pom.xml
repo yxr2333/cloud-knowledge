@@ -47,6 +47,18 @@
 
     <dependencyManagement>
         <dependencies>
+            <!--消息队列相关的依赖-->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-amqp</artifactId>
+                <version>${spring.boot.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.amqp</groupId>
+                <artifactId>spring-rabbit-test</artifactId>
+                <scope>test</scope>
+                <version>${spring.boot.version}</version>
+            </dependency>
             <dependency>
                 <groupId>com.aliyun</groupId>
                 <artifactId>dingtalk</artifactId>
@@ -175,6 +187,16 @@
         </dependencies>
     </dependencyManagement>
     <repositories>
+        <repository>
+            <id>default-mvn</id>
+            <name>default-mvn</name>
+            <url>https://repo1.maven.org/maven2/</url>
+        </repository>
+        <repository>
+            <id>alimaven-central</id>
+            <name>alimaven-central</name>
+            <url>https://maven.aliyun.com/repository/central</url>
+        </repository>
         <repository>
             <id>alimaven</id>
             <name>aliyun maven</name>

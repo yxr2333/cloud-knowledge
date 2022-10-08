@@ -18,7 +18,7 @@ import java.security.NoSuchAlgorithmException;
  */
 public interface IUserService {
 
-    ApiResult doRegister(IUsersRegisterVO vo);
+    ApiResult doRegister(IUsersRegisterParam vo);
 
     /**
      * 钉钉授权登录
@@ -43,7 +43,7 @@ public interface IUserService {
      * @param vo      重置密码信息
      * @return 重置结果
      */
-    ApiResult resetPassword(HttpServletRequest request, ResetPasswordVO vo);
+    ApiResult resetPassword(HttpServletRequest request, ResetPasswordParam vo);
 
     /**
      * 用户登录

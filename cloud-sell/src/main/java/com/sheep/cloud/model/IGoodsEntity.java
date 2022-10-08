@@ -23,6 +23,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Entity
 @Table(name = "t_goods")
+@Builder
 public class IGoodsEntity implements Serializable {
     /*
       id int [pk, note: "商品编号"]

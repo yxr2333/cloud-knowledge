@@ -14,7 +14,7 @@ import javax.validation.constraints.NotNull;
  * @datetime 2022/9/20 星期二
  */
 @Data
-public class ResetPasswordVO {
+public class ResetPasswordParam {
 
     @NotNull(message = "用户名不能为空")
     @NotEmpty(message = "用户名不能为空")
@@ -30,7 +30,7 @@ public class ResetPasswordVO {
 
     @Length(min = 5, max = 5, message = "验证码长度必须为5")
     private String code;
-    
+
 
     @Length(min = 10, max = 10, message = "请求标识符长度必须为10")
     private String requestKey;
