@@ -24,7 +24,12 @@ public enum OrderStatusEnum {
     DELIVERED_NOT_RECEIVED(3, "已发货，未收货"),
     FINISHED(4, "已收货，完成"),
     CANCELED(5, "已取消"),
-    REFUNDED(6, "已退款");
+    REFUNDED(6, "已退款"),
+
+    APPLY_NOT_REFUNDED(7, "已申请退款，等待卖家处理"),
+
+    REFUSED_REFUND(8, "卖家拒绝退款");
+
     public Integer code;
     public String description;
 

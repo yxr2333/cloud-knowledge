@@ -18,6 +18,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@Builder
 @Table(name = "t_user_roles")
 public class IUserRoleEntity {
 

@@ -1,8 +1,6 @@
 package com.sheep.cloud.controller;
 
-import com.sheep.cloud.dto.request.CancelOrderParam;
-import com.sheep.cloud.dto.request.CreateCommonOrderParam;
-import com.sheep.cloud.dto.request.PayOrderParam;
+import com.sheep.cloud.dto.request.*;
 import com.sheep.cloud.dto.response.ApiResult;
 import com.sheep.cloud.service.IOrderService;
 import io.swagger.annotations.Api;
@@ -78,5 +76,19 @@ public class IOrderController {
             return ApiResult.error("订单编号不能为空");
         }
         return orderService.checkSaveGoods(orderId);
+    }
+
+    @ApiImplicitParam(name = "param", value = "退款订单信息", required = true, dataType = "ReplyRefundOrderParam")
+    @ApiOperation(value = "申请退款", notes = "申请退款")
+    @PostMapping("/apply/refund")
+    public ApiResult applyForRefund(@RequestBody @Valid ReplyRefundOrderParam param) {
+        return orderService.applyForRefund(param);
+    }
+
+    @ApiImplicitParam(name = "param", value = "审核退款订单信息", required = true, dataType = "CheckRefundOrderParam")
+    @ApiOperation(value = "卖家审核退款", notes = "卖家审核退款")
+    @PostMapping("/reply/refund")
+    public ApiResult checkRefund(@RequestBody @Valid CheckRefundOrderParam param) {
+        return orderService.checkRefund(param);
     }
 }

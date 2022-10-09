@@ -15,14 +15,16 @@ import com.sheep.cloud.dto.response.ApiResult;
 import com.sheep.cloud.dto.response.DingUserInfo;
 import com.sheep.cloud.dto.response.TokenInfo;
 import com.sheep.cloud.model.IUserEntity;
+import com.sheep.cloud.model.IUserRoleEntity;
 import com.sheep.cloud.repository.IUserEntityRepository;
 import com.sheep.cloud.service.IRemoteOAuth2Service;
 import com.sheep.cloud.service.IRemoteUserService;
 import com.sheep.cloud.service.IUserService;
 import com.sheep.cloud.utils.RedisUtil;
 import com.sheep.cloud.utils.SignatureUtil;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -46,16 +48,31 @@ import java.util.Properties;
  */
 @Service
 @Slf4j
-@RequiredArgsConstructor
 public class IUserServiceImpl implements IUserService {
 
-    private final IRemoteUserService remoteUserService;
-    private final IRemoteOAuth2Service auth2Service;
-    private final IUserEntityRepository userEntityRepository;
-    private final SignatureUtil signatureUtil;
-    private final RedisUtil redisUtil;
+    @Autowired
+    private IRemoteUserService remoteUserService;
+    @Autowired
+    private IRemoteOAuth2Service auth2Service;
+    @Autowired
+    private IUserEntityRepository userEntityRepository;
+    @Autowired
+    private SignatureUtil signatureUtil;
+    @Autowired
+    private RedisUtil redisUtil;
+
+    @Autowired
+    @Qualifier("superAdmin")
+    private IUserRoleEntity superAdmin;
+
+    @Autowired
+    @Qualifier("normalUser")
+    private IUserRoleEntity normalUser;
+
+
     private String appKey;
     private String appSecret;
+
 
     @PostConstruct
     public void initApp() throws IOException {
@@ -68,23 +85,30 @@ public class IUserServiceImpl implements IUserService {
     }
 
     @Override
-    public ApiResult doRegister(IUsersRegisterParam vo) {
+    public ApiResult doRegister(IUsersRegisterVO vo) {
         ApiResult result = remoteUserService.doRemoteRegister(vo);
+        System.out.println(result.data instanceof IUsersRegisterVO);
         if (result.code == HttpStatus.HTTP_OK
-                && StringUtils.hasText(result.msg)
-                && result.data instanceof IUsersRegisterParam) {
+                && StringUtils.hasText(result.msg)) {
             log.info("远程调用成功");
-            IUsersRegisterParam data = (IUsersRegisterParam) result.data;
-            IUserEntity entity = new IUserEntity();
-            entity.setUsername(data.getUsername());
-            entity.setPassword(data.getPassword());
-            entity.setSalt(result.msg);
-            entity.setEmail(data.getEmail());
-            entity.setDescription(data.getDescription() == null ? "" : data.getDescription());
+            HashMap<String, String> data = (HashMap<String, String>) result.data;
+            IUserEntity entity = IUserEntity.builder()
+                    .username(data.get("username"))
+                    .password(data.get("password"))
+                    .salt(result.msg)
+                    .email(data.get("email"))
+                    .description(data.get("description") == null ? "" : data.get("description"))
+                    .isBanned(false)
+                    .isBindMainAccount(false)
+                    .isBindDing(false)
+                    .role(normalUser)
+                    .freeMoney(0.0)
+                    .build();
             userEntityRepository.save(entity);
             return ApiResult.success("注册成功");
         } else {
-            return ApiResult.error("暂时无法进行处理");
+            log.error(result.toString());
+            return ApiResult.error("暂时无法进行处理", result);
         }
     }
 
@@ -152,7 +176,7 @@ public class IUserServiceImpl implements IUserService {
         if (userEntityRepository.existsByUsername(param.getUsername())) {
             return ApiResult.error("该用户名已经被使用");
         }
-        IUsersRegisterParam remoteParam = new IUsersRegisterParam(param.getUsername(), param.getPassword(), param.getEmail(), param.getDescription());
+        IUsersRegisterVO remoteParam = new IUsersRegisterVO(param.getUsername(), param.getPassword(), param.getEmail(), param.getDescription());
         // 远程调用注册接口
         ApiResult remoteRegisterResult = remoteUserService.doRemoteRegister(remoteParam);
         log.info("远程调用注册接口返回结果:{}", remoteRegisterResult);

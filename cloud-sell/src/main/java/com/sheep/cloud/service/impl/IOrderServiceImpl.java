@@ -5,18 +5,10 @@ import cn.hutool.extra.mail.MailUtil;
 import com.sheep.cloud.common.CommonFields;
 import com.sheep.cloud.common.OrderStatusEnum;
 import com.sheep.cloud.common.SafeAccountHistoryEnum;
-import com.sheep.cloud.dto.request.CancelOrderParam;
-import com.sheep.cloud.dto.request.CreateCommonOrderParam;
-import com.sheep.cloud.dto.request.PayOrderParam;
+import com.sheep.cloud.dto.request.*;
 import com.sheep.cloud.dto.response.ApiResult;
-import com.sheep.cloud.model.IGoodsEntity;
-import com.sheep.cloud.model.IOrdersEntity;
-import com.sheep.cloud.model.ISafeAccountHistoryEntity;
-import com.sheep.cloud.model.IUserEntity;
-import com.sheep.cloud.repository.IGoodsEntityRepository;
-import com.sheep.cloud.repository.IOrdersEntityRepository;
-import com.sheep.cloud.repository.ISafeAccountHistoryEntityRepository;
-import com.sheep.cloud.repository.IUserEntityRepository;
+import com.sheep.cloud.model.*;
+import com.sheep.cloud.repository.*;
 import com.sheep.cloud.service.IOrderService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -46,6 +38,9 @@ public class IOrderServiceImpl implements IOrderService {
 
     @Autowired
     private ISafeAccountHistoryEntityRepository safeAccountRepository;
+
+    @Autowired
+    private IRefundOrderHistoryEntityRepository refundOrderHistoryEntityRepository;
 
     @Autowired
     private RabbitTemplate rabbitTemplate;
@@ -315,5 +310,100 @@ public class IOrderServiceImpl implements IOrderService {
             return ApiResult.error("暂时无法进行操作，请稍后再试");
         }
         return ApiResult.success(String.format("订单号:%s，已确认收货", orderId));
+    }
+
+    /**
+     * 申请退款
+     *
+     * @param param 申请退款信息
+     * @return 申请退款结果
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public ApiResult applyForRefund(ReplyRefundOrderParam param) {
+        IOrdersEntity order = ordersEntityRepository.findByOid(param.getOrderId())
+                .orElseThrow(() -> new RuntimeException("未查找到订单信息"));
+        // 当卖家已发货，买家未确认收货的时候，才能申请退款
+        if (!order.getOrderStatus().equals(OrderStatusEnum.DELIVERED_NOT_RECEIVED.code)) {
+            return ApiResult.error("当前订单状态不允许申请退款");
+        }
+        order.setOrderStatus(OrderStatusEnum.APPLY_NOT_REFUNDED.code);
+        order.setOrderStatusDescription(OrderStatusEnum.APPLY_NOT_REFUNDED.description);
+
+        IRefundOrderHistoryEntity history = IRefundOrderHistoryEntity.builder()
+                .order(order)
+                .createTime(LocalDateTime.now())
+                .refundReason(param.getReason())
+                .build();
+        // 保存退款记录，更新订单状态
+        refundOrderHistoryEntityRepository.save(history);
+        ordersEntityRepository.save(order);
+
+        // 给卖家发送邮件
+        String content = String.format("尊敬的：%s，您订单号:%s，的商品已被买家申请退款，请尽快查阅处理~", order.getSellerName(), param.getOrderId());
+        MailUtil.send(order.getSellerMail(), "订单申请退款通知", content, false);
+
+        return ApiResult.success(String.format("订单号:%s，已申请退款，等待卖家处理", param.getOrderId()));
+    }
+
+    /**
+     * 卖家审核退款
+     *
+     * @param param 审核退款信息
+     * @return 审核退款结果
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public ApiResult checkRefund(CheckRefundOrderParam param) {
+        IOrdersEntity order = ordersEntityRepository.findByOid(param.getOrderId())
+                .orElseThrow(() -> new RuntimeException("未查找到订单信息"));
+        IRefundOrderHistoryEntity history =
+                refundOrderHistoryEntityRepository.getOne(param.getRefundHistoryId());
+        // 同意退款，钱从安全账户转入买家账户
+        if (param.getIsAgree().equals(true)) {
+            // 更新订单状态
+            order.setOrderStatus(OrderStatusEnum.REFUNDED.code);
+            order.setOrderStatusDescription(OrderStatusEnum.REFUNDED.description);
+            // 退款之后，设置订单的结束时间
+            order.setFinishTime(LocalDateTime.now());
+            ordersEntityRepository.save(order);
+            history.setFinalRefundTime(LocalDateTime.now());
+            history.setIsRefunded(true);
+            refundOrderHistoryEntityRepository.save(history);
+            synchronized (this) {
+                safeAccount.setFreeMoney(safeAccount.getFreeMoney() - order.getFinalPrice());
+                order.getBuyer().setFreeMoney(order.getBuyer().getFreeMoney() + order.getFinalPrice());
+                userEntityRepository.save(safeAccount);
+                userEntityRepository.save(order.getBuyer());
+            }
+            // 保存安全账户历史记录
+            ISafeAccountHistoryEntity safeAccountHistory = ISafeAccountHistoryEntity.builder()
+                    .transTime(LocalDateTime.now())
+                    .price(order.getFinalPrice())
+                    .transType(SafeAccountHistoryEnum.TRANS_OUT_TO_BUYER.type)
+                    .transReason(SafeAccountHistoryEnum.TRANS_OUT_TO_BUYER.reason)
+                    .orderId(order.getId())
+                    .build();
+            safeAccountRepository.save(safeAccountHistory);
+            // 给买家发送邮件
+            String content = String.format("尊敬的：%s，您订单号:%s，的商品已被卖家同意退款，退款金额为：%s元，已转入您的账户~",
+                    order.getBuyerName(), param.getOrderId(), order.getFinalPrice());
+            MailUtil.send(order.getBuyerMail(), "订单退款通知", content, false);
+            return ApiResult.success(String.format("订单号:%s，已退款", param.getOrderId()));
+        } else {
+            // 不同意退款，更新订单状态
+            order.setOrderStatus(OrderStatusEnum.DELIVERED_NOT_RECEIVED.code);
+            order.setOrderStatusDescription(OrderStatusEnum.DELIVERED_NOT_RECEIVED.description);
+            ordersEntityRepository.save(order);
+            history.setFinalRefundTime(LocalDateTime.now());
+            history.setIsRefunded(false);
+            history.setRefusedRefundReason(param.getRefusedReason());
+            refundOrderHistoryEntityRepository.save(history);
+            // 给买家发送邮件
+            String content = String.format("尊敬的：%s，您订单号:%s，的商品已被卖家拒绝退款，如有疑问，请联系卖家~",
+                    order.getBuyerName(), param.getOrderId());
+            MailUtil.send(order.getBuyerMail(), "订单退款通知", content, false);
+            return ApiResult.success(String.format("订单号:%s，已拒绝退款", param.getOrderId()));
+        }
     }
 }

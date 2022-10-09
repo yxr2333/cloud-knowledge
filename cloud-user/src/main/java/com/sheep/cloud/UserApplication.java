@@ -52,4 +52,5 @@ public class UserApplication {
         clientConfig.setHttpProtocol(HttpProtocol.https);
         return new COSClient(credentials, clientConfig);
     }
+
 }

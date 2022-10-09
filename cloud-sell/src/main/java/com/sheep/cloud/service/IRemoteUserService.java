@@ -1,7 +1,7 @@
 package com.sheep.cloud.service;
 
 
-import com.sheep.cloud.dto.request.IUsersRegisterParam;
+import com.sheep.cloud.dto.request.IUsersRegisterVO;
 import com.sheep.cloud.dto.response.ApiResult;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,5 +22,5 @@ import javax.validation.Valid;
 public interface IRemoteUserService {
 
     @PostMapping("/register/remote")
-    ApiResult doRemoteRegister(@RequestBody @Valid IUsersRegisterParam vo);
+    ApiResult doRemoteRegister(@RequestBody @Valid IUsersRegisterVO vo);
 }

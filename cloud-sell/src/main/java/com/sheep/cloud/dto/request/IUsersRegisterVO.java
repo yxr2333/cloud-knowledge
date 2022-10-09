@@ -18,7 +18,10 @@ import java.io.Serializable;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class IUsersRegisterParam implements Serializable {
+public class IUsersRegisterVO implements Serializable {
+
+    private static final long serialVersionUID = 1070703598293847134L;
+
 
     @NotNull(message = "用户名不能为空")
     private String username;

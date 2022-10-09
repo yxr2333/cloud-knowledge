@@ -1,8 +1,6 @@
 package com.sheep.cloud.service;
 
-import com.sheep.cloud.dto.request.CancelOrderParam;
-import com.sheep.cloud.dto.request.CreateCommonOrderParam;
-import com.sheep.cloud.dto.request.PayOrderParam;
+import com.sheep.cloud.dto.request.*;
 import com.sheep.cloud.dto.response.ApiResult;
 
 /**
@@ -61,4 +59,21 @@ public interface IOrderService {
      * @return 确认收货结果
      */
     ApiResult checkSaveGoods(String orderId);
+
+    /**
+     * 申请退款
+     *
+     * @param param 申请退款信息
+     * @return 申请退款结果
+     */
+    ApiResult applyForRefund(ReplyRefundOrderParam param);
+
+    /**
+     * 卖家审核退款
+     *
+     * @param param 审核退款信息
+     * @return 审核退款结果
+     */
+    ApiResult checkRefund(CheckRefundOrderParam param);
+
 }
