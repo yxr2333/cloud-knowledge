@@ -72,6 +72,9 @@ public class IOrderServiceImpl implements IOrderService {
         if (freeTotal <= 0) {
             return ApiResult.error("商品库存不足");
         }
+        if (goodsEntity.getIsDown()) {
+            return ApiResult.error("商品已下架，无法购买");
+        }
         if (!param.getIsDiscount()) {
             param.setDiscountPercent(null);
         } else {
@@ -133,6 +136,12 @@ public class IOrderServiceImpl implements IOrderService {
                 .orElseThrow(() -> new RuntimeException("买家不存在"));
         if (!order.getOrderStatus().equals(OrderStatusEnum.NOT_PAYED.code)) {
             return ApiResult.error("订单状态异常");
+        }
+        if (order.getGood().getIsDown()) {
+            order.setOrderStatus(OrderStatusEnum.GOODS_DOWN_CANCELED.code);
+            order.setOrderStatusDescription(OrderStatusEnum.GOODS_DOWN_CANCELED.description);
+            order.setFinishTime(LocalDateTime.now());
+            return ApiResult.error("商品已下架，订单已取消，支付失败");
         }
         if (!order.getBuyer().getId().equals(buyer.getId())) {
             return ApiResult.error("这不是您的订单~");
@@ -335,7 +344,8 @@ public class IOrderServiceImpl implements IOrderService {
                 .createTime(LocalDateTime.now())
                 .refundReason(param.getReason())
                 .build();
-        // 保存退款记录，更新订单状态
+
+        // 保存退款记录，并更新订单的状态
         refundOrderHistoryEntityRepository.save(history);
         ordersEntityRepository.save(order);
 

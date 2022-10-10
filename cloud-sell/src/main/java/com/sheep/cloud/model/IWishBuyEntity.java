@@ -10,6 +10,7 @@ package com.sheep.cloud.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
+import lombok.experimental.Accessors;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
@@ -22,6 +23,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Entity
 @Table(name = "t_wish_buy")
+@Accessors(chain = true)
 public class IWishBuyEntity {
 
     /*
@@ -56,14 +58,14 @@ public class IWishBuyEntity {
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime pubTime;
+    private LocalDateTime pubTime = LocalDateTime.now();
 
     @ManyToOne
     @JoinColumn(name = "pub_user_id", referencedColumnName = "id")
     private IUserEntity pubUser;
 
     @Basic
-    private Boolean isFinished;
+    private Boolean isFinished = false;
 
     @ManyToOne
     @JoinColumn(name = "helper_id", referencedColumnName = "id")
@@ -84,7 +86,7 @@ public class IWishBuyEntity {
     private IGoodsEntity good;
 
     @Basic
-    private Boolean isDown;
+    private Boolean isDown = false;
 
 
 }

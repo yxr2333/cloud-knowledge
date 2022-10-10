@@ -40,6 +40,11 @@
         </repository>
     </repositories>
     <dependencies>
+        <!--类型转换工具-->
+        <dependency>
+            <groupId>org.modelmapper</groupId>
+            <artifactId>modelmapper</artifactId>
+        </dependency>
         <!--消息队列相关的依赖-->
         <dependency>
             <groupId>org.springframework.boot</groupId>

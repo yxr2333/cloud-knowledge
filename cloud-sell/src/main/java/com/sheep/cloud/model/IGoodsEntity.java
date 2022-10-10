@@ -10,6 +10,9 @@ package com.sheep.cloud.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.Where;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
@@ -24,6 +27,9 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "t_goods")
 @Builder
+@DynamicUpdate
+@DynamicInsert
+@Where(clause = "is_deleted = 0")
 public class IGoodsEntity implements Serializable {
     /*
       id int [pk, note: "商品编号"]
@@ -60,43 +66,46 @@ public class IGoodsEntity implements Serializable {
     @Basic
     private String brand;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "type_id", referencedColumnName = "id")
     private IGoodsTypeEntity type;
 
     @Basic
     @Column(name = "free_total")
-    private Integer freeTotal;
+    private Integer freeTotal = 0;
 
     @Basic
     private String cover;
 
-    @Column(name = "release_time")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime releaseTime;
-
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "release_user_id", referencedColumnName = "id")
     private IUserEntity releaseUser;
 
     @Basic
     @Column(name = "is_discount")
-    private Boolean isDiscount;
+    private Boolean isDiscount = false;
 
     @Basic
     @Column(name = "discount_percent")
     private Double discountPercent;
 
     @Basic
-    @Column(name = "is_sold")
-    private Boolean isSold;
+    @Column(name = "is_down")
+    private Boolean isDown = false;
 
     @Basic
-    @Column(name = "is_down")
-    private Boolean isDown;
+    private Boolean isDeleted = false;
 
-    @ManyToOne
-    @JoinColumn(name = "buyer_id", referencedColumnName = "id")
-    private IUserEntity buyer;
+    @Column(name = "release_time")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime releaseTime;
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime downTime;
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime deleteAt;
 }
