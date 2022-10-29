@@ -9,4 +9,6 @@ public interface IOrdersEntityRepository extends JpaRepository<IOrdersEntity, In
 
     // 根据订单号查询订单信息
     Optional<IOrdersEntity> findByOid(String orderId);
+
+    Boolean existsByGoodId(Integer goodsId);
 }

@@ -28,7 +28,9 @@ public enum OrderStatusEnum {
 
     APPLY_NOT_REFUNDED(7, "已申请退款，等待卖家处理"),
 
-    REFUSED_REFUND(8, "卖家拒绝退款");
+    REFUSED_REFUND(8, "卖家拒绝退款"),
+
+    GOODS_DOWN_CANCELED(9, "商品下架，订单取消");
 
     public Integer code;
     public String description;

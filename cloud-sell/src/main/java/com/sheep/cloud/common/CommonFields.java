@@ -24,6 +24,12 @@ public class CommonFields {
 
     public static final String ORDER_ROUTING_KEY = "sell.order.routingkey";
 
+    public static final String WISH_BUY_QUEUE_NAME = "sell.wishBuy.queue";
+
+    public static final String WISH_BUY_EXCHANGE_NAME = "sell.wishBuy.exchange";
+
+    public static final String WISH_BUY_ROUTING_KEY = "sell.wishBuy.routingkey";
+
     public static final String FIND_PWD_MAIL_TITLE = "验证找回密码";
     public static final String ORDER_OVERTIME_MAIL_TITLE = "订单超时提醒";
 

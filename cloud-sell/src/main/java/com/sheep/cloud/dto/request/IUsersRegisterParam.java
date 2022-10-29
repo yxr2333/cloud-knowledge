@@ -18,7 +18,7 @@ import java.io.Serializable;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class IUsersRegisterVO implements Serializable {
+public class IUsersRegisterParam implements Serializable {
 
     private static final long serialVersionUID = 1070703598293847134L;
 

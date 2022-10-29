@@ -85,9 +85,9 @@ public class IUserServiceImpl implements IUserService {
     }
 
     @Override
-    public ApiResult doRegister(IUsersRegisterVO vo) {
+    public ApiResult doRegister(IUsersRegisterParam vo) {
         ApiResult result = remoteUserService.doRemoteRegister(vo);
-        System.out.println(result.data instanceof IUsersRegisterVO);
+        System.out.println(result.data instanceof IUsersRegisterParam);
         if (result.code == HttpStatus.HTTP_OK
                 && StringUtils.hasText(result.msg)) {
             log.info("远程调用成功");
@@ -176,7 +176,7 @@ public class IUserServiceImpl implements IUserService {
         if (userEntityRepository.existsByUsername(param.getUsername())) {
             return ApiResult.error("该用户名已经被使用");
         }
-        IUsersRegisterVO remoteParam = new IUsersRegisterVO(param.getUsername(), param.getPassword(), param.getEmail(), param.getDescription());
+        IUsersRegisterParam remoteParam = new IUsersRegisterParam(param.getUsername(), param.getPassword(), param.getEmail(), param.getDescription());
         // 远程调用注册接口
         ApiResult remoteRegisterResult = remoteUserService.doRemoteRegister(remoteParam);
         log.info("远程调用注册接口返回结果:{}", remoteRegisterResult);

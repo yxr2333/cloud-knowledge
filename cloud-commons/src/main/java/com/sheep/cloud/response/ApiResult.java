@@ -68,7 +68,7 @@ public class ApiResult implements Serializable {
     }
 
     public static ApiResult success() {
-        return new ApiResult(CODE_SUCCESS, null, null);
+        return new ApiResult(CODE_SUCCESS, "ok", null);
     }
 
     public static ApiResult success(String msg) {
@@ -80,7 +80,7 @@ public class ApiResult implements Serializable {
     }
 
     public static ApiResult success(Object data) {
-        return new ApiResult(CODE_SUCCESS, null, data);
+        return new ApiResult(CODE_SUCCESS, "ok", data);
     }
 
     public static ApiResult error() {
@@ -92,6 +92,19 @@ public class ApiResult implements Serializable {
     }
 
     public static ApiResult error(String msg, Object data) {
+        return new ApiResult(CODE_ERROR, msg, data);
+    }
+
+
+    public static ApiResult fail() {
+        return new ApiResult(CODE_ERROR, "出错了", null);
+    }
+
+    public static ApiResult fail(String msg) {
+        return new ApiResult(CODE_ERROR, msg, null);
+    }
+
+    public static ApiResult fail(String msg, Object data) {
         return new ApiResult(CODE_ERROR, msg, data);
     }
 

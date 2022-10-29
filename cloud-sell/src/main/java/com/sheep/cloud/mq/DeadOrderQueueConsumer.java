@@ -5,8 +5,10 @@ import com.sheep.cloud.common.CommonFields;
 import com.sheep.cloud.common.OrderStatusEnum;
 import com.sheep.cloud.model.IGoodsEntity;
 import com.sheep.cloud.model.IOrdersEntity;
+import com.sheep.cloud.model.IWishBuyEntity;
 import com.sheep.cloud.repository.IGoodsEntityRepository;
 import com.sheep.cloud.repository.IOrdersEntityRepository;
+import com.sheep.cloud.repository.IWishBuyEntityRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -15,6 +17,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 /**
@@ -32,6 +35,9 @@ public class DeadOrderQueueConsumer {
     private IOrdersEntityRepository ordersEntityRepository;
     @Autowired
     private IGoodsEntityRepository goodsEntityRepository;
+
+    @Autowired
+    private IWishBuyEntityRepository wishBuyEntityRepository;
 
     @RabbitListener(queues = CommonFields.ORDER_QUEUE_NAME)
     @Transactional(rollbackFor = Exception.class)
@@ -56,6 +62,25 @@ public class DeadOrderQueueConsumer {
             }
             String content = "尊敬的：" + order.getBuyerName() + "您好！您的订单：" + order.getOid() + "在规定时间内未及时支付，已经自动取消";
             MailUtil.send(order.getBuyerMail(), CommonFields.ORDER_OVERTIME_MAIL_TITLE, content, false);
+        }
+    }
+
+    @RabbitListener(queues = CommonFields.WISH_BUY_QUEUE_NAME)
+    @Transactional(rollbackFor = Exception.class)
+    public void wishBuyNoReply(Message message) {
+        String wishBuyId = new String(message.getBody(), StandardCharsets.UTF_8);
+        log.info("求购信息延时队列收到消息，求购编号：{}", wishBuyId);
+        IWishBuyEntity wishBuy =
+                wishBuyEntityRepository.getOne(Integer.valueOf(wishBuyId));
+        if (wishBuy.getIsFinished().equals(Boolean.FALSE)) {
+            // 设置求购信息为已结束、已下架
+            wishBuy.setIsDown(true);
+            wishBuy.setIsFinished(true);
+            wishBuy.setFinishTime(LocalDateTime.now());
+            wishBuyEntityRepository.save(wishBuy);
+            // 发送邮件通知发布者
+            String content = String.format("<div><div>尊敬的：%s您好！您发布的求购信息：%s在规定时间内未有人回复，已经自动结束</div><img src=\"%s\" /></div>", wishBuy.getPubUser().getUsername(), wishBuy.getDescription(), wishBuy.getImgUrl());
+            MailUtil.send(wishBuy.getPubUser().getEmail(), "求购超时自动取消通知", content, true);
         }
     }
 }

@@ -18,7 +18,7 @@ import java.security.NoSuchAlgorithmException;
  */
 public interface IUserService {
 
-    ApiResult doRegister(IUsersRegisterVO vo);
+    ApiResult doRegister(IUsersRegisterParam vo);
 
     /**
      * 钉钉授权登录

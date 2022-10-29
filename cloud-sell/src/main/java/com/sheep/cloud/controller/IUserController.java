@@ -45,14 +45,14 @@ public class IUserController {
     @ApiImplicitParam(name = "vo", value = "用户注册信息", required = true, dataType = "IUsersRegisterParam")
     @ApiOperation(value = "测试远程调用", notes = "测试远程调用")
     @PostMapping("/test")
-    public ApiResult doRemoteRegister(@RequestBody @Valid IUsersRegisterVO vo) {
+    public ApiResult doRemoteRegister(@RequestBody @Valid IUsersRegisterParam vo) {
         return remoteUserService.doRemoteRegister(vo);
     }
 
     @ApiImplicitParam(name = "vo", value = "用户注册信息", required = true, dataType = "IUsersRegisterParam")
     @ApiOperation(value = "用户本站注册", notes = "用户本站注册")
     @PostMapping("/doRegister")
-    public ApiResult doRegister(@RequestBody @Valid IUsersRegisterVO vo) {
+    public ApiResult doRegister(@RequestBody @Valid IUsersRegisterParam vo) {
         return userService.doRegister(vo);
     }
 
