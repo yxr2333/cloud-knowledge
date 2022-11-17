@@ -27,6 +27,11 @@
       <option name="url" value="https://maven.aliyun.com/nexus/content/repositories/central/" />
     </remote-repository>
     <remote-repository>
+      <option name="id" value="default-mvn" />
+      <option name="name" value="default-mvn" />
+      <option name="url" value="https://maven.aliyun.com/repository/public" />
+    </remote-repository>
+    <remote-repository>
       <option name="id" value="central" />
       <option name="name" value="Central Repository" />
       <option name="url" value="https://maven.aliyun.com/repository/public" />
@@ -70,6 +75,11 @@
       <option name="id" value="aliyunmaven" />
       <option name="name" value="aliyun spring" />
       <option name="url" value="https://maven.aliyun.com/repository/spring" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="alimaven-central" />
+      <option name="name" value="alimaven-central" />
+      <option name="url" value="https://maven.aliyun.com/repository/public" />
     </remote-repository>
     <remote-repository>
       <option name="id" value="central" />

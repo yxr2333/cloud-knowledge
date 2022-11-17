@@ -1,6 +1,7 @@
 package com.sheep.cloud.controller;
 
 import com.sheep.cloud.dto.request.SaveOneGoodParam;
+import com.sheep.cloud.dto.request.UpdateGoodsInfoParam;
 import com.sheep.cloud.dto.response.ApiResult;
 import com.sheep.cloud.service.IGoodsService;
 import io.swagger.annotations.Api;
@@ -96,6 +97,14 @@ public class IGoodsController {
         }
         PageRequest pageable = PageRequest.of(page - 1, size);
         return goodsService.findAllGoodsByUserId(pageable, uid);
+    }
+
+
+    @ApiImplicitParam(name = "param", value = "商品信息", required = true, dataType = "UpdateGoodsInfoParam")
+    @ApiOperation(value = "更新商品信息", notes = "更新商品信息")
+    @PutMapping
+    public ApiResult updateGoodsInfo(@RequestBody @Valid UpdateGoodsInfoParam param) {
+        return goodsService.updateGoodsInfo(param);
     }
 
 

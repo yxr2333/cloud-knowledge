@@ -1,6 +1,7 @@
 package com.sheep.cloud.service;
 
 import com.sheep.cloud.dto.request.SaveOneGoodParam;
+import com.sheep.cloud.dto.request.UpdateGoodsInfoParam;
 import com.sheep.cloud.dto.response.ApiResult;
 import org.springframework.data.domain.Pageable;
 
@@ -54,4 +55,13 @@ public interface IGoodsService {
      * @return 商品列表
      */
     ApiResult findAllGoodsByUserId(Pageable pageable, Integer userId);
+
+
+    /**
+     * 更新商品信息
+     *
+     * @param param 商品信息
+     * @return 更新结果
+     */
+    ApiResult updateGoodsInfo(UpdateGoodsInfoParam param);
 }

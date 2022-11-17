@@ -1,6 +1,8 @@
 package com.sheep.cloud.service.impl;
 
+import com.sheep.cloud.aspect.CheckGoodsRelation;
 import com.sheep.cloud.dto.request.SaveOneGoodParam;
+import com.sheep.cloud.dto.request.UpdateGoodsInfoParam;
 import com.sheep.cloud.dto.response.ApiResult;
 import com.sheep.cloud.dto.response.IGoodsEntityBaseInfoDTO;
 import com.sheep.cloud.dto.response.PageData;
@@ -16,6 +18,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -191,6 +194,41 @@ public class IGoodsServiceImpl implements IGoodsService {
                 .data(dtoList)
                 .build()
         );
+    }
+
+    /**
+     * 更新商品信息
+     *
+     * @param param 商品信息
+     * @return 更新结果
+     */
+    @CheckGoodsRelation
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public ApiResult updateGoodsInfo(UpdateGoodsInfoParam param) {
+        if (!StringUtils.hasText(param.getName())) {
+            throw new RuntimeException("商品名称不能为空");
+        }
+        IGoodsTypeEntity goodsType = goodsTypeEntityRepository.findById(param.getTypeId())
+                .orElseThrow(() -> new RuntimeException("商品类型不存在"));
+        IGoodsEntity entity = goodsEntityRepository.getOne(param.getId());
+        if (param.getFreeTotal() < 0) throw new RuntimeException("请选择合适的商品库存");
+        if (param.getPrice() <= 0) throw new RuntimeException("请选择合适的商品价格");
+        boolean isDiscount = param.getIsDiscount();
+        boolean isDiscountSuit = param.getDiscountPercent() <= 0 || param.getDiscountPercent() >= 1;
+        if (isDiscount && isDiscountSuit) throw new RuntimeException("请输入合适的折扣");
+
+        entity.setType(goodsType);
+        entity.setName(param.getName());
+        entity.setDescription(param.getDescription());
+        entity.setPrice(param.getPrice());
+        entity.setFreeTotal(param.getFreeTotal());
+        entity.setIsDiscount(param.getIsDiscount());
+        entity.setDiscountPercent(param.getDiscountPercent());
+        entity.setCover(param.getCover());
+
+        goodsEntityRepository.save(entity);
+        return ApiResult.success("更新成功");
     }
 }
 
