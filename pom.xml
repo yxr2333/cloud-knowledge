@@ -43,10 +43,17 @@
         <jedis.version>4.2.3</jedis.version>
         <knife4j.version>2.0.9</knife4j.version>
         <dingtalk.version>1.4.35</dingtalk.version>
+        <nacos.version>2.1.0.RELEASE</nacos.version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
+            <!--nacos-->
+            <dependency>
+                <groupId>com.alibaba.cloud</groupId>
+                <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+                <version>${nacos.version}</version>
+            </dependency>
             <!--消息队列相关的依赖-->
             <dependency>
                 <groupId>org.springframework.boot</groupId>

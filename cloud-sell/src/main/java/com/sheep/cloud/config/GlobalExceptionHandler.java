@@ -34,9 +34,9 @@ public class GlobalExceptionHandler {
                 FieldError fieldError = (FieldError) allError;
                 sb.append(fieldError.getDefaultMessage()).append(";");
             }
-            return ApiResult.error(sb.toString());
+            return new ApiResult<>().error(sb.toString());
         } else {
-            return ApiResult.error(e.getMessage());
+            return new ApiResult<>().error(e.getMessage());
         }
     }
 }

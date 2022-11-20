@@ -1,7 +1,7 @@
 package com.sheep.cloud.service;
 
-import com.sheep.cloud.request.*;
-import com.sheep.cloud.response.ApiResult;
+import com.sheep.cloud.dto.request.knowledge.*;
+import com.sheep.cloud.dto.response.ApiResult;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -21,7 +21,7 @@ public interface UserService {
      * @param loginVO 用户登录信息
      * @return 登录结果
      */
-    ApiResult doLogin(IUsersLoginVO loginVO);
+    ApiResult<?> doLogin(IUsersLoginVO loginVO);
 
 
     /**
@@ -30,7 +30,7 @@ public interface UserService {
      * @param registerVO 用户注册信息
      * @return 注册结果
      */
-    ApiResult doRegister(IUsersRegisterVO registerVO);
+    ApiResult<?> doRegister(IUsersRegisterVO registerVO);
 
     /**
      * 远程调用用户注册
@@ -38,7 +38,7 @@ public interface UserService {
      * @param registerVO 用户注册信息
      * @return 注册结果
      */
-    ApiResult remoteMakeUserRegister(IUsersRegisterVO registerVO);
+    ApiResult<?> remoteMakeUserRegister(IUsersRegisterVO registerVO);
 
 
     /**
@@ -48,7 +48,7 @@ public interface UserService {
      * @param resetPasswordVO 用户重置密码信息
      * @return 重置密码结果
      */
-    ApiResult resetPassword(HttpServletRequest request, IUsersResetPasswordVO resetPasswordVO);
+    ApiResult<?> resetPassword(HttpServletRequest request, IUsersResetPasswordVO resetPasswordVO);
 
 
     /**
@@ -57,7 +57,7 @@ public interface UserService {
      * @param modifyInfoVO 用户修改信息
      * @return 修改结果
      */
-    ApiResult modifyInfo(IUsersModifyInfoVO modifyInfoVO);
+    ApiResult<?> modifyInfo(IUsersModifyInfoVO modifyInfoVO);
 
     /**
      * 通过用户名id删除用户
@@ -65,7 +65,7 @@ public interface UserService {
      * @param id 用户id
      * @return 删除结果
      */
-    ApiResult deleteUserById(Integer id);
+    ApiResult<?> deleteUserById(Integer id);
 
     /**
      * 通过用户名id查询用户
@@ -73,7 +73,7 @@ public interface UserService {
      * @param id 用户id
      * @return 查询结果
      */
-    ApiResult getOne(Integer id);
+    ApiResult<?> getOne(Integer id);
 
     /**
      * 通过用户名模糊查询用户
@@ -83,7 +83,7 @@ public interface UserService {
      * @param pageSize 页大小
      * @return 查询结果
      */
-    ApiResult getAllLikeName(String name, Integer pageNum, Integer pageSize);
+    ApiResult<?> getAllLikeName(String name, Integer pageNum, Integer pageSize);
 
     /**
      * 给用户添加积分
@@ -91,7 +91,7 @@ public interface UserService {
      * @param vo 添加积分信息
      * @return 添加结果
      */
-    ApiResult addScore(IUsersAddScoreVO vo);
+    ApiResult<?> addScore(IUsersAddScoreVO vo);
 
 
     /**
@@ -101,7 +101,7 @@ public interface UserService {
      * @param pageSize 页大小
      * @return 查询结果
      */
-    ApiResult getAll(Integer pageNum, Integer pageSize);
+    ApiResult<?> getAll(Integer pageNum, Integer pageSize);
 
 
     /**
@@ -110,7 +110,7 @@ public interface UserService {
      * @param uid 用户id
      * @return 查询结果
      */
-    ApiResult findCollectList(Integer uid);
+    ApiResult<?> findCollectList(Integer uid);
 
     /**
      * 查询发布记录
@@ -118,7 +118,7 @@ public interface UserService {
      * @param uid 用户id
      * @return 查询结果
      */
-    ApiResult findPublishList(Integer uid);
+    ApiResult<?> findPublishList(Integer uid);
 
     /**
      * 查询心愿墙发表记录
@@ -126,7 +126,7 @@ public interface UserService {
      * @param uid 用户id
      * @return 查询结果
      */
-    ApiResult findWishList(Integer uid);
+    ApiResult<?> findWishList(Integer uid);
 
 
     /**
@@ -135,7 +135,7 @@ public interface UserService {
      * @param uid 用户id
      * @return 查询结果
      */
-    ApiResult findScoreList(Integer uid);
+    ApiResult<?> findScoreList(Integer uid);
 
 
     /**
@@ -146,7 +146,7 @@ public interface UserService {
      * @param pageSize 页大小
      * @return 查询结果
      */
-    ApiResult findAllByLabelId(List<Integer> labelId, Integer pageNum, Integer pageSize);
+    ApiResult<?> findAllByLabelId(List<Integer> labelId, Integer pageNum, Integer pageSize);
 
-    ApiResult findAllByNameAndLabelId(String name, List<Integer> labelId, Integer pageNum, Integer pageSize);
+    ApiResult<?> findAllByNameAndLabelId(String name, List<Integer> labelId, Integer pageNum, Integer pageSize);
 }

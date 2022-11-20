@@ -1,7 +1,8 @@
 package com.sheep.cloud.service;
 
-import com.sheep.cloud.request.IUsersLoginVO;
-import com.sheep.cloud.response.ApiResult;
+import com.sheep.cloud.dto.request.knowledge.IUsersLoginVO;
+import com.sheep.cloud.dto.response.ApiResult;
+import com.sheep.cloud.dto.response.knowledge.IUserLoginResDTO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,5 +22,5 @@ import javax.validation.Valid;
 public interface RemoteUserService {
 
     @PostMapping("/user/login")
-    ApiResult doLogin(@RequestBody @Valid IUsersLoginVO usersLoginVO);
+    ApiResult<IUserLoginResDTO> doLogin(@RequestBody @Valid IUsersLoginVO usersLoginVO);
 }

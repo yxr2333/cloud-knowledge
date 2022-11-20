@@ -1,7 +1,7 @@
 package com.sheep.cloud;
 
-import com.sheep.cloud.entity.IWishesEntity;
-import com.sheep.cloud.response.PageData;
+import com.sheep.cloud.entity.knowledge.IWishesEntity;
+import com.sheep.cloud.dto.response.PageData;
 import com.sheep.cloud.service.WishService;
 import org.junit.Test;
 import org.junit.runner.RunWith;

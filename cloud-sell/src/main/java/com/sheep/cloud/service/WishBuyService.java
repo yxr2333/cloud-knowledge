@@ -1,6 +1,6 @@
 package com.sheep.cloud.service;
 
-import com.sheep.cloud.dto.request.PublishWishBuyEntityParam;
+import com.sheep.cloud.dto.request.sell.PublishWishBuyEntityParam;
 import com.sheep.cloud.dto.response.ApiResult;
 
 /**
@@ -18,7 +18,7 @@ public interface WishBuyService {
      * @param param 求购信息
      * @return 发布结果
      */
-    ApiResult publishOne(PublishWishBuyEntityParam param);
+    ApiResult<?> publishOne(PublishWishBuyEntityParam param);
 
     /**
      * 根据id获取求购信息
@@ -26,7 +26,7 @@ public interface WishBuyService {
      * @param id 求购信息id
      * @return 求购信息
      */
-    ApiResult findWishBuyDetail(Integer id);
+    ApiResult<?> findWishBuyDetail(Integer id);
 
     /**
      * 根据id删除求购信息
@@ -34,5 +34,5 @@ public interface WishBuyService {
      * @param id 求购信息id
      * @return 删除结果
      */
-    ApiResult deleteOne(Integer id);
+    ApiResult<?> deleteOne(Integer id);
 }

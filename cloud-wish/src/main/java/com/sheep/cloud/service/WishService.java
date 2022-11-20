@@ -1,8 +1,8 @@
 package com.sheep.cloud.service;
 
-import com.sheep.cloud.request.IWishHelpFinishVO;
-import com.sheep.cloud.request.IWishPublishVO;
-import com.sheep.cloud.response.ApiResult;
+import com.sheep.cloud.dto.request.knowledge.IWishHelpFinishVO;
+import com.sheep.cloud.dto.request.knowledge.IWishPublishVO;
+import com.sheep.cloud.dto.response.ApiResult;
 
 import java.util.List;
 
@@ -21,7 +21,7 @@ public interface WishService {
      * @param wishPublishVO 心愿信息
      * @return 发布结果
      */
-    ApiResult publishWish(IWishPublishVO wishPublishVO);
+    ApiResult<?> publishWish(IWishPublishVO wishPublishVO);
 
     /**
      * 根据编号获取心愿信息
@@ -29,7 +29,7 @@ public interface WishService {
      * @param id 心愿编号
      * @return 心愿信息
      */
-    ApiResult getWishById(Integer id);
+    ApiResult<?> getWishById(Integer id);
 
 
     /**
@@ -39,7 +39,7 @@ public interface WishService {
      * @param size 每页数量
      * @return 查询结果
      */
-    ApiResult getWishList(Integer page, Integer size);
+    ApiResult<?> getWishList(Integer page, Integer size);
 
 
     /**
@@ -50,7 +50,7 @@ public interface WishService {
      * @param size   每页数量
      * @return 查询结果
      */
-    ApiResult getWishListByUserId(Integer userId, Integer page, Integer size);
+    ApiResult<?> getWishListByUserId(Integer userId, Integer page, Integer size);
 
     /**
      * 根据id删除某条心愿
@@ -58,7 +58,7 @@ public interface WishService {
      * @param id 心愿id
      * @return 删除结果
      */
-    ApiResult deleteWishById(Integer id);
+    ApiResult<?> deleteWishById(Integer id);
 
     /**
      * 根据标签查询心愿列表
@@ -68,7 +68,7 @@ public interface WishService {
      * @param size     每页数量
      * @return 查询结果
      */
-    ApiResult findByLabels(List<Integer> labelIds, Integer page, Integer size);
+    ApiResult<?> findByLabels(List<Integer> labelIds, Integer page, Integer size);
 
 
     /**
@@ -77,7 +77,7 @@ public interface WishService {
      * @param vo 心愿信息
      * @return 完成结果
      */
-    ApiResult helpFinishWish(IWishHelpFinishVO vo);
+    ApiResult<?> helpFinishWish(IWishHelpFinishVO vo);
 
     /**
      * 通过内容和标签搜索
@@ -88,5 +88,5 @@ public interface WishService {
      * @param pageSize 页容量
      * @return 查询结果
      */
-    ApiResult findWishesByContentAndLabels(String content, List<Integer> labelIds, Integer pageNum, Integer pageSize);
+    ApiResult<?> findWishesByContentAndLabels(String content, List<Integer> labelIds, Integer pageNum, Integer pageSize);
 }

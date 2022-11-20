@@ -1,6 +1,6 @@
 package com.sheep.cloud.service;
 
-import com.sheep.cloud.response.ApiResult;
+import com.sheep.cloud.dto.response.ApiResult;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -19,7 +19,7 @@ public interface CommonService {
      *
      * @return 查询结果
      */
-    ApiResult getAllLabelCategoryMenu();
+    ApiResult<?> getAllLabelCategoryMenu();
 
 
     /**
@@ -27,7 +27,7 @@ public interface CommonService {
      *
      * @return 查询结果
      */
-    ApiResult getAllLabels();
+    ApiResult<?> getAllLabels();
 
     /**
      * 上传文件
@@ -35,7 +35,7 @@ public interface CommonService {
      * @param file 文件
      * @return 上传结果
      */
-    ApiResult uploadFile(MultipartFile file) throws IOException;
+    ApiResult<?> uploadFile(MultipartFile file) throws IOException;
 
     /**
      * 批量上传文件
@@ -43,5 +43,5 @@ public interface CommonService {
      * @param files 文件列表
      * @return 上传结果
      */
-    ApiResult uploadFile(MultipartFile[] files);
+    ApiResult<?> uploadFile(MultipartFile[] files);
 }

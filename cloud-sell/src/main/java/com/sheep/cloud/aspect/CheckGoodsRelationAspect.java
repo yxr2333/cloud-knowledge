@@ -1,8 +1,8 @@
 package com.sheep.cloud.aspect;
 
-import com.sheep.cloud.dto.request.UpdateGoodsInfoParam;
-import com.sheep.cloud.repository.IGoodsEntityRepository;
-import com.sheep.cloud.repository.ISpikeDetailsEntityRepository;
+import com.sheep.cloud.dto.request.sell.UpdateGoodsInfoParam;
+import com.sheep.cloud.dao.sell.ISellGoodsEntityRepository;
+import com.sheep.cloud.dao.sell.ISellSpikeDetailsEntityRepository;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -25,10 +25,10 @@ import org.springframework.util.Assert;
 public class CheckGoodsRelationAspect {
 
     @Autowired
-    private IGoodsEntityRepository goodsEntityRepository;
+    private ISellGoodsEntityRepository goodsEntityRepository;
 
     @Autowired
-    private ISpikeDetailsEntityRepository spikeDetailsEntityRepository;
+    private ISellSpikeDetailsEntityRepository spikeDetailsEntityRepository;
 
     @Pointcut("@annotation(com.sheep.cloud.aspect.CheckGoodsRelation)")
     public void checkGoodsRelation() {

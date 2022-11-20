@@ -1,7 +1,7 @@
 package com.sheep.cloud.controller;
 
-import com.sheep.cloud.dto.request.SaveOneGoodParam;
-import com.sheep.cloud.dto.request.UpdateGoodsInfoParam;
+import com.sheep.cloud.dto.request.sell.SaveOneGoodParam;
+import com.sheep.cloud.dto.request.sell.UpdateGoodsInfoParam;
 import com.sheep.cloud.dto.response.ApiResult;
 import com.sheep.cloud.service.IGoodsService;
 import io.swagger.annotations.Api;
@@ -32,7 +32,7 @@ public class IGoodsController {
     @ApiImplicitParam(name = "param", value = "商品信息", required = true, dataType = "SaveOneGoodParam")
     @ApiOperation(value = "发布一个商品", notes = "发布一个商品")
     @PostMapping("/save")
-    public ApiResult saveOne(@RequestBody @Valid SaveOneGoodParam param) {
+    public ApiResult<?> saveOne(@RequestBody @Valid SaveOneGoodParam param) {
         return goodsService.saveOne(param);
     }
 
@@ -40,9 +40,9 @@ public class IGoodsController {
     @ApiImplicitParam(name = "id", value = "商品id", required = true, dataType = "Integer")
     @ApiOperation(value = "软删除某个商品", notes = "软删除某个商品")
     @DeleteMapping("/del")
-    public ApiResult logicDeleteOne(@RequestParam(required = false) Integer goodsId) {
+    public ApiResult<?> logicDeleteOne(@RequestParam(required = false) Integer goodsId) {
         if (goodsId == null) {
-            return ApiResult.fail("商品id不能为空");
+            return new ApiResult<>().fail("商品id不能为空");
         }
         return goodsService.deleteOne(goodsId);
     }
@@ -50,9 +50,9 @@ public class IGoodsController {
     @ApiImplicitParam(name = "gid", value = "商品id", required = true, dataType = "Integer")
     @ApiOperation(value = "根据id获取商品信息", notes = "根据id获取商品信息")
     @GetMapping("/detail")
-    public ApiResult findGoodsDetail(@RequestParam(required = false) Integer gid) {
+    public ApiResult<?> findGoodsDetail(@RequestParam(required = false) Integer gid) {
         if (gid == null) {
-            return ApiResult.fail();
+            return new ApiResult<>().fail("请输入商品编号");
         }
         return goodsService.findGoodsDetail(gid);
     }
@@ -66,7 +66,7 @@ public class IGoodsController {
     )
     @ApiOperation(value = "分页获取所有商品", notes = "分页获取所有商品")
     @GetMapping("/list")
-    public ApiResult findAllGoods(
+    public ApiResult<?> findAllGoods(
             @RequestParam(required = false) Integer page,
             @RequestParam(required = false) Integer size) {
         if (page == null || size == null) {
@@ -86,11 +86,11 @@ public class IGoodsController {
     )
     @ApiOperation(value = "分页获取某个用户发布的所有商品", notes = "分页获取某个用户发布的所有商品")
     @GetMapping("/list/uid")
-    public ApiResult findAllGoodsByUserId(
+    public ApiResult<?> findAllGoodsByUserId(
             @RequestParam(required = false) Integer page,
             @RequestParam(required = false) Integer size,
             @RequestParam(required = false) Integer uid) {
-        if (uid == null) return ApiResult.fail("用户id不能为空");
+        if (uid == null) return new ApiResult<>().fail("用户id不能为空");
         if (page == null || size == null) {
             page = 1;
             size = 10;
@@ -103,7 +103,7 @@ public class IGoodsController {
     @ApiImplicitParam(name = "param", value = "商品信息", required = true, dataType = "UpdateGoodsInfoParam")
     @ApiOperation(value = "更新商品信息", notes = "更新商品信息")
     @PutMapping
-    public ApiResult updateGoodsInfo(@RequestBody @Valid UpdateGoodsInfoParam param) {
+    public ApiResult<?> updateGoodsInfo(@RequestBody @Valid UpdateGoodsInfoParam param) {
         return goodsService.updateGoodsInfo(param);
     }
 

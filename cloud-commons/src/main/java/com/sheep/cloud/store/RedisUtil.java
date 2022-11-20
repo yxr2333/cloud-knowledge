@@ -1,38 +1,43 @@
 package com.sheep.cloud.store;
 
-import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
-import redis.clients.jedis.Jedis;
-
-import javax.annotation.PostConstruct;
 
 /**
  * Created By Intellij IDEA
  *
  * @author ssssheep
- * @package com.sheep.cloud.store
- * @datetime 2022/9/14 星期三
+ * @package com.sheep.cloud.utils
+ * @datetime 2022/9/22 星期四
  */
 @Component
-@Slf4j
 public class RedisUtil {
-    private static final String IP = "localhost";
 
-    private static final Integer PORT = 6379;
+    @Autowired
+    @Qualifier(value = "redisStrObjTemplate")
+    private RedisTemplate<String, Object> redisTemplate;
 
-    public Jedis jedis = null;
-
-    @PostConstruct
-    public void initJedis() {
-        jedis = new Jedis(IP, PORT);
+    public void set(String key, Object value) {
+        redisTemplate.opsForValue().set(key, value);
     }
 
-    public void set(String key, String value) {
-        jedis.set(key, value);
+    public Object get(String key) {
+        return redisTemplate.opsForValue().get(key);
     }
 
-    public String get(String key) {
-        return jedis.get(key);
+    public void delete(String key) {
+        redisTemplate.delete(key);
     }
+
+    public void set(String key, Object value, long timeout) {
+        redisTemplate.opsForValue().set(key, value, timeout);
+    }
+
+    public boolean hasKey(String key) {
+        return Boolean.TRUE.equals(redisTemplate.hasKey(key));
+    }
+
 
 }

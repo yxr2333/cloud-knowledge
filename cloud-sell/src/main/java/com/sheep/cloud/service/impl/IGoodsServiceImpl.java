@@ -1,15 +1,15 @@
 package com.sheep.cloud.service.impl;
 
 import com.sheep.cloud.aspect.CheckGoodsRelation;
-import com.sheep.cloud.dto.request.SaveOneGoodParam;
-import com.sheep.cloud.dto.request.UpdateGoodsInfoParam;
+import com.sheep.cloud.dao.sell.*;
+import com.sheep.cloud.dto.request.sell.SaveOneGoodParam;
+import com.sheep.cloud.dto.request.sell.UpdateGoodsInfoParam;
 import com.sheep.cloud.dto.response.ApiResult;
-import com.sheep.cloud.dto.response.IGoodsEntityBaseInfoDTO;
 import com.sheep.cloud.dto.response.PageData;
-import com.sheep.cloud.model.IGoodsEntity;
-import com.sheep.cloud.model.IGoodsTypeEntity;
-import com.sheep.cloud.model.IUserEntity;
-import com.sheep.cloud.repository.*;
+import com.sheep.cloud.dto.response.sell.IGoodsEntityBaseInfoDTO;
+import com.sheep.cloud.entity.sell.ISellGoodsEntity;
+import com.sheep.cloud.entity.sell.ISellGoodsTypeEntity;
+import com.sheep.cloud.entity.sell.ISellUserEntity;
 import com.sheep.cloud.service.IGoodsService;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -36,28 +36,28 @@ import java.util.stream.Collectors;
 public class IGoodsServiceImpl implements IGoodsService {
 
     @Autowired
-    private IGoodsEntityRepository goodsEntityRepository;
+    private ISellGoodsEntityRepository goodsEntityRepository;
 
     @Autowired
-    private IGoodsTypeEntityRepository goodsTypeEntityRepository;
+    private ISellGoodsTypeEntityRepository goodsTypeEntityRepository;
 
     @Autowired
-    private IUserEntityRepository userEntityRepository;
+    private ISellUserEntityRepository userEntityRepository;
 
     @Autowired
-    private IImageEntityRepository imageEntityRepository;
+    private ISellImageEntityRepository imageEntityRepository;
 
     @Autowired
-    private IOrdersEntityRepository ordersEntityRepository;
+    private ISellOrdersEntityRepository ordersEntityRepository;
 
     @Autowired
-    private IShoppingCartEntityRepository shoppingCartEntityRepository;
+    private ISellShoppingCartEntityRepository shoppingCartEntityRepository;
 
     @Autowired
-    private ISpikeDetailsEntityRepository spikeDetailsEntityRepository;
+    private ISellSpikeDetailsEntityRepository spikeDetailsEntityRepository;
 
     @Autowired
-    private IWishBuyEntityRepository wishBuyEntityRepository;
+    private ISellWishBuyEntityRepository wishBuyEntityRepository;
 
     @Autowired
     private ModelMapper modelMapper;
@@ -72,9 +72,9 @@ public class IGoodsServiceImpl implements IGoodsService {
      * @return 发布结果
      */
     @Override
-    public ApiResult saveOne(SaveOneGoodParam param) {
-        IUserEntity releaseUser = userEntityRepository.findById(param.getReleaseUserId()).orElseThrow(() -> new RuntimeException("商品发布者不存在"));
-        IGoodsTypeEntity typeEntity = goodsTypeEntityRepository.findById(param.getTypeId()).orElseThrow(() -> new RuntimeException("商品类型不存在"));
+    public ApiResult<?> saveOne(SaveOneGoodParam param) {
+        ISellUserEntity releaseUser = userEntityRepository.findById(param.getReleaseUserId()).orElseThrow(() -> new RuntimeException("商品发布者不存在"));
+        ISellGoodsTypeEntity typeEntity = goodsTypeEntityRepository.findById(param.getTypeId()).orElseThrow(() -> new RuntimeException("商品类型不存在"));
         if (!param.getIsDiscount()) {
             param.setDiscountPercent(null);
         } else {
@@ -83,7 +83,7 @@ public class IGoodsServiceImpl implements IGoodsService {
                 throw new RuntimeException("折扣率不合法");
             }
         }
-        IGoodsEntity entity = IGoodsEntity.builder()
+        ISellGoodsEntity entity = ISellGoodsEntity.builder()
                 .name(param.getGoodsName())
                 .description(param.getDescription())
                 .price(param.getPrice())
@@ -97,7 +97,7 @@ public class IGoodsServiceImpl implements IGoodsService {
                 .releaseTime(LocalDateTime.now()).build();
 
         goodsEntityRepository.save(entity);
-        return ApiResult.success("发布成功");
+        return new ApiResult<>().success("发布成功");
     }
 
     /**
@@ -108,15 +108,15 @@ public class IGoodsServiceImpl implements IGoodsService {
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ApiResult deleteOne(Integer id) {
-        IGoodsEntity goods = goodsEntityRepository.findById(id).orElseThrow(() -> new RuntimeException("商品不存在"));
+    public ApiResult<?> deleteOne(Integer id) {
+        ISellGoodsEntity goods = goodsEntityRepository.findById(id).orElseThrow(() -> new RuntimeException("商品不存在"));
         // 判断是否有关联数据
         // 判断是否有图片关联，有的话则删除
         if (imageEntityRepository.existsByGoodId(id)) {
             imageEntityRepository.deleteAllByGoodId(id);
         }
         if (ordersEntityRepository.existsByGoodId(id)) {
-            return ApiResult.error("该商品存在订单记录，无法删除");
+            return new ApiResult<>().error("该商品存在订单记录，无法删除");
         }
         // 判断是否有购物车关联，有的话则删除
         if (shoppingCartEntityRepository.existsByGoodsId(id)) {
@@ -124,16 +124,16 @@ public class IGoodsServiceImpl implements IGoodsService {
         }
         // 判断是否有秒杀关联，有的话则删除失败
         if (spikeDetailsEntityRepository.existsByGoodsId(id)) {
-            return ApiResult.error("该商品存在秒杀活动，无法删除");
+            return new ApiResult<>().error("该商品存在秒杀活动，无法删除");
         }
         // 判断是否有求购关联，有的话则删除失败
         if (wishBuyEntityRepository.existsByGoodId(id)) {
-            return ApiResult.error("该商品存在求购记录，无法删除");
+            return new ApiResult<>().error("该商品存在求购记录，无法删除");
         }
         goods.setIsDeleted(true);
         goods.setDeleteAt(LocalDateTime.now());
         goodsEntityRepository.save(goods);
-        return ApiResult.success("删除成功");
+        return new ApiResult<>().success("删除成功");
     }
 
     /**
@@ -144,13 +144,13 @@ public class IGoodsServiceImpl implements IGoodsService {
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ApiResult findGoodsDetail(Integer goodsId) {
-        IGoodsEntity goods = goodsEntityRepository
+    public ApiResult<?> findGoodsDetail(Integer goodsId) {
+        ISellGoodsEntity goods = goodsEntityRepository
                 .findById(goodsId)
                 .orElseThrow(() -> new RuntimeException("商品不存在"));
         IGoodsEntityBaseInfoDTO goodsEntityDTO = new IGoodsEntityBaseInfoDTO();
         modelMapper.map(goods, goodsEntityDTO);
-        return ApiResult.success(goodsEntityDTO);
+        return new ApiResult<IGoodsEntityBaseInfoDTO>().success(goodsEntityDTO);
     }
 
     /**
@@ -161,12 +161,12 @@ public class IGoodsServiceImpl implements IGoodsService {
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ApiResult findAllGoods(Pageable pageable) {
-        Page<IGoodsEntity> page = goodsEntityRepository.findAll(pageable);
+    public ApiResult<?> findAllGoods(Pageable pageable) {
+        Page<ISellGoodsEntity> page = goodsEntityRepository.findAll(pageable);
         List<IGoodsEntityBaseInfoDTO> dtoList = page.get()
                 .map(item -> modelMapper.map(item, IGoodsEntityBaseInfoDTO.class))
                 .collect(Collectors.toList());
-        return ApiResult.success(builder
+        return new ApiResult<PageData<IGoodsEntityBaseInfoDTO>>().success(builder
                 .totalNum(page.getTotalElements())
                 .totalPage(page.getTotalPages())
                 .data(dtoList)
@@ -182,13 +182,13 @@ public class IGoodsServiceImpl implements IGoodsService {
      * @return 商品列表
      */
     @Override
-    public ApiResult findAllGoodsByUserId(Pageable pageable, Integer userId) {
-        Page<IGoodsEntity> page = goodsEntityRepository.findAllByReleaseUserId(pageable, userId);
+    public ApiResult<?> findAllGoodsByUserId(Pageable pageable, Integer userId) {
+        Page<ISellGoodsEntity> page = goodsEntityRepository.findAllByReleaseUserId(pageable, userId);
         List<IGoodsEntityBaseInfoDTO> dtoList = page.get()
                 .map(item -> modelMapper.map(item, IGoodsEntityBaseInfoDTO.class))
                 .collect(Collectors.toList());
 
-        return ApiResult.success(builder
+        return new ApiResult<PageData<IGoodsEntityBaseInfoDTO>>().success(builder
                 .totalNum(page.getTotalElements())
                 .totalPage(page.getTotalPages())
                 .data(dtoList)
@@ -205,13 +205,13 @@ public class IGoodsServiceImpl implements IGoodsService {
     @CheckGoodsRelation
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ApiResult updateGoodsInfo(UpdateGoodsInfoParam param) {
+    public ApiResult<?> updateGoodsInfo(UpdateGoodsInfoParam param) {
         if (!StringUtils.hasText(param.getName())) {
             throw new RuntimeException("商品名称不能为空");
         }
-        IGoodsTypeEntity goodsType = goodsTypeEntityRepository.findById(param.getTypeId())
+        ISellGoodsTypeEntity goodsType = goodsTypeEntityRepository.findById(param.getTypeId())
                 .orElseThrow(() -> new RuntimeException("商品类型不存在"));
-        IGoodsEntity entity = goodsEntityRepository.getOne(param.getId());
+        ISellGoodsEntity entity = goodsEntityRepository.getOne(param.getId());
         if (param.getFreeTotal() < 0) throw new RuntimeException("请选择合适的商品库存");
         if (param.getPrice() <= 0) throw new RuntimeException("请选择合适的商品价格");
         boolean isDiscount = param.getIsDiscount();
@@ -228,7 +228,7 @@ public class IGoodsServiceImpl implements IGoodsService {
         entity.setCover(param.getCover());
 
         goodsEntityRepository.save(entity);
-        return ApiResult.success("更新成功");
+        return new ApiResult<>().success("更新成功");
     }
 }
 

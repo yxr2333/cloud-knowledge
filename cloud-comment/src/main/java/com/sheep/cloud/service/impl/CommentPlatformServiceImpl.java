@@ -1,11 +1,11 @@
 package com.sheep.cloud.service.impl;
 
-import com.sheep.cloud.dao.ICommentsPlatformEntityRepository;
-import com.sheep.cloud.entity.ICommentsPlatformEntity;
-import com.sheep.cloud.entity.IUsersEntity;
-import com.sheep.cloud.request.ICommentPlatformAddVO;
-import com.sheep.cloud.response.ApiResult;
-import com.sheep.cloud.response.ICommentPlatformGetUserInfoDTO;
+import com.sheep.cloud.dao.knowledge.ICommentsPlatformEntityRepository;
+import com.sheep.cloud.entity.knowledge.ICommentsPlatformEntity;
+import com.sheep.cloud.entity.knowledge.IUsersEntity;
+import com.sheep.cloud.dto.request.knowledge.ICommentPlatformAddVO;
+import com.sheep.cloud.dto.response.ApiResult;
+import com.sheep.cloud.dto.response.knowledge.ICommentPlatformGetUserInfoDTO;
 import com.sheep.cloud.service.CommentPlatformService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +46,7 @@ public class CommentPlatformServiceImpl implements CommentPlatformService {
         comment.setPublishUser(iUsersEntity);
 
         commentsPlatformEntityRepository.save(comment);
-        return ApiResult.success("发表评论成功");
+        return new ApiResult<>().success("发表评论成功");
     }
 
     /*
@@ -58,9 +58,9 @@ public class CommentPlatformServiceImpl implements CommentPlatformService {
     public ApiResult deleteCommentById(Integer id) {
         if (commentsPlatformEntityRepository.existsById(id)) {
             commentsPlatformEntityRepository.deleteById(id);
-            return ApiResult.success("删除成功");
+            return new ApiResult<>().success("删除成功");
         }
-        return ApiResult.error("评论不存在");
+        return new ApiResult<>().error("评论不存在");
     }
 
     /*
@@ -76,6 +76,6 @@ public class CommentPlatformServiceImpl implements CommentPlatformService {
             ICommentPlatformGetUserInfoDTO result = modelMapper.map(commentsEntity, ICommentPlatformGetUserInfoDTO.class);
             list.add(result);
         }
-        return ApiResult.success(list);
+        return new ApiResult<>().success(list);
     }
 }

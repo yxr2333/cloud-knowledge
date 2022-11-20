@@ -1,8 +1,8 @@
 package com.sheep.cloud.controller;
 
-import com.sheep.cloud.request.IWishHelpFinishVO;
-import com.sheep.cloud.request.IWishPublishVO;
-import com.sheep.cloud.response.ApiResult;
+import com.sheep.cloud.dto.request.knowledge.IWishHelpFinishVO;
+import com.sheep.cloud.dto.request.knowledge.IWishPublishVO;
+import com.sheep.cloud.dto.response.ApiResult;
 import com.sheep.cloud.service.WishService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,20 +30,20 @@ public class WishController {
     private WishService wishService;
 
     @PostMapping("/publishWish")
-    public ApiResult publishWish(@RequestBody @Valid IWishPublishVO wishPublishVO) {
+    public ApiResult<?> publishWish(@RequestBody @Valid IWishPublishVO wishPublishVO) {
         return wishService.publishWish(wishPublishVO);
     }
 
     @GetMapping("/get/one/{id}")
-    public ApiResult getOne(@PathVariable Integer id) {
+    public ApiResult<?> getOne(@PathVariable Integer id) {
         if (id == null) {
-            return ApiResult.error("id不能为空");
+            return new ApiResult<>().error("id不能为空");
         }
         return wishService.getWishById(id);
     }
 
     @GetMapping("/getWishListByUserId")
-    public ApiResult getWishListByUserId(
+    public ApiResult<?> getWishListByUserId(
             @RequestParam(required = false) Integer userId,
             @RequestParam(required = false) Integer pageNum,
             @RequestParam(required = false) Integer pageSize) {
@@ -58,7 +58,7 @@ public class WishController {
     }
 
     @GetMapping("/getWishList")
-    public ApiResult getWishList(
+    public ApiResult<?> getWishList(
             @RequestParam(required = false) Integer pageNum,
             @RequestParam(required = false) Integer pageSize) {
         if (pageNum == null || pageSize == null) {
@@ -69,17 +69,17 @@ public class WishController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public ApiResult deleteWishById(@PathVariable Integer id) {
+    public ApiResult<?> deleteWishById(@PathVariable Integer id) {
         return wishService.deleteWishById(id);
     }
 
     @PostMapping("/helpFinishWish")
-    public ApiResult helpFinishWish(@RequestBody @Valid IWishHelpFinishVO vo) {
+    public ApiResult<?> helpFinishWish(@RequestBody @Valid IWishHelpFinishVO vo) {
         return wishService.helpFinishWish(vo);
     }
 
     @GetMapping("/findByContentAndLabels")
-    public ApiResult findWishesByContentAndLabels(
+    public ApiResult<?> findWishesByContentAndLabels(
             @RequestParam(required = false) Integer pageNum,
             @RequestParam(required = false) Integer pageSize,
             @RequestParam(required = false) String content,

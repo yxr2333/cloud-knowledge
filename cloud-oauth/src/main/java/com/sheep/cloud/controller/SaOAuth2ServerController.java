@@ -8,17 +8,16 @@ import cn.dev33.satoken.stp.StpUtil;
 import cn.dev33.satoken.util.SaResult;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.http.HttpStatus;
-import cn.hutool.json.JSONObject;
-import cn.hutool.json.JSONUtil;
-import com.sheep.cloud.dao.IAppClientsEntityRepository;
-import com.sheep.cloud.dao.IOAuth2GrantEntityRepository;
-import com.sheep.cloud.dao.IUsersEntityRepository;
-import com.sheep.cloud.entity.IAppClientsEntity;
-import com.sheep.cloud.entity.IOAuth2GrantEntity;
-import com.sheep.cloud.entity.IUsersEntity;
-import com.sheep.cloud.request.IUsersLoginVO;
-import com.sheep.cloud.response.ApiResult;
-import com.sheep.cloud.response.IUsersBaseInfoDTO;
+import com.sheep.cloud.dao.knowledge.IAppClientsEntityRepository;
+import com.sheep.cloud.dao.knowledge.IOAuth2GrantEntityRepository;
+import com.sheep.cloud.dao.knowledge.IUsersEntityRepository;
+import com.sheep.cloud.dto.request.knowledge.IUsersLoginVO;
+import com.sheep.cloud.dto.response.ApiResult;
+import com.sheep.cloud.dto.response.knowledge.IUserLoginResDTO;
+import com.sheep.cloud.dto.response.knowledge.IUsersBaseInfoDTO;
+import com.sheep.cloud.entity.knowledge.IAppClientsEntity;
+import com.sheep.cloud.entity.knowledge.IOAuth2GrantEntity;
+import com.sheep.cloud.entity.knowledge.IUsersEntity;
 import com.sheep.cloud.service.RemoteUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -58,13 +57,15 @@ public class SaOAuth2ServerController {
     private ModelMapper modelMapper;
 
     @RequestMapping("/oauth2/userinfo")
-    public ApiResult oauth2UserInfo() {
+    public ApiResult<?> oauth2UserInfo() {
         String accessToken = SaHolder.getRequest().getParamNotNull("access_token");
         Object loginId = SaOAuth2Util.getLoginIdByAccessToken(accessToken);
         System.out.println("accessToken = " + accessToken);
         SaOAuth2Util.checkScope(accessToken, "userinfo");
         Optional<IUsersEntity> optional = usersEntityRepository.findById(Integer.parseInt((String) loginId));
-        return optional.map(iUsersEntity -> ApiResult.success(modelMapper.map(iUsersEntity, IUsersBaseInfoDTO.class))).orElseGet(() -> ApiResult.error("用户不存在"));
+        return optional.map(iUsersEntity ->
+                        new ApiResult<>().success(modelMapper.map(iUsersEntity, IUsersBaseInfoDTO.class)))
+                .orElseGet(() -> new ApiResult<>().error("用户不存在"));
     }
 
     @RequestMapping("/oauth2/*")
@@ -85,10 +86,10 @@ public class SaOAuth2ServerController {
                             .password(pwd)
                             .build();
                     log.info(vo.toString());
-                    ApiResult result = remoteUserService.doLogin(vo);
-                    log.info(result.toString());
-                    JSONObject userInfo = JSONUtil.parseObj(result.data).getJSONObject("userInfo");
-                    IUsersEntity user = modelMapper.map(userInfo, IUsersEntity.class);
+                    ApiResult<IUserLoginResDTO> result = remoteUserService.doLogin(vo);
+//                    log.info(result.toString());
+                    IUserLoginResDTO resultData = result.getData();
+                    IUsersEntity user = resultData.getUser();
                     System.out.println("user:" + user);
                     if (result.code == HttpStatus.HTTP_OK) {
                         log.info("远程调用成功");

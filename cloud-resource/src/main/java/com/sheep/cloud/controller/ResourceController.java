@@ -1,10 +1,10 @@
 package com.sheep.cloud.controller;
 
 
-import com.sheep.cloud.request.IResourceAddVO;
-import com.sheep.cloud.request.IResourceModifyVO;
-import com.sheep.cloud.request.IResourcePaymentVO;
-import com.sheep.cloud.response.ApiResult;
+import com.sheep.cloud.dto.request.knowledge.IResourceAddVO;
+import com.sheep.cloud.dto.request.knowledge.IResourceModifyVO;
+import com.sheep.cloud.dto.request.knowledge.IResourcePaymentVO;
+import com.sheep.cloud.dto.response.ApiResult;
 import com.sheep.cloud.service.ResourceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -20,42 +20,42 @@ public class ResourceController {
     private ResourceService resourceService;
 
     @PostMapping("/add")
-    public ApiResult addOne(@RequestBody @Valid IResourceAddVO vo) {
+    public ApiResult<?> addOne(@RequestBody @Valid IResourceAddVO vo) {
         return resourceService.addOne(vo);
     }
 
     @DeleteMapping("/{id}")
-    public ApiResult deleteResource(@PathVariable Integer id) {
+    public ApiResult<?> deleteResource(@PathVariable Integer id) {
         return resourceService.deleteResourceById(id);
     }
 
     @PostMapping("/modifyResource")
-    public ApiResult modifyResource(@RequestBody @Valid IResourceModifyVO vo) {
+    public ApiResult<?> modifyResource(@RequestBody @Valid IResourceModifyVO vo) {
         return resourceService.modifyResource(vo);
     }
 
     @GetMapping("/find/id")
-    public ApiResult findByResourceId(@RequestParam(required = false) Integer id) {
+    public ApiResult<?> findByResourceId(@RequestParam(required = false) Integer id) {
         if (id == null) {
-            return ApiResult.error("id不能为空");
+            return new ApiResult<>().error("id不能为空");
         }
         return resourceService.findOneByResourceId(id);
     }
 
     @GetMapping("/find/one")
-    public ApiResult findOne(Integer id) {
+    public ApiResult<?> findOne(Integer id) {
         return resourceService.findOne(id);
     }
 
     @PostMapping("/payment")
-    public ApiResult payment(@RequestBody @Valid IResourcePaymentVO vo) {
+    public ApiResult<?> payment(@RequestBody @Valid IResourcePaymentVO vo) {
         return resourceService.payment(vo);
     }
 
     @GetMapping("/label")
-    public ApiResult lable(@RequestParam(value = "id", required = false) Integer id,
-                           @RequestParam(value = "pageNum", required = false) Integer pageNum,
-                           @RequestParam(value = "pageSize", required = false) Integer pageSize) {
+    public ApiResult<?> lable(@RequestParam(value = "id", required = false) Integer id,
+                              @RequestParam(value = "pageNum", required = false) Integer pageNum,
+                              @RequestParam(value = "pageSize", required = false) Integer pageSize) {
         List<Integer> labels = Arrays.asList(id);
         if (pageNum == null || pageSize == null) {
             pageNum = 1;
@@ -65,38 +65,38 @@ public class ResourceController {
     }
 
     @PostMapping("/add/collect")
-    public ApiResult addCollect(@RequestParam Integer uid, @RequestParam Integer rid) {
+    public ApiResult<?> addCollect(@RequestParam Integer uid, @RequestParam Integer rid) {
         return resourceService.addCollect(uid, rid);
     }
 
     @DeleteMapping("/collect/{id}")
-    public ApiResult deleteCollectById(@PathVariable Integer id) {
+    public ApiResult<?> deleteCollectById(@PathVariable Integer id) {
         return resourceService.deleteCollectById(id);
     }
 
     @DeleteMapping("/delete/collect")
-    public ApiResult deleteByResourceIdAndUserUid(@RequestParam Integer uid, @RequestParam Integer rid) {
+    public ApiResult<?> deleteByResourceIdAndUserUid(@RequestParam Integer uid, @RequestParam Integer rid) {
         return resourceService.deleteByResourceIdAndUserUid(uid, rid);
     }
 
     @GetMapping("/find/collect")
-    public ApiResult findCollectById(Integer uid) {
+    public ApiResult<?> findCollectById(Integer uid) {
         return resourceService.findAllByListIn(uid);
     }
 
 
     @GetMapping("/count")
-    public ApiResult countDistinctByLabelsId(@RequestParam Integer id) {
+    public ApiResult<?> countDistinctByLabelsId(@RequestParam Integer id) {
         return resourceService.countDistinctByLabelsId(id);
     }
 
 
     @GetMapping("/find/all")
-    public ApiResult test(@RequestParam(value = "id", required = false) Integer id,
-                          @RequestParam(value = "order", required = false) int order,
-                          @RequestParam(value = "isFree", required = false) boolean isFree,
-                          @RequestParam(value = "pageNum", required = false) Integer pageNum,
-                          @RequestParam(value = "pageSize", required = false) Integer pageSize) {
+    public ApiResult<?> test(@RequestParam(value = "id", required = false) Integer id,
+                             @RequestParam(value = "order", required = false) int order,
+                             @RequestParam(value = "isFree", required = false) boolean isFree,
+                             @RequestParam(value = "pageNum", required = false) Integer pageNum,
+                             @RequestParam(value = "pageSize", required = false) Integer pageSize) {
         List<Integer> labels = Arrays.asList(id);
         if (pageNum == null || pageSize == null) {
             pageNum = 1;
@@ -107,7 +107,7 @@ public class ResourceController {
     }
 
     @GetMapping("/find/dynamic")
-    public ApiResult findByDynamicSearch(
+    public ApiResult<?> findByDynamicSearch(
             @RequestParam(required = false) Integer labelId,
             @RequestParam(required = false) String name,
             @RequestParam(required = false) Integer orderId,

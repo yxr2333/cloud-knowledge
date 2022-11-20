@@ -3,12 +3,12 @@ package com.sheep.cloud.mq;
 import cn.hutool.extra.mail.MailUtil;
 import com.sheep.cloud.common.CommonFields;
 import com.sheep.cloud.common.OrderStatusEnum;
-import com.sheep.cloud.model.IGoodsEntity;
-import com.sheep.cloud.model.IOrdersEntity;
-import com.sheep.cloud.model.IWishBuyEntity;
-import com.sheep.cloud.repository.IGoodsEntityRepository;
-import com.sheep.cloud.repository.IOrdersEntityRepository;
-import com.sheep.cloud.repository.IWishBuyEntityRepository;
+import com.sheep.cloud.entity.sell.ISellGoodsEntity;
+import com.sheep.cloud.entity.sell.ISellOrdersEntity;
+import com.sheep.cloud.entity.sell.ISellWishBuyEntity;
+import com.sheep.cloud.dao.sell.ISellGoodsEntityRepository;
+import com.sheep.cloud.dao.sell.ISellOrdersEntityRepository;
+import com.sheep.cloud.dao.sell.ISellWishBuyEntityRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -32,22 +32,22 @@ import java.util.Optional;
 public class DeadOrderQueueConsumer {
 
     @Autowired
-    private IOrdersEntityRepository ordersEntityRepository;
+    private ISellOrdersEntityRepository ordersEntityRepository;
     @Autowired
-    private IGoodsEntityRepository goodsEntityRepository;
+    private ISellGoodsEntityRepository goodsEntityRepository;
 
     @Autowired
-    private IWishBuyEntityRepository wishBuyEntityRepository;
+    private ISellWishBuyEntityRepository wishBuyEntityRepository;
 
     @RabbitListener(queues = CommonFields.ORDER_QUEUE_NAME)
     @Transactional(rollbackFor = Exception.class)
     public void orderOverTime(Message message) {
         String oid = new String(message.getBody(), StandardCharsets.UTF_8);
         log.info("订单延时队列收到消息，订单主键id：{}", oid);
-        Optional<IOrdersEntity> optional =
+        Optional<ISellOrdersEntity> optional =
                 ordersEntityRepository.findById(Integer.valueOf(oid));
         assert optional.isPresent();
-        IOrdersEntity order = optional.get();
+        ISellOrdersEntity order = optional.get();
         if (order.getOrderStatus().equals(OrderStatusEnum.NOT_PAYED.code)) {
             // 修改订单状态为已取消
             order.setOrderStatus(OrderStatusEnum.CANCELED.code);
@@ -55,7 +55,7 @@ public class DeadOrderQueueConsumer {
             ordersEntityRepository.save(order);
             // 修改商品库存
             synchronized (this) {
-                IGoodsEntity goods = order.getGood();
+                ISellGoodsEntity goods = order.getGood();
                 Integer freeTotal = goods.getFreeTotal();
                 goods.setFreeTotal(freeTotal + 1);
                 goodsEntityRepository.save(goods);
@@ -70,7 +70,7 @@ public class DeadOrderQueueConsumer {
     public void wishBuyNoReply(Message message) {
         String wishBuyId = new String(message.getBody(), StandardCharsets.UTF_8);
         log.info("求购信息延时队列收到消息，求购编号：{}", wishBuyId);
-        IWishBuyEntity wishBuy =
+        ISellWishBuyEntity wishBuy =
                 wishBuyEntityRepository.getOne(Integer.valueOf(wishBuyId));
         if (wishBuy.getIsFinished().equals(Boolean.FALSE)) {
             // 设置求购信息为已结束、已下架

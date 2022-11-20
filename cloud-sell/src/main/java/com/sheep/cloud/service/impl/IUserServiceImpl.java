@@ -10,21 +10,26 @@ import cn.hutool.http.HttpStatus;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.sheep.cloud.common.CommonFields;
-import com.sheep.cloud.dto.request.*;
+import com.sheep.cloud.dto.request.knowledge.IUsersLoginVO;
+import com.sheep.cloud.dto.request.knowledge.IUsersRegisterVO;
+import com.sheep.cloud.dto.request.sell.*;
 import com.sheep.cloud.dto.response.ApiResult;
-import com.sheep.cloud.dto.response.DingUserInfo;
-import com.sheep.cloud.dto.response.TokenInfo;
-import com.sheep.cloud.model.IUserEntity;
-import com.sheep.cloud.model.IUserRoleEntity;
-import com.sheep.cloud.repository.IUserEntityRepository;
+import com.sheep.cloud.dto.response.OAuth2TokenInfo;
+import com.sheep.cloud.dto.response.knowledge.IUsersBaseInfoDTO;
+import com.sheep.cloud.dto.response.sell.DingUserInfo;
+import com.sheep.cloud.dto.response.sell.TokenInfo;
+import com.sheep.cloud.entity.sell.ISellUserEntity;
+import com.sheep.cloud.entity.sell.ISellUserRoleEntity;
+import com.sheep.cloud.dao.sell.ISellUserEntityRepository;
 import com.sheep.cloud.service.IRemoteOAuth2Service;
 import com.sheep.cloud.service.IRemoteUserService;
 import com.sheep.cloud.service.IUserService;
-import com.sheep.cloud.utils.RedisUtil;
+import com.sheep.cloud.store.RedisUtil;
 import com.sheep.cloud.utils.SignatureUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -55,24 +60,26 @@ public class IUserServiceImpl implements IUserService {
     @Autowired
     private IRemoteOAuth2Service auth2Service;
     @Autowired
-    private IUserEntityRepository userEntityRepository;
+    private ISellUserEntityRepository userEntityRepository;
     @Autowired
     private SignatureUtil signatureUtil;
     @Autowired
     private RedisUtil redisUtil;
-
-    @Autowired
-    @Qualifier("superAdmin")
-    private IUserRoleEntity superAdmin;
-
     @Autowired
     @Qualifier("normalUser")
-    private IUserRoleEntity normalUser;
+    private ISellUserRoleEntity normalUser;
 
+    @Value("${sso.grantType}")
+    private String grantType;
+
+    @Value("${sso.clientId}")
+    private String clientId;
+
+    @Value("${sso.clientSecret}")
+    private String clientSecret;
 
     private String appKey;
     private String appSecret;
-
 
     @PostConstruct
     public void initApp() throws IOException {
@@ -85,19 +92,18 @@ public class IUserServiceImpl implements IUserService {
     }
 
     @Override
-    public ApiResult doRegister(IUsersRegisterParam vo) {
-        ApiResult result = remoteUserService.doRemoteRegister(vo);
-        System.out.println(result.data instanceof IUsersRegisterParam);
+    public ApiResult<?> doRegister(IUsersRegisterVO vo) {
+        ApiResult<IUsersRegisterVO> result = remoteUserService.doRemoteRegister(vo);
         if (result.code == HttpStatus.HTTP_OK
                 && StringUtils.hasText(result.msg)) {
             log.info("远程调用成功");
-            HashMap<String, String> data = (HashMap<String, String>) result.data;
-            IUserEntity entity = IUserEntity.builder()
-                    .username(data.get("username"))
-                    .password(data.get("password"))
+            IUsersRegisterVO ansVo = result.getData();
+            ISellUserEntity entity = ISellUserEntity.builder()
+                    .username(ansVo.getUsername())
+                    .password(ansVo.getPassword())
                     .salt(result.msg)
-                    .email(data.get("email"))
-                    .description(data.get("description") == null ? "" : data.get("description"))
+                    .email(ansVo.getEmail())
+                    .description(ansVo.getDescription() == null ? "" : ansVo.getDescription())
                     .isBanned(false)
                     .isBindMainAccount(false)
                     .isBindDing(false)
@@ -105,10 +111,10 @@ public class IUserServiceImpl implements IUserService {
                     .freeMoney(0.0)
                     .build();
             userEntityRepository.save(entity);
-            return ApiResult.success("注册成功");
+            return new ApiResult<>().success("注册成功");
         } else {
             log.error(result.toString());
-            return ApiResult.error("暂时无法进行处理", result);
+            return new ApiResult<>().error("暂时无法进行处理", result);
         }
     }
 
@@ -119,7 +125,7 @@ public class IUserServiceImpl implements IUserService {
      * @return 用户信息
      */
     @Override
-    public ApiResult doDingLogin(String code) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException {
+    public ApiResult<?> doDingLogin(String code) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException {
         String timestamp = String.valueOf(System.currentTimeMillis());
         String signature = signatureUtil.makeDingSignature(timestamp, appSecret);
         HashMap<String, String> args = new HashMap<>(2);
@@ -138,26 +144,26 @@ public class IUserServiceImpl implements IUserService {
                     userInfo.setOpenId(jsonUserInfo.getStr("openid"));
                     userInfo.setUnionId(jsonUserInfo.getStr("unionid"));
                     // 判断appId是否绑定了账号
-                    Optional<IUserEntity> optionalIUser = userEntityRepository.findByDingAppId(userInfo.getOpenId());
+                    Optional<ISellUserEntity> optionalUser = userEntityRepository.findByDingAppId(userInfo.getOpenId());
                     // 如果没有绑定账号
-                    if (!optionalIUser.isPresent() || !optionalIUser.get().getIsBindDing()) {
-                        return ApiResult.notBind("该钉钉账号未绑定账号,请先进行账号绑定", userInfo);
+                    if (!optionalUser.isPresent() || !optionalUser.get().getIsBindDing()) {
+                        return new ApiResult<>().notBind("该钉钉账号未绑定账号,请先进行账号绑定", userInfo);
                     } else {
-                        StpUtil.login(optionalIUser.get().getId() + "");
+                        StpUtil.login(optionalUser.get().getId() + "");
                         String tokenName = StpUtil.getTokenInfo().getTokenName();
                         String tokenValue = StpUtil.getTokenInfo().getTokenValue();
                         TokenInfo tokenInfo = new TokenInfo(tokenName, tokenValue);
-                        return ApiResult.success("登录成功", tokenInfo);
+                        return new ApiResult<>().success("登录成功", tokenInfo);
                     }
                 } else {
-                    return ApiResult.error(obj.get("errmsg").toString());
+                    return new ApiResult<>().error(obj.get("errmsg").toString());
                 }
             } else {
-                return ApiResult.error("暂时无法进行处理");
+                return new ApiResult<>().error("暂时无法进行处理");
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return ApiResult.error("暂时无法进行处理");
+            return new ApiResult<>().error("暂时无法进行处理");
         }
     }
 
@@ -168,36 +174,36 @@ public class IUserServiceImpl implements IUserService {
      * @return 绑定结果
      */
     @Override
-    public ApiResult bindDingAccount(BindDingAccountParam param) {
+    public ApiResult<?> bindDingAccount(BindDingAccountParam param) {
         Boolean isExist = userEntityRepository.existsByDingAppId(param.getOpenid());
         if (isExist) {
-            return ApiResult.error("该钉钉账号已经绑定了账号");
+            return new ApiResult<>().error("该钉钉账号已经绑定了账号");
         }
         if (userEntityRepository.existsByUsername(param.getUsername())) {
-            return ApiResult.error("该用户名已经被使用");
+            return new ApiResult<>().error("该用户名已经被使用");
         }
-        IUsersRegisterParam remoteParam = new IUsersRegisterParam(param.getUsername(), param.getPassword(), param.getEmail(), param.getDescription());
+        IUsersRegisterVO remoteParam = new IUsersRegisterVO(param.getUsername(), param.getPassword(), param.getEmail(), param.getDescription());
         // 远程调用注册接口
-        ApiResult remoteRegisterResult = remoteUserService.doRemoteRegister(remoteParam);
+        ApiResult<IUsersRegisterVO> remoteRegisterResult = remoteUserService.doRemoteRegister(remoteParam);
         log.info("远程调用注册接口返回结果:{}", remoteRegisterResult);
         if (remoteRegisterResult.code == HttpStatus.HTTP_OK
                 && StringUtils.hasText(remoteRegisterResult.msg)) {
             // 获取加密后的一些信息
-            JSONObject jsonData = JSONUtil.parseObj(remoteRegisterResult.data);
-            IUserEntity entity = new IUserEntity();
+            IUsersRegisterVO data = remoteRegisterResult.getData();
+            ISellUserEntity entity = new ISellUserEntity();
             // 设置参数，保存到数据库
-            entity.setUsername(jsonData.getStr("username"));
-            entity.setPassword(jsonData.getStr("password"));
+            entity.setUsername(data.getUsername());
+            entity.setPassword(data.getPassword());
             entity.setSalt(remoteRegisterResult.msg);
-            entity.setDescription(jsonData.getStr("description") == null ? "" : jsonData.getStr("description"));
-            entity.setEmail(jsonData.getStr("email"));
+            entity.setDescription(data.getDescription() == null ? "" : data.getDescription());
+            entity.setEmail(data.getEmail());
             entity.setDingAppId(param.getOpenid());
             entity.setIsBindDing(true);
             entity.setIsBanned(false);
             userEntityRepository.save(entity);
-            return ApiResult.success("绑定成功");
+            return new ApiResult<>().success("绑定成功");
         } else {
-            return ApiResult.error("暂时无法进行处理");
+            return new ApiResult<>().error("暂时无法进行处理");
         }
     }
 
@@ -210,16 +216,16 @@ public class IUserServiceImpl implements IUserService {
      * @return 重置结果
      */
     @Override
-    public ApiResult resetPassword(HttpServletRequest request, ResetPasswordParam vo) {
+    public ApiResult<?> resetPassword(HttpServletRequest request, ResetPasswordParam vo) {
         String requestKey = vo.getRequestKey();
         Object o = redisUtil.get(requestKey);
         if (o == null) {
-            return ApiResult.error("未获取验证码或验证码已过期");
+            return new ApiResult<>().error("未获取验证码或验证码已过期");
         }
         String resetCode = o.toString();
         if (resetCode.equals(vo.getCode())) {
             // 判断账号密码是否匹配
-            IUserEntity entity = checkPassword(vo.getUsername(), vo.getPassword());
+            ISellUserEntity entity = checkPassword(vo.getUsername(), vo.getPassword());
             if (entity != null) {
                 HashMap<String, String> map = makeSalt(vo.getNewPassword());
                 entity.setSalt(map.get("salt"));
@@ -227,12 +233,12 @@ public class IUserServiceImpl implements IUserService {
                 userEntityRepository.save(entity);
                 // 删除验证码
                 redisUtil.delete(requestKey);
-                return ApiResult.success("重置密码成功");
+                return new ApiResult<>().success("重置密码成功");
             } else {
-                return ApiResult.error("旧密码错误");
+                return new ApiResult<>().error("旧密码错误");
             }
         } else {
-            return ApiResult.error("验证码错误");
+            return new ApiResult<>().error("验证码错误");
         }
     }
 
@@ -253,17 +259,17 @@ public class IUserServiceImpl implements IUserService {
      * @return 登录结果
      */
     @Override
-    public ApiResult doLogin(UserLoginParam param) {
+    public ApiResult<?> doLogin(IUsersLoginVO param) {
 
-        IUserEntity entity = checkPassword(param.getUsername(), param.getPassword());
+        ISellUserEntity entity = checkPassword(param.getUsername(), param.getPassword());
         if (entity != null) {
             StpUtil.login(entity.getId() + "");
             String tokenName = StpUtil.getTokenInfo().getTokenName();
             String tokenValue = StpUtil.getTokenInfo().getTokenValue();
             TokenInfo tokenInfo = new TokenInfo(tokenName, tokenValue);
-            return ApiResult.success("登录成功", tokenInfo);
+            return new ApiResult<>().success("登录成功", tokenInfo);
         } else {
-            return ApiResult.error("用户名或密码错误");
+            return new ApiResult<>().error("用户名或密码错误");
         }
     }
 
@@ -274,8 +280,8 @@ public class IUserServiceImpl implements IUserService {
      * @param password 密码
      * @return 匹配结果, 匹配成功返回用户信息, 匹配失败返回null
      */
-    private IUserEntity checkPassword(String username, String password) {
-        IUserEntity entity = userEntityRepository.findDistinctByUsername(username)
+    private ISellUserEntity checkPassword(String username, String password) {
+        ISellUserEntity entity = userEntityRepository.findDistinctByUsername(username)
                 .orElseThrow(() -> new RuntimeException("用户不存在"));
         String salt = entity.getSalt();
         String pwd = SecureUtil.md5(password + salt);
@@ -293,37 +299,33 @@ public class IUserServiceImpl implements IUserService {
      * @return 登录结果
      */
     @Override
-    public ApiResult doMainWebLogin(String code) {
+    public ApiResult<?> doMainWebLogin(String code) {
         if (!StringUtils.hasText(code)) {
-            return ApiResult.error("授权码不能为空");
+            return new ApiResult<>().error("授权码不能为空");
         }
-        HttpResponse response = HttpRequest.get(CommonFields.MAIN_WEB_USER_APPID_URL + "&code=" + code).execute();
-        if (!response.isOk()) {
-            return ApiResult.error("暂时无法获取用户信息");
-        } else {
-            // body就是data
-            JSONObject data = JSONUtil.parseObj(response.body());
+        // TODO: 封装成RPC调用
+        ApiResult<OAuth2TokenInfo> result = auth2Service.oauth2Token(grantType, clientId, clientSecret, code);
+        if (result.code == 200) {
+            OAuth2TokenInfo data = result.getData();
             log.info("获取到的用户信息: {}", data);
-            if (data.getInt("code") == HttpStatus.HTTP_OK) {
-                String accessToken = data.getJSONObject("data").getStr("access_token");
-                String openId = data.getJSONObject("data").getStr("openid");
-                Optional<IUserEntity> optional = userEntityRepository.findByMainAccountAppId(openId);
-                if (!optional.isPresent()) {
-                    HashMap<String, String> map = new HashMap<>(2);
-                    map.put("access_token", accessToken);
-                    map.put("openid", openId);
-                    return ApiResult.notBind("未绑定主站账号", map);
-                } else {
-                    IUserEntity entity = optional.get();
-                    StpUtil.login(entity.getId() + "");
-                    String tokenName = StpUtil.getTokenInfo().getTokenName();
-                    String tokenValue = StpUtil.getTokenInfo().getTokenValue();
-                    TokenInfo tokenInfo = new TokenInfo(tokenName, tokenValue);
-                    return ApiResult.success("登录成功", tokenInfo);
-                }
+            String accessToken = data.getAccessToken();
+            String openId = data.getOpenId();
+            Optional<ISellUserEntity> optional = userEntityRepository.findByMainAccountAppId(openId);
+            if (!optional.isPresent()) {
+                HashMap<String, String> map = new HashMap<>(2);
+                map.put("access_token", accessToken);
+                map.put("openid", openId);
+                return new ApiResult<>().notBind("未绑定主站账号", map);
             } else {
-                return ApiResult.error("统一认证中心暂不能处理");
+                ISellUserEntity entity = optional.get();
+                StpUtil.login(entity.getId() + "");
+                String tokenName = StpUtil.getTokenInfo().getTokenName();
+                String tokenValue = StpUtil.getTokenInfo().getTokenValue();
+                TokenInfo tokenInfo = new TokenInfo(tokenName, tokenValue);
+                return new ApiResult<>().success("登录成功", tokenInfo);
             }
+        } else {
+            return new ApiResult<>().error("统一认证中心暂不能处理");
         }
     }
 
@@ -334,33 +336,44 @@ public class IUserServiceImpl implements IUserService {
      * @return 绑定结果
      */
     @Override
-    public ApiResult doBindMainWebAccount(BindMainWebAccountParam param) {
+    public ApiResult<?> doBindMainWebAccount(BindMainWebAccountParam param) {
         if (userEntityRepository.existsByMainAccountAppId(param.getOpenid())) {
-            return ApiResult.error("该主站账号已被绑定");
-        }
-        if (userEntityRepository.existsByUsername(param.getUsername())) {
-            return ApiResult.error("该用户名已被注册");
+            return new ApiResult<>().error("该主站账号已被绑定");
         }
         if (userEntityRepository.existsByEmail(param.getEmail())) {
-            return ApiResult.error("该邮箱已被其他账户使用");
+            return new ApiResult<>().error("该邮箱已被其他账户使用");
         }
-        ApiResult result = auth2Service.oauth2UserInfo(param.getAccessToken());
+        ISellUserEntity userEntity = null;
+        Optional<ISellUserEntity> optional = userEntityRepository.findDistinctByUsername(param.getUsername());
+        if (optional.isPresent()) {
+            userEntity = optional.get();
+        }
+        ApiResult<IUsersBaseInfoDTO> result = auth2Service.oauth2UserInfo(param.getAccessToken());
         if (result.code == HttpStatus.HTTP_OK) {
-            Integer uid = JSONUtil.parseObj(result.data).getInt("uid");
+            Integer uid = result.getData().getUid();
             HashMap<String, String> map = makeSalt(param.getPassword());
-            IUserEntity entity = IUserEntity.builder()
-                    .isBindMainAccount(true)
-                    .mainAccountId(uid)
-                    .mainAccountAppId(param.getOpenid())
-                    .username(param.getUsername())
-                    .password(map.get("password"))
-                    .salt(map.get("salt"))
-                    .email(param.getEmail())
-                    .description(param.getDescription())
-                    .isBanned(false)
-                    .build();
-            userEntityRepository.save(entity);
-            return ApiResult.success("绑定成功");
+            // 如果用户已存在，则直接更新绑定信息，不存在就创建一个新的用户
+            if (userEntity != null) {
+                userEntity.setIsBindMainAccount(true);
+                userEntity.setMainAccountAppId(param.getOpenid());
+                userEntity.setMainAccountId(uid);
+                userEntityRepository.save(userEntity);
+            } else {
+                ISellUserEntity entity = ISellUserEntity.builder()
+                        .isBindMainAccount(true)
+                        .mainAccountId(uid)
+                        .mainAccountAppId(param.getOpenid())
+                        .username(param.getUsername())
+                        .password(map.get("password"))
+                        .salt(map.get("salt"))
+                        .email(param.getEmail())
+                        .description(param.getDescription())
+                        .isBanned(false)
+                        .build();
+                userEntityRepository.save(entity);
+            }
+
+            return new ApiResult<>().success("绑定成功");
         } else {
             return result;
         }

@@ -25,18 +25,22 @@ spring:
         format_sql: true
         show_sql: true
         dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848
 mybatis:
   mapperLocations: classpath:mapper/*.xml
   type-aliases-package: com.sheep.cloud.entity    # 所有Entity别名类所在包
-eureka:
-  client:
-    register-with-eureka: true
-    fetch-registry: true
-    service-url:
-      defaultZone: http://localhost:7001/eureka/
-  instance:
-    instance-id: oauth2-service-8009
-    prefer-ip-address: true
+#eureka:
+#  client:
+#    register-with-eureka: true
+#    fetch-registry: true
+#    service-url:
+#      defaultZone: http://localhost:7001/eureka/
+#  instance:
+#    instance-id: oauth2-service-8009
+#    prefer-ip-address: true
 sa-token:
   # token 名称 (同时也是cookie名称)
   token-name: token

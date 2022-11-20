@@ -1,7 +1,7 @@
 package com.sheep.cloud.service;
 
-import com.sheep.cloud.request.ICommentPlatformAddVO;
-import com.sheep.cloud.response.ApiResult;
+import com.sheep.cloud.dto.request.knowledge.ICommentPlatformAddVO;
+import com.sheep.cloud.dto.response.ApiResult;
 
 /**
  * @author ALEX
@@ -13,19 +13,19 @@ public interface CommentPlatformService {
      * @param commentPlatformAddVO
      * @return: com.sheep.cloud.response.ApiResult
      */
-    ApiResult insertComment(ICommentPlatformAddVO commentPlatformAddVO);
+    ApiResult<?> insertComment(ICommentPlatformAddVO commentPlatformAddVO);
 
     /*
      * @Description:根据id删除评论角评论
      * @param id
      * @return: com.sheep.cloud.response.ApiResult
      */
-    ApiResult deleteCommentById(Integer id);
+    ApiResult<?> deleteCommentById(Integer id);
 
     /*
      * @Description: 获取所有评论
      * @param id
      * @return: com.sheep.cloud.response.ApiResult
      */
-    ApiResult getAllComment();
+    ApiResult<?> getAllComment();
 }

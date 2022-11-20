@@ -1,6 +1,6 @@
 package com.sheep.cloud.config;
 
-import com.sheep.cloud.response.ApiResult;
+import com.sheep.cloud.dto.response.ApiResult;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -20,13 +20,13 @@ import java.util.Objects;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler
-    public ApiResult exceptionHanlder(Exception e) {
+    public ApiResult<?> exceptionHanlder(Exception e) {
         if (e instanceof MethodArgumentNotValidException) {
             MethodArgumentNotValidException exception = (MethodArgumentNotValidException) e;
             log.error("参数校验失败：{}", Objects.requireNonNull(exception.getBindingResult().getFieldError()).getDefaultMessage());
-            return ApiResult.error(exception.getBindingResult().getFieldError().getDefaultMessage());
+            return new ApiResult<>().error(exception.getBindingResult().getFieldError().getDefaultMessage());
         } else {
-            return ApiResult.error(e.getMessage());
+            return new ApiResult<>().error(e.getMessage());
         }
     }
 }

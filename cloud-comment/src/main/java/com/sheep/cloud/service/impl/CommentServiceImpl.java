@@ -1,16 +1,16 @@
 package com.sheep.cloud.service.impl;
 
-import com.sheep.cloud.dao.ICommentsEntityRepository;
-import com.sheep.cloud.dao.IRepliesEntityRepository;
-import com.sheep.cloud.entity.ICommentsEntity;
-import com.sheep.cloud.entity.IRepliesEntity;
-import com.sheep.cloud.entity.IResourcesEntity;
-import com.sheep.cloud.entity.IUsersEntity;
-import com.sheep.cloud.request.ICommentAddVO;
-import com.sheep.cloud.request.IReplyAddVO;
-import com.sheep.cloud.response.ApiResult;
-import com.sheep.cloud.response.ICommentGetInfoDTO;
-import com.sheep.cloud.response.IReplyGetInfoDTO;
+import com.sheep.cloud.dao.knowledge.ICommentsEntityRepository;
+import com.sheep.cloud.dao.knowledge.IRepliesEntityRepository;
+import com.sheep.cloud.entity.knowledge.ICommentsEntity;
+import com.sheep.cloud.entity.knowledge.IRepliesEntity;
+import com.sheep.cloud.entity.knowledge.IResourcesEntity;
+import com.sheep.cloud.entity.knowledge.IUsersEntity;
+import com.sheep.cloud.dto.request.knowledge.ICommentAddVO;
+import com.sheep.cloud.dto.request.knowledge.IReplyAddVO;
+import com.sheep.cloud.dto.response.ApiResult;
+import com.sheep.cloud.dto.response.knowledge.ICommentGetInfoDTO;
+import com.sheep.cloud.dto.response.knowledge.IReplyGetInfoDTO;
 import com.sheep.cloud.service.CommentService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,29 +35,29 @@ public class CommentServiceImpl implements CommentService {
     private ModelMapper modelMapper;
 
     @Override
-    public ApiResult deleteCommentById(Integer id) {
+    public ApiResult<?> deleteCommentById(Integer id) {
         //判断是否存在回复
         if (commentsEntityRepository.existsById(id)) {
             //存在回复则先删除回复再删除评论，回复不存在则直接删除评论
             if (repliesEntityRepository.existsCommentById(id) != 0) {
                 repliesEntityRepository.deleteCommentById(id);
                 commentsEntityRepository.deleteById(id);
-                return ApiResult.success("删除成功");
+                return new ApiResult<>().success("删除成功");
             } else {
                 commentsEntityRepository.deleteById(id);
-                return ApiResult.success("删除成功");
+                return new ApiResult<>().success("删除成功");
             }
         }
-        return ApiResult.success("评论不存在");
+        return new ApiResult<>().error("评论不存在");
     }
 
     @Override
-    public ApiResult deleteReplyById(Integer id) {
+    public ApiResult<?> deleteReplyById(Integer id) {
         if (repliesEntityRepository.existsById(id)) {
             repliesEntityRepository.deleteById(id);
-            return ApiResult.success("删除成功");
+            return new ApiResult<>().success("删除成功");
         } else {
-            return ApiResult.error("删除失败");
+            return new ApiResult<>().error("删除失败");
         }
     }
 
@@ -68,7 +68,7 @@ public class CommentServiceImpl implements CommentService {
      * @return: com.sheep.cloud.response.ApiResult
      */
     @Override
-    public ApiResult insertComment(ICommentAddVO commentAddVo) {
+    public ApiResult<?> insertComment(ICommentAddVO commentAddVo) {
         ICommentsEntity comment = new ICommentsEntity();
         comment.setContent(commentAddVo.getContent());
 
@@ -82,7 +82,7 @@ public class CommentServiceImpl implements CommentService {
 
         comment.setPublishTime(LocalDateTime.now());
         commentsEntityRepository.save(comment);
-        return ApiResult.success("发表评论成功");
+        return new ApiResult<>().success("发表评论成功");
     }
 
 
@@ -92,7 +92,7 @@ public class CommentServiceImpl implements CommentService {
      * @return: com.sheep.cloud.response.ApiResult
      */
     @Override
-    public ApiResult insertReply(IReplyAddVO replyAddVO) {
+    public ApiResult<?> insertReply(IReplyAddVO replyAddVO) {
         IRepliesEntity reply = new IRepliesEntity();
         reply.setContent(replyAddVO.getContent());
         reply.setPublishTime(LocalDateTime.now());
@@ -110,7 +110,7 @@ public class CommentServiceImpl implements CommentService {
         reply.setReplyUser(iUsersEntity);
 
         repliesEntityRepository.save(reply);
-        return ApiResult.success("回复成功");
+        return new ApiResult<>().success("回复成功");
     }
 
     /*
@@ -119,14 +119,14 @@ public class CommentServiceImpl implements CommentService {
      * @return: com.sheep.cloud.response.ApiResult
      */
     @Override
-    public ApiResult getCommentByResourceId(Integer resource_id) {
+    public ApiResult<ArrayList<ICommentGetInfoDTO>> getCommentByResourceId(Integer resource_id) {
         List<ICommentsEntity> commentList = commentsEntityRepository.findCommentByResourceId(resource_id);
         ArrayList<ICommentGetInfoDTO> list = new ArrayList<>();
         for (ICommentsEntity commentsEntity : commentList) {
             ICommentGetInfoDTO result = modelMapper.map(commentsEntity, ICommentGetInfoDTO.class);
             list.add(result);
         }
-        return ApiResult.success(list);
+        return new ApiResult<ArrayList<ICommentGetInfoDTO>>().success(list);
     }
 
     /*
@@ -135,13 +135,13 @@ public class CommentServiceImpl implements CommentService {
      * @return: com.sheep.cloud.response.ApiResult
      */
     @Override
-    public ApiResult getReplyByCommentId(Integer comment_id) {
+    public ApiResult<?> getReplyByCommentId(Integer comment_id) {
         List<IRepliesEntity> replyList = repliesEntityRepository.getReplyByCommentId(comment_id);
         ArrayList<IReplyGetInfoDTO> list = new ArrayList<>();
         for (IRepliesEntity repliesEntity : replyList) {
             IReplyGetInfoDTO result = modelMapper.map(repliesEntity, IReplyGetInfoDTO.class);
             list.add(result);
         }
-        return ApiResult.success(list);
+        return new ApiResult<ArrayList<IReplyGetInfoDTO>>().success(list);
     }
 }

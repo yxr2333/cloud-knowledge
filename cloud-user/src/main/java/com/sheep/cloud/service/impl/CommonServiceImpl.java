@@ -3,10 +3,10 @@ package com.sheep.cloud.service.impl;
 import com.qcloud.cos.COSClient;
 import com.qcloud.cos.model.PutObjectRequest;
 import com.qcloud.cos.model.PutObjectResult;
-import com.sheep.cloud.dao.ILabelCategoryEntityRepository;
-import com.sheep.cloud.dao.ILabelsEntityRepository;
-import com.sheep.cloud.entity.ILabelCategoryEntity;
-import com.sheep.cloud.response.ApiResult;
+import com.sheep.cloud.dao.knowledge.ILabelCategoryEntityRepository;
+import com.sheep.cloud.dao.knowledge.ILabelsEntityRepository;
+import com.sheep.cloud.entity.knowledge.ILabelCategoryEntity;
+import com.sheep.cloud.dto.response.ApiResult;
 import com.sheep.cloud.service.CommonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -46,7 +46,7 @@ public class CommonServiceImpl implements CommonService {
     public ApiResult getAllLabelCategoryMenu() {
         Sort sort = Sort.by(Sort.Direction.ASC, "id");
         List<ILabelCategoryEntity> result = labelCategoryEntityRepository.findAll(sort);
-        return result.isEmpty() ? ApiResult.warning("查询结果为空") : ApiResult.success(result);
+        return result.isEmpty() ? new ApiResult<>().warning("查询结果为空") : new ApiResult<>().success(result);
     }
 
     /**
@@ -55,8 +55,8 @@ public class CommonServiceImpl implements CommonService {
      * @return 查询结果
      */
     @Override
-    public ApiResult getAllLabels() {
-        return ApiResult.success(labelsEntityRepository.findAll());
+    public ApiResult<?> getAllLabels() {
+        return new ApiResult<>().success(labelsEntityRepository.findAll());
     }
 
     /**
@@ -66,7 +66,7 @@ public class CommonServiceImpl implements CommonService {
      * @return 上传结果
      */
     @Override
-    public ApiResult uploadFile(MultipartFile file) throws IOException {
+    public ApiResult<?> uploadFile(MultipartFile file) throws IOException {
         String[] strings = file.getOriginalFilename().split("\\.");
         String bucketName = "insurence-1304011999";
         File tempFile = File.createTempFile(strings[0] + System.currentTimeMillis(), "." + strings[1]);
@@ -75,7 +75,7 @@ public class CommonServiceImpl implements CommonService {
         String key = tempFile.getName();
         PutObjectRequest request = new PutObjectRequest(bucketName, key, tempFile);
         PutObjectResult result = cosClient.putObject(request);
-        return ApiResult.success("上传成功", BASE_URL + key);
+        return new ApiResult<>().success("上传成功", BASE_URL + key);
     }
 
     /**
@@ -85,7 +85,7 @@ public class CommonServiceImpl implements CommonService {
      * @return 上传结果
      */
     @Override
-    public ApiResult uploadFile(MultipartFile[] files) {
+    public ApiResult<?> uploadFile(MultipartFile[] files) {
         return null;
     }
 }

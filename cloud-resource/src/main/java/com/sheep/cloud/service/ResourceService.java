@@ -1,9 +1,9 @@
 package com.sheep.cloud.service;
 
-import com.sheep.cloud.request.IResourceAddVO;
-import com.sheep.cloud.request.IResourceModifyVO;
-import com.sheep.cloud.request.IResourcePaymentVO;
-import com.sheep.cloud.response.ApiResult;
+import com.sheep.cloud.dto.request.knowledge.IResourceAddVO;
+import com.sheep.cloud.dto.request.knowledge.IResourceModifyVO;
+import com.sheep.cloud.dto.request.knowledge.IResourcePaymentVO;
+import com.sheep.cloud.dto.response.ApiResult;
 
 import java.util.List;
 
@@ -14,7 +14,7 @@ public interface ResourceService {
      * @param vo 资源
      * @return 添加结果
      */
-    ApiResult addOne(IResourceAddVO vo);
+    ApiResult<?> addOne(IResourceAddVO vo);
 
     /**
      * 通过用户名id删除资源
@@ -22,7 +22,7 @@ public interface ResourceService {
      * @param id 资源id
      * @return 删除结果
      */
-    ApiResult deleteResourceById(Integer id);
+    ApiResult<?> deleteResourceById(Integer id);
 
     /**
      * 用户修改信息
@@ -30,7 +30,7 @@ public interface ResourceService {
      * @param vo 修改资源信息
      * @return 修改结果
      */
-    ApiResult modifyResource(IResourceModifyVO vo);
+    ApiResult<?> modifyResource(IResourceModifyVO vo);
 
     /**
      * 通过id查询用户发布资源
@@ -38,7 +38,7 @@ public interface ResourceService {
      * @param id 用户id
      * @return 查询结果
      */
-    ApiResult findOne(Integer id);
+    ApiResult<?> findOne(Integer id);
 
     /**
      * 设置资源付费
@@ -46,7 +46,7 @@ public interface ResourceService {
      * @param vo 资源付费信息
      * @return 修改结果
      */
-    ApiResult payment(IResourcePaymentVO vo);
+    ApiResult<?> payment(IResourcePaymentVO vo);
 
     /**
      * 根据标签划分资源
@@ -56,7 +56,7 @@ public interface ResourceService {
      * @param pageSize 页大小
      * @return 查询结果
      */
-    ApiResult label(List<Integer> labels, Integer pageNum, Integer pageSize);
+    ApiResult<?> label(List<Integer> labels, Integer pageNum, Integer pageSize);
 
     /**
      * 用户收藏资源
@@ -65,7 +65,7 @@ public interface ResourceService {
      * @param rid 资源id
      * @return 收藏结果
      */
-    ApiResult addCollect(Integer uid, Integer rid);
+    ApiResult<?> addCollect(Integer uid, Integer rid);
 
     /**
      * 通过id用户取消收藏资源
@@ -73,7 +73,7 @@ public interface ResourceService {
      * @param id 收藏id
      * @return 取消收藏结果
      */
-    ApiResult deleteCollectById(Integer id);
+    ApiResult<?> deleteCollectById(Integer id);
 
     /**
      * 通过用户id和资源id取消收藏资源
@@ -82,7 +82,7 @@ public interface ResourceService {
      * @param rid 资源id
      * @return 收藏结果
      */
-    ApiResult deleteByResourceIdAndUserUid(Integer uid, Integer rid);
+    ApiResult<?> deleteByResourceIdAndUserUid(Integer uid, Integer rid);
 
     /**
      * 查询用户收藏列表
@@ -90,7 +90,7 @@ public interface ResourceService {
      * @param uid 用户id
      * @return 查询结果
      */
-    ApiResult findAllByListIn(Integer uid);
+    ApiResult<?> findAllByListIn(Integer uid);
 
     /**
      * 查询指定标签下的资源个数
@@ -98,7 +98,7 @@ public interface ResourceService {
      * @param id 标签id
      * @return 查询结果
      */
-    ApiResult countDistinctByLabelsId(Integer id);
+    ApiResult<?> countDistinctByLabelsId(Integer id);
 
 
     /**
@@ -109,7 +109,7 @@ public interface ResourceService {
      * @param pageSize 页大小
      * @return 查询结果
      */
-    ApiResult findAllResources(List<Integer> labelId, int order, boolean isFree, Integer pageNum, Integer pageSize);
+    ApiResult<?> findAllResources(List<Integer> labelId, int order, boolean isFree, Integer pageNum, Integer pageSize);
 
     /**
      * 根据资源id查询资源
@@ -117,7 +117,7 @@ public interface ResourceService {
      * @param id 资源id
      * @return 查询结果
      */
-    ApiResult findOneByResourceId(Integer id);
+    ApiResult<?> findOneByResourceId(Integer id);
 
     /**
      * 复杂查询
@@ -130,6 +130,6 @@ public interface ResourceService {
      * @param pageSize 页容量
      * @return 查询结果
      */
-    ApiResult findByDynamicSearch(Integer labelId, String name, Integer orderId, Boolean isFree, Integer pageNum, Integer pageSize);
+    ApiResult<?> findByDynamicSearch(Integer labelId, String name, Integer orderId, Boolean isFree, Integer pageNum, Integer pageSize);
 
 }

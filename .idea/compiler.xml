@@ -7,7 +7,6 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="cloud-eureka-server" />
         <module name="cloud-user" />
         <module name="cloud-wish" />
         <module name="cloud-comment" />
@@ -20,6 +19,7 @@
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="cloud-eureka" target="1.8" />
+      <module name="cloud-eureka-server" target="1.8" />
       <module name="cloud-mail" target="1.8" />
     </bytecodeTargetLevel>
   </component>

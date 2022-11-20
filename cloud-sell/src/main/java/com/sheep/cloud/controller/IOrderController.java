@@ -1,6 +1,6 @@
 package com.sheep.cloud.controller;
 
-import com.sheep.cloud.dto.request.*;
+import com.sheep.cloud.dto.request.sell.*;
 import com.sheep.cloud.dto.response.ApiResult;
 import com.sheep.cloud.service.IOrderService;
 import io.swagger.annotations.Api;
@@ -30,30 +30,30 @@ public class IOrderController {
     @ApiImplicitParam(name = "param", value = "订单信息", required = true, dataType = "CreateCommonOrderParam")
     @ApiOperation(value = "创建一个普通交易的订单", notes = "创建一个普通交易的订单")
     @PostMapping("/create/common")
-    public ApiResult createOrder(@RequestBody @Valid CreateCommonOrderParam param) {
+    public ApiResult<?> createOrder(@RequestBody @Valid CreateCommonOrderParam param) {
         return orderService.createCommonOrder(param);
     }
 
     @ApiImplicitParam(name = "param", value = "待支付的订单信息", required = true, dataType = "PayOrderParam")
     @ApiOperation(value = "支付订单", notes = "支付订单")
     @PostMapping("/pay")
-    public ApiResult payOrder(@RequestBody @Valid PayOrderParam param) {
+    public ApiResult<?> payOrder(@RequestBody @Valid PayOrderParam param) {
         return orderService.payOrder(param);
     }
 
     @ApiImplicitParam(name = "param", value = "待取消的订单信息", required = true, dataType = "CancelOrderParam")
     @ApiOperation(value = "取消订单", notes = "取消订单")
     @PostMapping("/cancel")
-    public ApiResult cancelOrder(@RequestBody @Valid CancelOrderParam param) {
+    public ApiResult<?> cancelOrder(@RequestBody @Valid CancelOrderParam param) {
         return orderService.cancelOrder(param);
     }
 
     @ApiImplicitParam(name = "orderId", value = "订单id", required = true, dataType = "String")
     @ApiOperation(value = "审核订单是否支付成功", notes = "审核订单是否支付成功")
     @PostMapping("/check/pay")
-    public ApiResult checkPay(@RequestParam(required = false) String orderId) {
+    public ApiResult<?> checkPay(@RequestParam(required = false) String orderId) {
         if (orderId == null) {
-            return ApiResult.error("订单编号不能为空");
+            return new ApiResult<>().error("订单编号不能为空");
         }
         return orderService.checkPay(orderId);
     }
@@ -61,9 +61,9 @@ public class IOrderController {
     @ApiImplicitParam(name = "orderId", value = "订单id", required = true, dataType = "String")
     @ApiOperation(value = "卖家发货", notes = "卖家发货")
     @PostMapping("/deliver/goods")
-    public ApiResult deliverOrder(@RequestParam(required = false) String orderId) {
+    public ApiResult<?> deliverOrder(@RequestParam(required = false) String orderId) {
         if (orderId == null) {
-            return ApiResult.error("订单编号不能为空");
+            return new ApiResult<>().error("订单编号不能为空");
         }
         return orderService.deliverOrder(orderId);
     }
@@ -71,9 +71,9 @@ public class IOrderController {
     @ApiImplicitParam(name = "orderId", value = "订单id", required = true, dataType = "String")
     @ApiOperation(value = "买家确认收货", notes = "买家确认收货")
     @PostMapping("/confirm/save")
-    public ApiResult checkSaveGoods(@RequestParam(required = false) String orderId) {
+    public ApiResult<?> checkSaveGoods(@RequestParam(required = false) String orderId) {
         if (orderId == null) {
-            return ApiResult.error("订单编号不能为空");
+            return new ApiResult<>().error("订单编号不能为空");
         }
         return orderService.checkSaveGoods(orderId);
     }
@@ -81,14 +81,14 @@ public class IOrderController {
     @ApiImplicitParam(name = "param", value = "退款订单信息", required = true, dataType = "ReplyRefundOrderParam")
     @ApiOperation(value = "申请退款", notes = "申请退款")
     @PostMapping("/apply/refund")
-    public ApiResult applyForRefund(@RequestBody @Valid ReplyRefundOrderParam param) {
+    public ApiResult<?> applyForRefund(@RequestBody @Valid ReplyRefundOrderParam param) {
         return orderService.applyForRefund(param);
     }
 
     @ApiImplicitParam(name = "param", value = "审核退款订单信息", required = true, dataType = "CheckRefundOrderParam")
     @ApiOperation(value = "卖家审核退款", notes = "卖家审核退款")
     @PostMapping("/reply/refund")
-    public ApiResult checkRefund(@RequestBody @Valid CheckRefundOrderParam param) {
+    public ApiResult<?> checkRefund(@RequestBody @Valid CheckRefundOrderParam param) {
         return orderService.checkRefund(param);
     }
 }

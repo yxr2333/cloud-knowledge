@@ -9,6 +9,9 @@ spring:
     port: 6379
     connect-timeout: 2000
   cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848
     gateway:
       discovery:
         locator:

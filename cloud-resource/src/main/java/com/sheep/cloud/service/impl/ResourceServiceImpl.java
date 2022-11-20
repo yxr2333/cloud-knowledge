@@ -1,20 +1,19 @@
 package com.sheep.cloud.service.impl;
 
-import com.sheep.cloud.dao.ICollectListsEntityRepository;
-import com.sheep.cloud.dao.ILabelsEntityRepository;
-import com.sheep.cloud.dao.IResourcesEntityRepository;
-import com.sheep.cloud.dao.IUsersEntityRepository;
-import com.sheep.cloud.entity.ICollectListsEntity;
-import com.sheep.cloud.entity.ILabelsEntity;
-import com.sheep.cloud.entity.IResourcesEntity;
-import com.sheep.cloud.request.IResourceAddVO;
-import com.sheep.cloud.request.IResourceModifyVO;
-import com.sheep.cloud.request.IResourcePaymentVO;
-import com.sheep.cloud.response.ApiResult;
-import com.sheep.cloud.response.PageData;
+import com.sheep.cloud.dao.knowledge.ICollectListsEntityRepository;
+import com.sheep.cloud.dao.knowledge.ILabelsEntityRepository;
+import com.sheep.cloud.dao.knowledge.IResourcesEntityRepository;
+import com.sheep.cloud.dao.knowledge.IUsersEntityRepository;
+import com.sheep.cloud.dto.request.knowledge.IResourceAddVO;
+import com.sheep.cloud.dto.request.knowledge.IResourceModifyVO;
+import com.sheep.cloud.dto.request.knowledge.IResourcePaymentVO;
+import com.sheep.cloud.dto.response.ApiResult;
+import com.sheep.cloud.dto.response.PageData;
+import com.sheep.cloud.entity.knowledge.ICollectListsEntity;
+import com.sheep.cloud.entity.knowledge.ILabelsEntity;
+import com.sheep.cloud.entity.knowledge.IResourcesEntity;
 import com.sheep.cloud.service.ResourceService;
 import lombok.extern.slf4j.Slf4j;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -26,10 +25,13 @@ import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * @author sheep
+ */
 @Service
 @Slf4j
 public class ResourceServiceImpl implements ResourceService {
@@ -45,10 +47,6 @@ public class ResourceServiceImpl implements ResourceService {
     @Autowired
     private ICollectListsEntityRepository iCollectListsEntityRepository;
 
-    @Autowired
-    private ModelMapper modelMapper;
-    private Object LocalDate;
-
     /**
      * 发布资源
      *
@@ -56,10 +54,10 @@ public class ResourceServiceImpl implements ResourceService {
      * @return 添加结果
      */
     @Override
-    public ApiResult addOne(IResourceAddVO vo) {
+    public ApiResult<?> addOne(IResourceAddVO vo) {
         IResourcesEntity iResourcesEntity = new IResourcesEntity();
         if (!usersEntityRepository.existsById(vo.getPublishUser())) {
-            return ApiResult.error("该用户不存在！");
+            return new ApiResult<>().error("该用户不存在！");
         }
         iResourcesEntity.setName(vo.getName());
         iResourcesEntity.setDescription(vo.getDescription());
@@ -72,12 +70,12 @@ public class ResourceServiceImpl implements ResourceService {
             if (!StringUtils.isEmpty(vo.getPassword())) {
                 iResourcesEntity.setPassword(vo.getPassword());
             } else {
-                return ApiResult.warning("付费资源需要设置资源访问密码！");
+                return new ApiResult<>().warning("付费资源需要设置资源访问密码！");
             }
         }
         iResourcesEntity.setPublishUser(usersEntityRepository.getOne(vo.getPublishUser()));
         iResourcesEntityRepository.save(iResourcesEntity);
-        return ApiResult.success("发表成功！");
+        return new ApiResult<>().success("发表成功！");
     }
 
 
@@ -88,12 +86,12 @@ public class ResourceServiceImpl implements ResourceService {
      * @return 删除结果
      */
     @Override
-    public ApiResult deleteResourceById(Integer id) {
+    public ApiResult<?> deleteResourceById(Integer id) {
         if (iResourcesEntityRepository.existsById(id)) {
             iResourcesEntityRepository.deleteById(id);
-            return ApiResult.success("删除成功！");
+            return new ApiResult<>().success("删除成功！");
         } else {
-            return ApiResult.error("资源不存在！");
+            return new ApiResult<>().error("资源不存在！");
         }
     }
 
@@ -104,7 +102,7 @@ public class ResourceServiceImpl implements ResourceService {
      * @return 修改结果
      */
     @Override
-    public ApiResult modifyResource(IResourceModifyVO vo) {
+    public ApiResult<?> modifyResource(IResourceModifyVO vo) {
         IResourcesEntity iResourcesEntity = iResourcesEntityRepository
                 .findById(vo.getId())
                 .orElseThrow(() -> new RuntimeException("该资源不存在！"));
@@ -128,7 +126,7 @@ public class ResourceServiceImpl implements ResourceService {
             iResourcesEntity.setLabels(vo.getLabels());
         }
         iResourcesEntityRepository.save(iResourcesEntity);
-        return ApiResult.success("修改更新成功");
+        return new ApiResult<>().success("修改更新成功");
     }
 
     /**
@@ -138,12 +136,12 @@ public class ResourceServiceImpl implements ResourceService {
      * @return 查询结果
      */
     @Override
-    public ApiResult findOne(Integer id) {
+    public ApiResult<?> findOne(Integer id) {
         List<IResourcesEntity> list = iResourcesEntityRepository.findAllByPublishUserUid(id);
         if (CollectionUtils.isEmpty(list)) {
-            return ApiResult.warning("该用户暂未分享资源");
+            return new ApiResult<>().warning("该用户暂未分享资源");
         } else {
-            return ApiResult.success(list);
+            return new ApiResult<>().success(list);
         }
     }
 
@@ -154,7 +152,7 @@ public class ResourceServiceImpl implements ResourceService {
      * @return 修改结果
      */
     @Override
-    public ApiResult payment(IResourcePaymentVO vo) {
+    public ApiResult<?> payment(IResourcePaymentVO vo) {
         IResourcesEntity iResourcesEntity = iResourcesEntityRepository
                 .findById(vo.getId())
                 .orElseThrow(() -> new RuntimeException("该资源不存在！"));
@@ -164,14 +162,14 @@ public class ResourceServiceImpl implements ResourceService {
                 iResourcesEntity.setIsPaid(vo.getIsPaid());
                 iResourcesEntity.setPassword(vo.getPassword());
             } else {
-                return ApiResult.warning("付费资源需设置资源访问密码！");
+                return new ApiResult<>().warning("付费资源需设置资源访问密码！");
             }
         } else {
             iResourcesEntity.setIsPaid(vo.getIsPaid());
             iResourcesEntity.setPassword("");
         }
         iResourcesEntityRepository.save(iResourcesEntity);
-        return ApiResult.success("资源付费修改成功！");
+        return new ApiResult<>().success("资源付费修改成功！");
     }
 
     /**
@@ -184,7 +182,7 @@ public class ResourceServiceImpl implements ResourceService {
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ApiResult label(List<Integer> labelId, Integer pageNum, Integer pageSize) {
+    public ApiResult<?> label(List<Integer> labelId, Integer pageNum, Integer pageSize) {
         ArrayList<ILabelsEntity> labels = new ArrayList<>();
         // 根据标签编号查询标签
         labelId.forEach(id -> {
@@ -196,7 +194,7 @@ public class ResourceServiceImpl implements ResourceService {
         Page<IResourcesEntity> page = iResourcesEntityRepository.findDistinctAllByLabelsIn(labels, pageable);
 
         PageData.PageDataBuilder<IResourcesEntity> builder = PageData.builder();
-        return ApiResult.success(builder.totalPage(page.getTotalPages())
+        return new ApiResult<PageData<IResourcesEntity>>().success(builder.totalPage(page.getTotalPages())
                 .totalNum(page.getTotalElements())
                 .data(page.getContent())
                 .build());
@@ -210,16 +208,16 @@ public class ResourceServiceImpl implements ResourceService {
      * @return 收藏结果
      */
     @Override
-    public ApiResult addCollect(Integer uid, Integer rid) {
+    public ApiResult<?> addCollect(Integer uid, Integer rid) {
         if (!usersEntityRepository.existsById(uid)) {
-            return ApiResult.error("该用户不存在！");
+            return new ApiResult<>().error("该用户不存在！");
         }
         if (!iResourcesEntityRepository.existsById(rid)) {
-            return ApiResult.error("该资源不存在！");
+            return new ApiResult<>().error("该资源不存在！");
         }
         IResourcesEntity iResourcesEntity = iResourcesEntityRepository.getOne(rid);
         if (iCollectListsEntityRepository.findICollectListsEntityIdByResourceIdAndUserUid(rid, uid) != null) {
-            return ApiResult.warning("请不要重复收藏该资源！");
+            return new ApiResult<>().warning("请不要重复收藏该资源！");
         }
         //收藏量加一
         if (iResourcesEntity.getCollect() == null) {
@@ -233,7 +231,7 @@ public class ResourceServiceImpl implements ResourceService {
         iCollectListsEntity.setResource(iResourcesEntityRepository.getOne(rid));
         iCollectListsEntity.setCreateTime(LocalDateTime.now());
         iCollectListsEntityRepository.save(iCollectListsEntity);
-        return ApiResult.success("收藏成功！");
+        return new ApiResult<>().success("收藏成功！");
     }
 
     /**
@@ -243,7 +241,7 @@ public class ResourceServiceImpl implements ResourceService {
      * @return 取消收藏结果
      */
     @Override
-    public ApiResult deleteCollectById(Integer id) {
+    public ApiResult<?> deleteCollectById(Integer id) {
         if (iCollectListsEntityRepository.existsById(id)) {
             ICollectListsEntity iCollectListsEntity = iCollectListsEntityRepository.getOne(id);
             IResourcesEntity iResourcesEntity = iResourcesEntityRepository
@@ -253,9 +251,9 @@ public class ResourceServiceImpl implements ResourceService {
             iResourcesEntity.setCollect(iResourcesEntity.getCollect() - 1);
             iResourcesEntityRepository.save(iResourcesEntity);
             iCollectListsEntityRepository.deleteById(id);
-            return ApiResult.success("取消收藏成功！");
+            return new ApiResult<>().success("取消收藏成功！");
         } else {
-            return ApiResult.error("收藏不存在！");
+            return new ApiResult<>().error("收藏不存在！");
         }
     }
 
@@ -268,22 +266,22 @@ public class ResourceServiceImpl implements ResourceService {
      */
     @Override
     @Transactional
-    public ApiResult deleteByResourceIdAndUserUid(Integer uid, Integer rid) {
+    public ApiResult<?> deleteByResourceIdAndUserUid(Integer uid, Integer rid) {
         if (!usersEntityRepository.existsById(uid)) {
-            return ApiResult.error("该用户不存在！");
+            return new ApiResult<>().error("该用户不存在！");
         }
         iCollectListsEntityRepository.deleteByResourceIdAndUserUid(uid, rid);
         IResourcesEntity iResourcesEntity = iResourcesEntityRepository
                 .findById(rid)
                 .orElseThrow(() -> new RuntimeException("该资源不存在！"));
         if (iCollectListsEntityRepository.findICollectListsEntityIdByResourceIdAndUserUid(rid, uid) == null) {
-            return ApiResult.warning("请勿重复取消收藏！");
+            return new ApiResult<>().warning("请勿重复取消收藏！");
         }
         //收藏量减一
         iResourcesEntity.setCollect(iResourcesEntity.getCollect() - 1);
         iResourcesEntityRepository.save(iResourcesEntity);
         iCollectListsEntityRepository.deleteByResourceIdAndUserUid(rid, uid);
-        return ApiResult.success("取消收藏成功！");
+        return new ApiResult<>().success("取消收藏成功！");
     }
 
     /**
@@ -293,15 +291,15 @@ public class ResourceServiceImpl implements ResourceService {
      * @return 查询结果
      */
     @Override
-    public ApiResult findAllByListIn(Integer uid) {
+    public ApiResult<?> findAllByListIn(Integer uid) {
         if (!usersEntityRepository.existsById(uid)) {
-            return ApiResult.error("该用户不存在！");
+            return new ApiResult<>().error("该用户不存在！");
         }
         List<IResourcesEntity> list = iResourcesEntityRepository.findAllByUserId(uid);
         if (CollectionUtils.isEmpty(list)) {
-            return ApiResult.warning("该用户暂无收藏记录！");
+            return new ApiResult<>().warning("该用户暂无收藏记录！");
         } else {
-            return ApiResult.success(list);
+            return new ApiResult<List<IResourcesEntity>>().success(list);
         }
     }
 
@@ -312,8 +310,8 @@ public class ResourceServiceImpl implements ResourceService {
      * @return 查询结果
      */
     @Override
-    public ApiResult countDistinctByLabelsId(Integer id) {
-        return ApiResult.success(iResourcesEntityRepository.countDistinctByLabelsId(id));
+    public ApiResult<?> countDistinctByLabelsId(Integer id) {
+        return new ApiResult<Integer>().success(iResourcesEntityRepository.countDistinctByLabelsId(id));
     }
 
     /**
@@ -326,7 +324,7 @@ public class ResourceServiceImpl implements ResourceService {
      * @return 查询结果
      */
     @Override
-    public ApiResult findAllResources(List<Integer> labelId, int order, boolean isFree, Integer pageNum, Integer pageSize) {
+    public ApiResult<?> findAllResources(List<Integer> labelId, int order, boolean isFree, Integer pageNum, Integer pageSize) {
 
         ArrayList<ILabelsEntity> labels = new ArrayList<>();
         // 根据标签编号查询标签
@@ -348,13 +346,13 @@ public class ResourceServiceImpl implements ResourceService {
             sort = Sort.by(Sort.Direction.DESC, "releaseTime");
             pageable = PageRequest.of(pageNum, pageSize, sort);
         } else {
-            return ApiResult.warning("请输入正确的排序规则！");
+            return new ApiResult<>().warning("请输入正确的排序规则！");
         }
 
         Page<IResourcesEntity> page = iResourcesEntityRepository.findDistinctAllByIsPaidAndAndLabelsIn(isFree, labels, pageable);
 
         PageData.PageDataBuilder<IResourcesEntity> builder = PageData.builder();
-        return ApiResult.success(builder.totalPage(page.getTotalPages())
+        return new ApiResult<PageData<IResourcesEntity>>().success(builder.totalPage(page.getTotalPages())
                 .totalNum(page.getTotalElements())
                 .data(page.getContent())
                 .build());
@@ -368,10 +366,10 @@ public class ResourceServiceImpl implements ResourceService {
      * @return 查询结果
      */
     @Override
-    public ApiResult findOneByResourceId(Integer id) {
+    public ApiResult<?> findOneByResourceId(Integer id) {
         IResourcesEntity entity = iResourcesEntityRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("该资源不存在！"));
-        return ApiResult.success(entity);
+        return new ApiResult<IResourcesEntity>().success(entity);
     }
 
     /**
@@ -386,11 +384,11 @@ public class ResourceServiceImpl implements ResourceService {
      * @return 查询结果
      */
     @Override
-    public ApiResult findByDynamicSearch(Integer labelId, String name, Integer orderId, Boolean isFree, Integer pageNum, Integer pageSize) {
+    public ApiResult<?> findByDynamicSearch(Integer labelId, String name, Integer orderId, Boolean isFree, Integer pageNum, Integer pageSize) {
         if (labelId == null) {
-            return ApiResult.error("请选择资源分类");
+            return new ApiResult<>().error("请选择资源分类");
         }
-        List<Integer> labelIds = Arrays.asList(labelId);
+        List<Integer> labelIds = Collections.singletonList(labelId);
         List<ILabelsEntity> labels = iLabelsEntityRepository.findAllById(labelIds);
         Sort sort = null;
         if (orderId == 0) {
@@ -407,7 +405,7 @@ public class ResourceServiceImpl implements ResourceService {
             page = iResourcesEntityRepository.findAllByIsPaidAndNameLikeIgnoreCaseAndLabelsIn(!isFree, name, labels, pageable);
         }
         PageData.PageDataBuilder<IResourcesEntity> builder = PageData.builder();
-        return ApiResult.success(builder.totalPage(page.getTotalPages())
+        return new ApiResult<PageData<IResourcesEntity>>().success(builder.totalPage(page.getTotalPages())
                 .totalNum(page.getTotalElements())
                 .data(page.getContent())
                 .build());

@@ -1,7 +1,9 @@
 package com.sheep.cloud.service;
 
 
-import com.sheep.cloud.dto.request.*;
+import com.sheep.cloud.dto.request.knowledge.IUsersLoginVO;
+import com.sheep.cloud.dto.request.knowledge.IUsersRegisterVO;
+import com.sheep.cloud.dto.request.sell.*;
 import com.sheep.cloud.dto.response.ApiResult;
 
 import javax.servlet.http.HttpServletRequest;
@@ -18,7 +20,7 @@ import java.security.NoSuchAlgorithmException;
  */
 public interface IUserService {
 
-    ApiResult doRegister(IUsersRegisterParam vo);
+    ApiResult<?> doRegister(IUsersRegisterVO vo);
 
     /**
      * 钉钉授权登录
@@ -26,7 +28,7 @@ public interface IUserService {
      * @param code 钉钉授权码
      * @return 用户信息
      */
-    ApiResult doDingLogin(String code) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException;
+    ApiResult<?> doDingLogin(String code) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException;
 
     /**
      * 绑定钉钉账号
@@ -34,7 +36,7 @@ public interface IUserService {
      * @param param 参数
      * @return 绑定结果
      */
-    ApiResult bindDingAccount(BindDingAccountParam param);
+    ApiResult<?> bindDingAccount(BindDingAccountParam param);
 
     /**
      * 重置密码
@@ -43,7 +45,7 @@ public interface IUserService {
      * @param vo      重置密码信息
      * @return 重置结果
      */
-    ApiResult resetPassword(HttpServletRequest request, ResetPasswordParam vo);
+    ApiResult<?> resetPassword(HttpServletRequest request, ResetPasswordParam vo);
 
     /**
      * 用户登录
@@ -51,7 +53,7 @@ public interface IUserService {
      * @param param 登录参数
      * @return 登录结果
      */
-    ApiResult doLogin(UserLoginParam param);
+    ApiResult<?> doLogin(IUsersLoginVO param);
 
 
     /**
@@ -60,7 +62,7 @@ public interface IUserService {
      * @param code 主站授权码
      * @return 登录结果
      */
-    ApiResult doMainWebLogin(String code);
+    ApiResult<?> doMainWebLogin(String code);
 
     /**
      * 绑定主站账号
@@ -68,5 +70,5 @@ public interface IUserService {
      * @param param 参数
      * @return 绑定结果
      */
-    ApiResult doBindMainWebAccount(BindMainWebAccountParam param);
+    ApiResult<?> doBindMainWebAccount(BindMainWebAccountParam param);
 }

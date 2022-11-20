@@ -1,6 +1,6 @@
 package com.sheep.cloud.controller;
 
-import com.sheep.cloud.response.ApiResult;
+import com.sheep.cloud.dto.response.ApiResult;
 import com.sheep.cloud.service.CommonService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,17 +25,17 @@ public class CommonController {
     private CommonService commonService;
 
     @GetMapping("/labelCategoryMenu")
-    public ApiResult getAllLabelCategoryMenu() {
+    public ApiResult<?> getAllLabelCategoryMenu() {
         return commonService.getAllLabelCategoryMenu();
     }
 
     @GetMapping("/getAllLabels")
-    public ApiResult getAllLabels() {
+    public ApiResult<?> getAllLabels() {
         return commonService.getAllLabels();
     }
 
     @PostMapping("/upload")
-    public ApiResult uploadImg(@RequestParam("file") MultipartFile file) throws IOException {
+    public ApiResult<?> uploadImg(@RequestParam("file") MultipartFile file) throws IOException {
         return commonService.uploadFile(file);
     }
 }

@@ -1,7 +1,7 @@
 package com.sheep.cloud.service;
 
-import com.sheep.cloud.dto.request.SaveOneGoodParam;
-import com.sheep.cloud.dto.request.UpdateGoodsInfoParam;
+import com.sheep.cloud.dto.request.sell.SaveOneGoodParam;
+import com.sheep.cloud.dto.request.sell.UpdateGoodsInfoParam;
 import com.sheep.cloud.dto.response.ApiResult;
 import org.springframework.data.domain.Pageable;
 
@@ -21,7 +21,7 @@ public interface IGoodsService {
      * @param param 商品信息
      * @return 发布结果
      */
-    ApiResult saveOne(SaveOneGoodParam param);
+    ApiResult<?> saveOne(SaveOneGoodParam param);
 
     /**
      * 软删除某个商品
@@ -29,7 +29,7 @@ public interface IGoodsService {
      * @param id 商品id
      * @return 删除结果
      */
-    ApiResult deleteOne(Integer id);
+    ApiResult<?> deleteOne(Integer id);
 
     /**
      * 获取某个商品详情
@@ -37,7 +37,7 @@ public interface IGoodsService {
      * @param goodsId 商品id
      * @return 商品详情
      */
-    ApiResult findGoodsDetail(Integer goodsId);
+    ApiResult<?> findGoodsDetail(Integer goodsId);
 
     /**
      * 分页获取所有商品
@@ -45,7 +45,7 @@ public interface IGoodsService {
      * @param pageable 分页信息
      * @return 商品列表
      */
-    ApiResult findAllGoods(Pageable pageable);
+    ApiResult<?> findAllGoods(Pageable pageable);
 
     /**
      * 分页获取某个用户发布的商品
@@ -54,7 +54,7 @@ public interface IGoodsService {
      * @param userId   用户id
      * @return 商品列表
      */
-    ApiResult findAllGoodsByUserId(Pageable pageable, Integer userId);
+    ApiResult<?> findAllGoodsByUserId(Pageable pageable, Integer userId);
 
 
     /**
@@ -63,5 +63,5 @@ public interface IGoodsService {
      * @param param 商品信息
      * @return 更新结果
      */
-    ApiResult updateGoodsInfo(UpdateGoodsInfoParam param);
+    ApiResult<?> updateGoodsInfo(UpdateGoodsInfoParam param);
 }

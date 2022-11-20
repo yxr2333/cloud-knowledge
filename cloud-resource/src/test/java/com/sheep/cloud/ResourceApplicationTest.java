@@ -1,7 +1,7 @@
 package com.sheep.cloud;
 
-import com.sheep.cloud.dao.ILabelsEntityRepository;
-import com.sheep.cloud.dao.IResourcesEntityRepository;
+import com.sheep.cloud.dao.knowledge.ILabelsEntityRepository;
+import com.sheep.cloud.dao.knowledge.IResourcesEntityRepository;
 import com.sheep.cloud.service.ResourceService;
 import org.junit.Test;
 import org.junit.runner.RunWith;

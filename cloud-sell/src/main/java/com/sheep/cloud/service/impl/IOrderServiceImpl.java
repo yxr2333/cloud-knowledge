@@ -5,10 +5,10 @@ import cn.hutool.extra.mail.MailUtil;
 import com.sheep.cloud.common.CommonFields;
 import com.sheep.cloud.common.OrderStatusEnum;
 import com.sheep.cloud.common.SafeAccountHistoryEnum;
-import com.sheep.cloud.dto.request.*;
+import com.sheep.cloud.dao.sell.*;
+import com.sheep.cloud.dto.request.sell.*;
 import com.sheep.cloud.dto.response.ApiResult;
-import com.sheep.cloud.model.*;
-import com.sheep.cloud.repository.*;
+import com.sheep.cloud.entity.sell.*;
 import com.sheep.cloud.service.IOrderService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -30,22 +30,22 @@ import java.time.LocalDateTime;
 @Slf4j
 public class IOrderServiceImpl implements IOrderService {
     @Autowired
-    private IGoodsEntityRepository goodsEntityRepository;
+    private ISellGoodsEntityRepository goodsEntityRepository;
     @Autowired
-    private IUserEntityRepository userEntityRepository;
+    private ISellUserEntityRepository userEntityRepository;
     @Autowired
-    private IOrdersEntityRepository ordersEntityRepository;
+    private ISellOrdersEntityRepository ordersEntityRepository;
 
     @Autowired
-    private ISafeAccountHistoryEntityRepository safeAccountRepository;
+    private ISellSafeAccountHistoryEntityRepository safeAccountRepository;
 
     @Autowired
-    private IRefundOrderHistoryEntityRepository refundOrderHistoryEntityRepository;
+    private ISellRefundOrderHistoryEntityRepository refundOrderHistoryEntityRepository;
 
     @Autowired
     private RabbitTemplate rabbitTemplate;
 
-    private IUserEntity safeAccount;
+    private ISellUserEntity safeAccount;
 
     @PostConstruct
     public void init() {
@@ -60,39 +60,39 @@ public class IOrderServiceImpl implements IOrderService {
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ApiResult createCommonOrder(CreateCommonOrderParam param) {
-        IGoodsEntity goodsEntity = goodsEntityRepository.findById(param.getGoodsId())
+    public ApiResult<?> createCommonOrder(CreateCommonOrderParam param) {
+        ISellGoodsEntity goodsEntity = goodsEntityRepository.findById(param.getGoodsId())
                 .orElseThrow(() -> new RuntimeException("商品不存在"));
-        IUserEntity buyerEntity = userEntityRepository.findById(param.getBuyerId())
+        ISellUserEntity buyerEntity = userEntityRepository.findById(param.getBuyerId())
                 .orElseThrow(() -> new RuntimeException("买家不存在"));
-        IUserEntity sellerEntity = userEntityRepository.findById(param.getSellerId())
+        ISellUserEntity sellerEntity = userEntityRepository.findById(param.getSellerId())
                 .orElseThrow(() -> new RuntimeException("卖家不存在"));
         Integer freeTotal = goodsEntity.getFreeTotal();
         // 判断库存是否充足，以及商品是否打折
         if (freeTotal <= 0) {
-            return ApiResult.error("商品库存不足");
+            return new ApiResult<>().error("商品库存不足");
         }
         if (goodsEntity.getIsDown()) {
-            return ApiResult.error("商品已下架，无法购买");
+            return new ApiResult<>().error("商品已下架，无法购买");
         }
-        if (!param.getIsDiscount()) {
-            param.setDiscountPercent(null);
+        if (!goodsEntity.getIsDiscount()) {
+            goodsEntity.setDiscountPercent(null);
         } else {
-            Double percent = param.getDiscountPercent();
+            Double percent = goodsEntity.getDiscountPercent();
             if (percent == null || percent <= 0 || percent >= 1) {
                 throw new RuntimeException("折扣率不合法");
             }
         }
-        IOrdersEntity entity = IOrdersEntity.builder()
+        ISellOrdersEntity entity = ISellOrdersEntity.builder()
                 .oid(IdUtil.randomUUID())
                 .good(goodsEntity)
-                .price(param.getPrice())
-                .isDiscount(param.getIsDiscount())
-                .discountPercent(param.getDiscountPercent())
+                .price(goodsEntity.getPrice())
+                .isDiscount(goodsEntity.getIsDiscount())
+                .discountPercent(goodsEntity.getDiscountPercent())
                 // 标记为普通交易订单
                 .sellType(0)
                 // 计算最后的价格
-                .finalPrice(param.getDiscountPercent() == null ? param.getPrice() : param.getPrice() * param.getDiscountPercent())
+                .finalPrice(goodsEntity.getDiscountPercent() == null ? goodsEntity.getPrice() : goodsEntity.getPrice() * goodsEntity.getDiscountPercent())
                 .seller(sellerEntity)
                 .sellerName(sellerEntity.getUsername())
                 .sellerMail(sellerEntity.getEmail())
@@ -103,7 +103,7 @@ public class IOrderServiceImpl implements IOrderService {
                 .orderStatusDescription(OrderStatusEnum.NOT_PAYED.description)
                 .createTime(LocalDateTime.now())
                 .build();
-        IOrdersEntity order = ordersEntityRepository.save(entity);
+        ISellOrdersEntity order = ordersEntityRepository.save(entity);
         synchronized (this) {
             goodsEntity.setFreeTotal(freeTotal - 1);
             goodsEntityRepository.save(goodsEntity);
@@ -116,7 +116,7 @@ public class IOrderServiceImpl implements IOrderService {
             log.info("向延时队列发送消息成功，订单id：{}", order.getId());
             return message;
         });
-        return ApiResult.success("订单创建成功");
+        return new ApiResult<>().success("订单创建成功，订单号：" + order.getOid());
     }
 
     /**
@@ -127,27 +127,27 @@ public class IOrderServiceImpl implements IOrderService {
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ApiResult payOrder(PayOrderParam param) {
-        IOrdersEntity order = ordersEntityRepository
+    public ApiResult<?> payOrder(PayOrderParam param) {
+        ISellOrdersEntity order = ordersEntityRepository
                 .findByOid(param.getOrderId())
                 .orElseThrow(() -> new RuntimeException("订单不存在"));
-        IUserEntity buyer = userEntityRepository
+        ISellUserEntity buyer = userEntityRepository
                 .findById(param.getBuyerId())
                 .orElseThrow(() -> new RuntimeException("买家不存在"));
         if (!order.getOrderStatus().equals(OrderStatusEnum.NOT_PAYED.code)) {
-            return ApiResult.error("订单状态异常");
+            return new ApiResult<>().error("订单状态异常");
         }
         if (order.getGood().getIsDown()) {
             order.setOrderStatus(OrderStatusEnum.GOODS_DOWN_CANCELED.code);
             order.setOrderStatusDescription(OrderStatusEnum.GOODS_DOWN_CANCELED.description);
             order.setFinishTime(LocalDateTime.now());
-            return ApiResult.error("商品已下架，订单已取消，支付失败");
+            return new ApiResult<>().error("商品已下架，订单已取消，支付失败");
         }
         if (!order.getBuyer().getId().equals(buyer.getId())) {
-            return ApiResult.error("这不是您的订单~");
+            return new ApiResult<>().error("这不是您的订单~");
         }
         if (order.getFinalPrice() > buyer.getFreeMoney()) {
-            return ApiResult.error("余额不足");
+            return new ApiResult<>().error("余额不足");
         }
         // 扣费
         buyer.setFreeMoney(buyer.getFreeMoney() - order.getFinalPrice());
@@ -161,7 +161,7 @@ public class IOrderServiceImpl implements IOrderService {
         userEntityRepository.save(safeAccount);
 
         // 添加一条安全账户的转入流水
-        ISafeAccountHistoryEntity safeAccountHistory = ISafeAccountHistoryEntity.builder()
+        ISellSafeAccountHistoryEntity safeAccountHistory = ISellSafeAccountHistoryEntity.builder()
                 .orderId(order.getId())
                 .price(order.getFinalPrice())
                 .transType(SafeAccountHistoryEnum.TRANS_IN.type)
@@ -175,7 +175,7 @@ public class IOrderServiceImpl implements IOrderService {
         order.setOrderStatusDescription(OrderStatusEnum.PAYED_NOT_CHECKED.description);
         order.setPayTime(LocalDateTime.now());
         ordersEntityRepository.save(order);
-        return ApiResult.success("支付成功");
+        return new ApiResult<>().success("支付成功");
     }
 
 
@@ -187,23 +187,23 @@ public class IOrderServiceImpl implements IOrderService {
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ApiResult cancelOrder(CancelOrderParam param) {
-        IOrdersEntity order = ordersEntityRepository
+    public ApiResult<?> cancelOrder(CancelOrderParam param) {
+        ISellOrdersEntity order = ordersEntityRepository
                 .findByOid(param.getOrderId())
                 .orElseThrow(() -> new RuntimeException("未查找到订单信息"));
-        IUserEntity submitUser = userEntityRepository
+        ISellUserEntity submitUser = userEntityRepository
                 .findById(param.getSubmitUserId())
                 .orElseThrow(() -> new RuntimeException("未查找到用户信息"));
         if (!order.getBuyer().getId().equals(submitUser.getId())) {
-            return ApiResult.error("这不是您的订单~");
+            return new ApiResult<>().error("这不是您的订单~");
         }
         if (order.getOrderStatus().equals(OrderStatusEnum.REFUNDED.code)
                 || order.getOrderStatus().equals(OrderStatusEnum.CANCELED.code)) {
-            return ApiResult.error("订单" + order.getOrderStatusDescription() + "，无法取消");
+            return new ApiResult<>().error("订单" + order.getOrderStatusDescription() + "，无法取消");
         }
         if (order.getOrderStatus().equals(OrderStatusEnum.DELIVERED_NOT_RECEIVED.code)
                 || order.getOrderStatus().equals(OrderStatusEnum.FINISHED.code)) {
-            return ApiResult.error("订单已发货，无法取消");
+            return new ApiResult<>().error("订单已发货，无法取消");
         }
         order.setOrderStatus(OrderStatusEnum.CANCELED.code);
         order.setOrderStatusDescription(OrderStatusEnum.CANCELED.description);
@@ -211,7 +211,7 @@ public class IOrderServiceImpl implements IOrderService {
         ordersEntityRepository.save(order);
 
         // 释放库存以及退款给买家
-        IGoodsEntity goods = goodsEntityRepository
+        ISellGoodsEntity goods = goodsEntityRepository
                 .findById(order.getGood().getId())
                 .orElseThrow(() -> new RuntimeException("未查找到商品信息"));
         synchronized (this) {
@@ -224,7 +224,7 @@ public class IOrderServiceImpl implements IOrderService {
         userEntityRepository.save(safeAccount);
 
         // 添加一条安全账户的转出流水
-        ISafeAccountHistoryEntity safeAccountHistory = ISafeAccountHistoryEntity.builder()
+        ISellSafeAccountHistoryEntity safeAccountHistory = ISellSafeAccountHistoryEntity.builder()
                 .transTime(LocalDateTime.now())
                 .price(order.getFinalPrice())
                 .transType(SafeAccountHistoryEnum.TRANS_OUT_TO_BUYER.type)
@@ -232,7 +232,7 @@ public class IOrderServiceImpl implements IOrderService {
                 .orderId(order.getId())
                 .build();
         safeAccountRepository.save(safeAccountHistory);
-        return ApiResult.success("取消成功");
+        return new ApiResult<>().success("取消成功");
     }
 
     /**
@@ -242,15 +242,16 @@ public class IOrderServiceImpl implements IOrderService {
      * @return 审核结果
      */
     @Override
-    public ApiResult checkPay(String orderId) {
-        IOrdersEntity order = ordersEntityRepository
+    @Transactional(rollbackFor = Exception.class)
+    public ApiResult<?> checkPay(String orderId) {
+        ISellOrdersEntity order = ordersEntityRepository
                 .findByOid(orderId)
                 .orElseThrow(() -> new RuntimeException("未查找到订单信息"));
         order.setOrderStatus(OrderStatusEnum.CHECKED_NOT_DELIVERED.code);
         order.setOrderStatusDescription(OrderStatusEnum.CHECKED_NOT_DELIVERED.description);
         ordersEntityRepository.save(order);
 
-        return ApiResult.success(String.format("订单号:%s，已审核成功", orderId));
+        return new ApiResult<>().success(String.format("订单号:%s，已审核成功", orderId));
     }
 
     /**
@@ -261,10 +262,19 @@ public class IOrderServiceImpl implements IOrderService {
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ApiResult deliverOrder(String orderId) {
-        IOrdersEntity order = ordersEntityRepository
+    public ApiResult<?> deliverOrder(String orderId) {
+        ISellOrdersEntity order = ordersEntityRepository
                 .findByOid(orderId)
                 .orElseThrow(() -> new RuntimeException("未查找到订单信息"));
+        if (order.getOrderStatus().equals(OrderStatusEnum.PAYED_NOT_CHECKED.code)) {
+            return new ApiResult<>().error("请等待管理员审核是否支付成功");
+        }
+        if (order.getOrderStatus().equals(OrderStatusEnum.DELIVERED_NOT_RECEIVED.code)) {
+            return new ApiResult<>().error("订单已发货，无需重复发货");
+        }
+        if (!order.getOrderStatus().equals(OrderStatusEnum.CHECKED_NOT_DELIVERED.code)) {
+            return new ApiResult<>().error("订单状态异常，无法发货");
+        }
         order.setOrderStatus(OrderStatusEnum.DELIVERED_NOT_RECEIVED.code);
         order.setOrderStatusDescription(OrderStatusEnum.DELIVERED_NOT_RECEIVED.description);
         ordersEntityRepository.save(order);
@@ -273,9 +283,9 @@ public class IOrderServiceImpl implements IOrderService {
             MailUtil.send(order.getBuyerMail(), "订单发货通知", content, false);
         } catch (Exception e) {
             e.printStackTrace();
-            return ApiResult.error("暂时无法进行发货，请稍后再试");
+            return new ApiResult<>().error("暂时无法进行发货，请稍后再试");
         }
-        return ApiResult.success(String.format("订单号:%s，已发货", orderId));
+        return new ApiResult<>().success(String.format("订单号:%s，已发货", orderId));
     }
 
     /**
@@ -285,8 +295,9 @@ public class IOrderServiceImpl implements IOrderService {
      * @return 确认收货结果
      */
     @Override
-    public ApiResult checkSaveGoods(String orderId) {
-        IOrdersEntity order = ordersEntityRepository.findByOid(orderId)
+    @Transactional(rollbackFor = Exception.class)
+    public ApiResult<?> checkSaveGoods(String orderId) {
+        ISellOrdersEntity order = ordersEntityRepository.findByOid(orderId)
                 .orElseThrow(() -> new RuntimeException("未查找到订单信息"));
         order.setOrderStatus(OrderStatusEnum.FINISHED.code);
         order.setOrderStatusDescription(OrderStatusEnum.FINISHED.description);
@@ -294,7 +305,7 @@ public class IOrderServiceImpl implements IOrderService {
         ordersEntityRepository.save(order);
 
         // 确认收货后，钱从安全账户转入卖家账户
-        IUserEntity seller = order.getSeller();
+        ISellUserEntity seller = order.getSeller();
         synchronized (this) {
             seller.setFreeMoney(seller.getFreeMoney() + order.getFinalPrice());
             safeAccount.setFreeMoney(safeAccount.getFreeMoney() - order.getFinalPrice());
@@ -303,7 +314,7 @@ public class IOrderServiceImpl implements IOrderService {
         userEntityRepository.save(safeAccount);
 
         // 添加一条安全账户的转出流水
-        ISafeAccountHistoryEntity safeAccountHistory = ISafeAccountHistoryEntity.builder()
+        ISellSafeAccountHistoryEntity safeAccountHistory = ISellSafeAccountHistoryEntity.builder()
                 .transTime(LocalDateTime.now())
                 .price(order.getFinalPrice())
                 .transType(SafeAccountHistoryEnum.TRANS_OUT_TO_SELLER.type)
@@ -316,9 +327,9 @@ public class IOrderServiceImpl implements IOrderService {
             MailUtil.send(order.getSellerMail(), "订单交易成功通知", content, false);
         } catch (Exception e) {
             e.printStackTrace();
-            return ApiResult.error("暂时无法进行操作，请稍后再试");
+            return new ApiResult<>().error("暂时无法进行操作，请稍后再试");
         }
-        return ApiResult.success(String.format("订单号:%s，已确认收货", orderId));
+        return new ApiResult<>().success(String.format("订单号:%s，已确认收货", orderId));
     }
 
     /**
@@ -329,17 +340,17 @@ public class IOrderServiceImpl implements IOrderService {
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ApiResult applyForRefund(ReplyRefundOrderParam param) {
-        IOrdersEntity order = ordersEntityRepository.findByOid(param.getOrderId())
+    public ApiResult<?> applyForRefund(ReplyRefundOrderParam param) {
+        ISellOrdersEntity order = ordersEntityRepository.findByOid(param.getOrderId())
                 .orElseThrow(() -> new RuntimeException("未查找到订单信息"));
         // 当卖家已发货，买家未确认收货的时候，才能申请退款
         if (!order.getOrderStatus().equals(OrderStatusEnum.DELIVERED_NOT_RECEIVED.code)) {
-            return ApiResult.error("当前订单状态不允许申请退款");
+            return new ApiResult<>().error("当前订单状态不允许申请退款");
         }
         order.setOrderStatus(OrderStatusEnum.APPLY_NOT_REFUNDED.code);
         order.setOrderStatusDescription(OrderStatusEnum.APPLY_NOT_REFUNDED.description);
 
-        IRefundOrderHistoryEntity history = IRefundOrderHistoryEntity.builder()
+        ISellRefundOrderHistoryEntity history = ISellRefundOrderHistoryEntity.builder()
                 .order(order)
                 .createTime(LocalDateTime.now())
                 .refundReason(param.getReason())
@@ -353,7 +364,7 @@ public class IOrderServiceImpl implements IOrderService {
         String content = String.format("尊敬的：%s，您订单号:%s，的商品已被买家申请退款，请尽快查阅处理~", order.getSellerName(), param.getOrderId());
         MailUtil.send(order.getSellerMail(), "订单申请退款通知", content, false);
 
-        return ApiResult.success(String.format("订单号:%s，已申请退款，等待卖家处理", param.getOrderId()));
+        return new ApiResult<>().success(String.format("订单号:%s，已申请退款，等待卖家处理", param.getOrderId()));
     }
 
     /**
@@ -364,10 +375,10 @@ public class IOrderServiceImpl implements IOrderService {
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ApiResult checkRefund(CheckRefundOrderParam param) {
-        IOrdersEntity order = ordersEntityRepository.findByOid(param.getOrderId())
+    public ApiResult<?> checkRefund(CheckRefundOrderParam param) {
+        ISellOrdersEntity order = ordersEntityRepository.findByOid(param.getOrderId())
                 .orElseThrow(() -> new RuntimeException("未查找到订单信息"));
-        IRefundOrderHistoryEntity history =
+        ISellRefundOrderHistoryEntity history =
                 refundOrderHistoryEntityRepository.getOne(param.getRefundHistoryId());
         // 同意退款，钱从安全账户转入买家账户
         if (param.getIsAgree().equals(true)) {
@@ -387,7 +398,7 @@ public class IOrderServiceImpl implements IOrderService {
                 userEntityRepository.save(order.getBuyer());
             }
             // 保存安全账户历史记录
-            ISafeAccountHistoryEntity safeAccountHistory = ISafeAccountHistoryEntity.builder()
+            ISellSafeAccountHistoryEntity safeAccountHistory = ISellSafeAccountHistoryEntity.builder()
                     .transTime(LocalDateTime.now())
                     .price(order.getFinalPrice())
                     .transType(SafeAccountHistoryEnum.TRANS_OUT_TO_BUYER.type)
@@ -399,7 +410,7 @@ public class IOrderServiceImpl implements IOrderService {
             String content = String.format("尊敬的：%s，您订单号:%s，的商品已被卖家同意退款，退款金额为：%s元，已转入您的账户~",
                     order.getBuyerName(), param.getOrderId(), order.getFinalPrice());
             MailUtil.send(order.getBuyerMail(), "订单退款通知", content, false);
-            return ApiResult.success(String.format("订单号:%s，已退款", param.getOrderId()));
+            return new ApiResult<>().success(String.format("订单号:%s，已退款", param.getOrderId()));
         } else {
             // 不同意退款，更新订单状态
             order.setOrderStatus(OrderStatusEnum.DELIVERED_NOT_RECEIVED.code);
@@ -413,7 +424,7 @@ public class IOrderServiceImpl implements IOrderService {
             String content = String.format("尊敬的：%s，您订单号:%s，的商品已被卖家拒绝退款，如有疑问，请联系卖家~",
                     order.getBuyerName(), param.getOrderId());
             MailUtil.send(order.getBuyerMail(), "订单退款通知", content, false);
-            return ApiResult.success(String.format("订单号:%s，已拒绝退款", param.getOrderId()));
+            return new ApiResult<>().success(String.format("订单号:%s，已拒绝退款", param.getOrderId()));
         }
     }
 }

@@ -3,10 +3,10 @@ package com.sheep.cloud.config;
 import cn.dev33.satoken.oauth2.logic.SaOAuth2Template;
 import cn.dev33.satoken.oauth2.model.SaClientModel;
 import cn.hutool.core.util.RandomUtil;
-import com.sheep.cloud.dao.IAppClientsEntityRepository;
-import com.sheep.cloud.dao.IOAuth2GrantEntityRepository;
-import com.sheep.cloud.entity.IAppClientsEntity;
-import com.sheep.cloud.entity.IOAuth2GrantEntity;
+import com.sheep.cloud.dao.knowledge.IAppClientsEntityRepository;
+import com.sheep.cloud.dao.knowledge.IOAuth2GrantEntityRepository;
+import com.sheep.cloud.entity.knowledge.IAppClientsEntity;
+import com.sheep.cloud.entity.knowledge.IOAuth2GrantEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
