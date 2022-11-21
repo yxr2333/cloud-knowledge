@@ -21,6 +21,8 @@
       <module name="cloud-eureka" target="1.8" />
       <module name="cloud-eureka-server" target="1.8" />
       <module name="cloud-mail" target="1.8" />
+      <module name="cloud-mq" target="1.8" />
+      <module name="cloud-nacos" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>
