@@ -7,6 +7,7 @@
 /cloud-user/target/
 /cloud-wish/target/
 /cloud-sell/target/
+/cloud-oauth/target/
 
 /cloud-sell/src/main/resources/ding.properties
 /cloud-sell/src/main/resources/config/mail.setting
@@ -15,5 +16,7 @@
 /cloud-user/src/main/resources/config/mail.setting
 .idea
 .idea/**
+/cloud-user/src/main/resources/oss.properties
 /cloud-user/src/main/resources/config/
 /cloud-sell/src/main/resources/config/
+/.idea/

@@ -16,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Created By Intellij IDEA
@@ -43,7 +44,7 @@ public class CommonServiceImpl implements CommonService {
      * @return 查询结果
      */
     @Override
-    public ApiResult getAllLabelCategoryMenu() {
+    public ApiResult<?> getAllLabelCategoryMenu() {
         Sort sort = Sort.by(Sort.Direction.ASC, "id");
         List<ILabelCategoryEntity> result = labelCategoryEntityRepository.findAll(sort);
         return result.isEmpty() ? new ApiResult<>().warning("查询结果为空") : new ApiResult<>().success(result);
@@ -67,7 +68,7 @@ public class CommonServiceImpl implements CommonService {
      */
     @Override
     public ApiResult<?> uploadFile(MultipartFile file) throws IOException {
-        String[] strings = file.getOriginalFilename().split("\\.");
+        String[] strings = Objects.requireNonNull(file.getOriginalFilename()).split("\\.");
         String bucketName = "insurence-1304011999";
         File tempFile = File.createTempFile(strings[0] + System.currentTimeMillis(), "." + strings[1]);
         System.out.println(tempFile.getName());
@@ -86,6 +87,7 @@ public class CommonServiceImpl implements CommonService {
      */
     @Override
     public ApiResult<?> uploadFile(MultipartFile[] files) {
+
         return null;
     }
 }
