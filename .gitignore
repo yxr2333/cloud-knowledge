@@ -11,8 +11,10 @@
 
 /cloud-sell/src/main/resources/ding.properties
 /cloud-sell/src/main/resources/config/mail.setting
+/cloud-sell/src/main/resources/config/
 
 /cloud-user/src/main/resources/cos.properties
+/cloud-user/src/main/resources/config/
 /cloud-user/src/main/resources/config/mail.setting
 
 /cloud-sell-backend-web/src/main/resources/application-dev.yml
