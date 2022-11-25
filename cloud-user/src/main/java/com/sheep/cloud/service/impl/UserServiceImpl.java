@@ -135,6 +135,7 @@ public class UserServiceImpl implements UserService {
      * @param resetPasswordVO 用户重置密码信息
      * @return 重置密码结果
      */
+    @Override
     public ApiResult<?> resetPassword(HttpServletRequest request, IUsersResetPasswordVO resetPasswordVO) {
         Object resetCode = request.getSession().getAttribute("reset_code");
         log.info("resetCode:" + resetCode);
@@ -240,6 +241,7 @@ public class UserServiceImpl implements UserService {
      * @param pageSize 页大小
      * @return 查询结果
      */
+    @Override
     public ApiResult<?> getAllLikeName(String name, Integer pageNum, Integer pageSize) {
         PageRequest pageable = PageRequest.of(pageNum, pageSize);
         Page<IUsersEntity> page = usersEntityRepository.findAllByUsernameLike(name, pageable);
@@ -384,7 +386,7 @@ public class UserServiceImpl implements UserService {
         List<ILabelsEntity> labels = labelsEntityRepository.findAllById(labelId);
         Sort sort = Sort.by(Sort.Direction.ASC, "uid");
         PageRequest pageable = PageRequest.of(pageNum, pageSize, sort);
-        Page<IUsersEntity> page = null;
+        Page<IUsersEntity> page;
         if (!StringUtils.hasText(name)) {
             page = usersEntityRepository.findAllByLabelsIn(labels, pageable);
         } else if (CollectionUtils.isEmpty(labelId)) {

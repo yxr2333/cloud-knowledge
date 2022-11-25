@@ -9,7 +9,6 @@
     <version>1.0-SNAPSHOT</version>
     <modules>
         <module>cloud-commons</module>
-        <module>cloud-eureka-server</module>
         <module>cloud-user</module>
         <module>cloud-resource</module>
         <module>cloud-wish</module>

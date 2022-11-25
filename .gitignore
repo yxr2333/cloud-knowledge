@@ -13,3 +13,4 @@
 /cloud-user/src/main/resources/cos.properties
 .idea
 .idea/**
+/cloud-user/src/main/resources/oss.properties
