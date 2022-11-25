@@ -1,5 +1,10 @@
 package com.sheep.cloud.entity.sell;
 
+import lombok.*;
+
+import javax.persistence.*;
+import java.io.Serializable;
+
 /**
  * Created By Intellij IDEA
  *
@@ -7,12 +12,6 @@ package com.sheep.cloud.entity.sell;
  * @package com.cloud.sheep.model
  * @datetime 2022/9/16 星期五
  */
-
-import lombok.*;
-
-import javax.persistence.*;
-import java.io.Serializable;
-
 @Getter
 @Setter
 @ToString

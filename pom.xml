@@ -46,11 +46,17 @@
         <nacos.version>2.1.0.RELEASE</nacos.version>
         <amqp.version>2.2.4.RELEASE</amqp.version>
         <erupt.version>1.10.12</erupt.version>
+        <qiniu.version>7.9.3</qiniu.version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
-
+            <!--七牛云SDK-->
+            <dependency>
+                <groupId>com.qiniu</groupId>
+                <artifactId>qiniu-java-sdk</artifactId>
+                <version>${qiniu.version}</version>
+            </dependency>
             <!--Erupt后台管理界面依赖-->
             <!--定时任务-->
             <dependency>

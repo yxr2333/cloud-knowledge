@@ -40,7 +40,7 @@
         </repository>
     </repositories>
     <dependencies>
-        
+
         <dependency>
             <groupId>com.alibaba.cloud</groupId>
             <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
@@ -49,6 +49,12 @@
             <groupId>com.sheep</groupId>
             <artifactId>cloud-commons</artifactId>
             <version>1.0-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>xyz.erupt</groupId>
+                    <artifactId>erupt-upms</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <!--类型转换工具-->
         <dependency>

@@ -1,14 +1,6 @@
 package com.sheep.cloud.entity.sell;
 
 
-/**
- * Created By Intellij IDEA
- *
- * @author ssssheep
- * @package com.cloud.sheep.model
- * @datetime 2022/9/16 星期五
- */
-
 import lombok.*;
 import xyz.erupt.annotation.Erupt;
 import xyz.erupt.annotation.EruptField;
@@ -17,12 +9,18 @@ import xyz.erupt.annotation.sub_field.Edit;
 import xyz.erupt.annotation.sub_field.EditType;
 import xyz.erupt.annotation.sub_field.View;
 import xyz.erupt.annotation.sub_field.ViewType;
-import xyz.erupt.annotation.sub_field.sub_edit.BoolType;
-import xyz.erupt.annotation.sub_field.sub_edit.InputType;
-import xyz.erupt.annotation.sub_field.sub_edit.Search;
+import xyz.erupt.annotation.sub_field.sub_edit.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
+
+/**
+ * Created By Intellij IDEA
+ *
+ * @author ssssheep
+ * @package com.cloud.sheep.model
+ * @datetime 2022/9/16 星期五
+ */
 
 @Getter
 @Setter
@@ -118,6 +116,16 @@ public class ISellUserEntity implements Serializable {
     )
     private String email;
 
+    @EruptField(
+            views = @View(
+                    title = "头像"
+            ),
+            edit = @Edit(
+                    title = "头像",
+                    type = EditType.ATTACHMENT, search = @Search, notNull = true,
+                    attachmentType = @AttachmentType(type = AttachmentType.Type.IMAGE)
+            )
+    )
     private String avatar;
 
     @Basic
@@ -133,7 +141,7 @@ public class ISellUserEntity implements Serializable {
 
     @Basic
     @EruptField(
-            views = @View(title = "是否被禁用", type = ViewType.NUMBER),
+            views = @View(title = "是否被禁用", type = ViewType.BOOLEAN),
             edit = @Edit(
                     title = "是否被禁用",
                     type = EditType.BOOLEAN,
@@ -142,16 +150,31 @@ public class ISellUserEntity implements Serializable {
     )
     private Boolean isBanned;
 
+    @EruptField
     private Boolean isBindMainAccount;
 
+    @EruptField
     private Integer mainAccountId;
 
+    @EruptField
     private String mainAccountAppId;
 
+    @EruptField
     private Boolean isBindDing;
 
+    @EruptField
     private String dingAppId;
 
+    @EruptField(
+            views = @View(title = "角色", column = "label"),
+            edit = @Edit(
+                    title = "角色",
+                    notNull = true,
+                    search = @Search,
+                    type = EditType.REFERENCE_TABLE,
+                    referenceTableType = @ReferenceTableType(label = "label")
+            )
+    )
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "role_id", referencedColumnName = "id")
     private ISellUserRoleEntity role;

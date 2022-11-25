@@ -2,7 +2,7 @@ window.eruptSiteConfig = {
     //erupt接口地址，在前后端分离时指定
     domain: "",
     //附件地址，一般情况下不需要指定，如果自定义对象存储空间，则需在此指定附件资源访问地址
-    fileDomain: "",
+    fileDomain: "http://rlsv4aala.hn-bkt.clouddn.com",
     //标题
     title: "云e购管理系统",
     //描述
