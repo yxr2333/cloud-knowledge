@@ -9,8 +9,10 @@
 /cloud-sell/target/
 
 /cloud-sell/src/main/resources/ding.properties
+/cloud-sell/src/main/resources/config/mail.setting
 
 /cloud-user/src/main/resources/cos.properties
+/cloud-user/src/main/resources/config/mail.setting
 .idea
 .idea/**
 /cloud-user/src/main/resources/config/

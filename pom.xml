@@ -29,7 +29,7 @@
         <log4j.version>1.2.17</log4j.version>
         <lombok.version>1.18.24</lombok.version>
         <druid.version>1.2.6</druid.version>
-        <mybatis.version>2.2.0</mybatis.version>
+        <mybatis.version>2.2.2</mybatis.version>
         <junit.version>4.13.2</junit.version>
         <hutool.version>5.8.3</hutool.version>
         <satoken.version>1.30.0</satoken.version>
@@ -43,10 +43,17 @@
         <knife4j.version>2.0.9</knife4j.version>
         <dingtalk.version>1.4.35</dingtalk.version>
         <nacos.version>2.1.0.RELEASE</nacos.version>
+        <amqp.version>2.2.4.RELEASE</amqp.version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
+            <!--RabbitMQ-->
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-starter-bus-amqp</artifactId>
+                <version>${amqp.version}</version>
+            </dependency>
             <!--nacos-->
             <dependency>
                 <groupId>com.alibaba.cloud</groupId>
