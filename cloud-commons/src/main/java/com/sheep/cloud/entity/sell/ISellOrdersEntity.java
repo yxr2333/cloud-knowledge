@@ -108,6 +108,10 @@ public class ISellOrdersEntity implements Serializable {
     @Basic
     private String orderStatusDescription;
 
+    @Basic
+    @Column(nullable = false)
+    private String address;
+
     @Column(nullable = false)
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")

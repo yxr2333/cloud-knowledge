@@ -1,7 +1,10 @@
 package com.sheep.cloud.service;
 
 import com.sheep.cloud.dto.request.sell.PublishWishBuyEntityParam;
+import com.sheep.cloud.dto.request.sell.UpdateWishBuyInfoParam;
 import com.sheep.cloud.dto.response.ApiResult;
+
+import java.util.List;
 
 /**
  * Created By Intellij IDEA
@@ -13,7 +16,7 @@ import com.sheep.cloud.dto.response.ApiResult;
 public interface WishBuyService {
 
     /**
-     * 发布一条新的求购信息
+     * 发布一条新地求购信息
      *
      * @param param 求购信息
      * @return 发布结果
@@ -29,10 +32,18 @@ public interface WishBuyService {
     ApiResult<?> findWishBuyDetail(Integer id);
 
     /**
-     * 根据id删除求购信息
+     * 根据id删除多条求购信息
      *
-     * @param id 求购信息id
+     * @param ids 求购信息id的队列
      * @return 删除结果
      */
-    ApiResult<?> deleteOne(Integer id);
+    ApiResult<?> deleteMultiple(List<Integer> ids);
+
+    /**
+     * 根据id更新求购信息
+     *
+     * @param param 修改求购信息
+     * @return 修改结果
+     */
+    ApiResult<?> updateWishBuyDetail(UpdateWishBuyInfoParam param);
 }

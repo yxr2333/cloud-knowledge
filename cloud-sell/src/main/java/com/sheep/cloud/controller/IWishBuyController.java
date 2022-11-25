@@ -1,6 +1,7 @@
 package com.sheep.cloud.controller;
 
 import com.sheep.cloud.dto.request.sell.PublishWishBuyEntityParam;
+import com.sheep.cloud.dto.request.sell.UpdateWishBuyInfoParam;
 import com.sheep.cloud.dto.response.ApiResult;
 import com.sheep.cloud.service.WishBuyService;
 import io.swagger.annotations.Api;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 /**
  * Created By Intellij IDEA
@@ -41,6 +43,23 @@ public class IWishBuyController {
             return new ApiResult<>().fail("请选择编号");
         }
         return wishBuyService.findWishBuyDetail(id);
+    }
+
+    @ApiImplicitParam(name = "ids", value = "求购id的队列", required = true, dataType = "List<Integer>")
+    @ApiOperation(value = "删除某条求购信息", notes = "删除某条求购信息")
+    @DeleteMapping("/detail")
+    public ApiResult<?> deleteMultiple(@RequestParam(required = false) List<Integer> ids) {
+        return wishBuyService.deleteMultiple(ids);
+    }
+
+    @ApiImplicitParam(name = "param", value = "修改求购信息", required = true, dataType = "UpdateWishBuyInfoParam")
+    @ApiOperation(value = "修改某条求购信息", notes = "修改某条求购信息")
+    @PutMapping("/detail")
+    public ApiResult<?> updateOne(@RequestBody @Valid UpdateWishBuyInfoParam param) {
+        if (param.getId() == null) {
+            return new ApiResult<>().fail("编号不能为空");
+        }
+        return wishBuyService.updateWishBuyDetail(param);
     }
 
 }

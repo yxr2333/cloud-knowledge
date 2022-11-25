@@ -19,3 +19,7 @@
 
 .idea
 .idea/**
+/cloud-user/src/main/resources/oss.properties
+/cloud-user/src/main/resources/config/
+/cloud-sell/src/main/resources/config/
+/.idea/

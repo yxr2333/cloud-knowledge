@@ -1,15 +1,16 @@
 package com.sheep.cloud.service.impl;
 
 import com.sheep.cloud.common.CommonFields;
+import com.sheep.cloud.dao.sell.ISellGoodsTypeEntityRepository;
+import com.sheep.cloud.dao.sell.ISellUserEntityRepository;
+import com.sheep.cloud.dao.sell.ISellWishBuyEntityRepository;
 import com.sheep.cloud.dto.request.sell.PublishWishBuyEntityParam;
+import com.sheep.cloud.dto.request.sell.UpdateWishBuyInfoParam;
 import com.sheep.cloud.dto.response.ApiResult;
 import com.sheep.cloud.dto.response.sell.IWishBuyEntityBaseInfoDTO;
 import com.sheep.cloud.entity.sell.ISellGoodsTypeEntity;
 import com.sheep.cloud.entity.sell.ISellUserEntity;
 import com.sheep.cloud.entity.sell.ISellWishBuyEntity;
-import com.sheep.cloud.dao.sell.ISellGoodsTypeEntityRepository;
-import com.sheep.cloud.dao.sell.ISellUserEntityRepository;
-import com.sheep.cloud.dao.sell.ISellWishBuyEntityRepository;
 import com.sheep.cloud.service.WishBuyService;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -17,6 +18,8 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 /**
  * Created By Intellij IDEA
@@ -45,7 +48,7 @@ public class WishBuyServiceImpl implements WishBuyService {
     private RabbitTemplate rabbitTemplate;
 
     /**
-     * 发布一条新的求购信息
+     * 发布一条新地求购信息
      *
      * @param param 求购信息
      * @return 发布结果
@@ -90,11 +93,41 @@ public class WishBuyServiceImpl implements WishBuyService {
     /**
      * 根据id删除求购信息
      *
-     * @param id 求购信息id
+     * @param ids 求购信息id队列
      * @return 删除结果
      */
     @Override
-    public ApiResult deleteOne(Integer id) {
-        return null;
+    @Transactional(rollbackFor = Exception.class)
+    public ApiResult<?> deleteMultiple(List<Integer> ids) {
+        for (Integer id : ids) {
+            if (id == null) {
+                throw new RuntimeException("id不能为空");
+            }
+            wishBuyEntityRepository.findById(id).orElseThrow(() -> new RuntimeException("求购信息不存在"));
+            wishBuyEntityRepository.deleteById(id);
+        }
+        return new ApiResult<>().success("删除成功");
     }
+    /**
+     * 根据id更新求购信息
+     *
+     * @param param 修改求购信息
+     * @return 修改结果
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public ApiResult<?> updateWishBuyDetail(UpdateWishBuyInfoParam param) {
+        wishBuyEntityRepository.findById(param.getId()).orElseThrow(() -> new RuntimeException("求购信息不存在"));
+        ISellGoodsTypeEntity type = goodsTypeEntityRepository.findById(param.getTypeId())
+                .orElseThrow(() -> new RuntimeException("不支持的商品类型"));
+        ISellWishBuyEntity wishBuy = wishBuyEntityRepository
+                .save(new ISellWishBuyEntity()
+                        .setId(param.getId())
+                        .setDescription(param.getDescription())
+                        .setType(type)
+                        .setImgUrl(param.getImgUrl()));
+        log.info("修改求购信息成功！编号为：{}", wishBuy.getId());
+        return new ApiResult<>().success("修改成功！");
+    }
+
 }
