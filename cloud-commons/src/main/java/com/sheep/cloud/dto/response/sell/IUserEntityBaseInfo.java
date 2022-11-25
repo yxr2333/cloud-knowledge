@@ -5,7 +5,7 @@ import lombok.*;
 import java.io.Serializable;
 
 /**
- * A DTO for the {@link com.sheep.cloud.model.IUserEntity} entity
+ * @author sheep
  */
 @Data
 @AllArgsConstructor

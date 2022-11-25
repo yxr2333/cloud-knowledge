@@ -35,16 +35,12 @@ public class IOrderServiceImpl implements IOrderService {
     private ISellUserEntityRepository userEntityRepository;
     @Autowired
     private ISellOrdersEntityRepository ordersEntityRepository;
-
     @Autowired
     private ISellSafeAccountHistoryEntityRepository safeAccountRepository;
-
     @Autowired
     private ISellRefundOrderHistoryEntityRepository refundOrderHistoryEntityRepository;
-
     @Autowired
     private RabbitTemplate rabbitTemplate;
-
     private ISellUserEntity safeAccount;
 
     @PostConstruct

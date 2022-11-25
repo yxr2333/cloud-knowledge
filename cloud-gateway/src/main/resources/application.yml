@@ -45,19 +45,25 @@ spring:
           uri: lb://cloud-wish-service
           predicates:
             - Path=/wish/**
+          # 交易市场模块
         - id: cloud-sell-service
           uri: lb://cloud-sell-service
           predicates:
             - Path=/sell/**
-eureka:
-  instance:
-    prefer-ip-address: true
-    instance-id: gateway-service-9527
-  client:
-    register-with-eureka: true
-    fetch-registry: true
-    service-url:
-      defaultZone: http://localhost:7001/eureka
+          # 交易市场后端模块
+        - id: cloud-sell-backend-service
+          uri: lb://cloud-sell-backend-service
+          predicates:
+            - Path=/backend/sell/**
+#eureka:
+#  instance:
+#    prefer-ip-address: true
+#    instance-id: gateway-service-9527
+#  client:
+#    register-with-eureka: true
+#    fetch-registry: true
+#    service-url:
+#      defaultZone: http://localhost:7001/eureka
 sa-token:
   # token 名称 (同时也是cookie名称)
   token-name: token

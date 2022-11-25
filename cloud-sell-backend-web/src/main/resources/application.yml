@@ -1,9 +1,15 @@
+server:
+  port: 6457
+  servlet:
+    context-path: /backend/sell
 spring:
+  profiles:
+    active: dev
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
   application:
-    name: cloud-sell-service
+    name: cloud-sell-backend-service
   rabbitmq:
     host: localhost
     port: 5672
@@ -32,7 +38,7 @@ spring:
       ddl-auto: update
     database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
     show-sql: true
-    open-in-view: true
+    open-in-view: false
     properties:
       hibernate:
         format_sql: true
@@ -50,42 +56,12 @@ logging:
     org.hibernate.engine.QueryParameters: debug
     org.hibernate.engine.query.HQLQueryPlan: debug
     org.hibernate.type.descriptor.sql.BasicBinder: trace
-#eureka:
-#  client:
-#    register-with-eureka: true
-#    fetch-registry: true
-#    service-url:
-#      defaultZone: http://localhost:7001/eureka/
-#  instance:
-#    instance-id: sell-service-7080
-#    prefer-ip-address: true
-sa-token:
-  # token 名称 (同时也是cookie名称)
-  token-name: token
-  # token 有效期，单位s 默认30天, -1代表永不过期
-  timeout: 2592000
-  # token 临时有效期 (指定时间内无操作就视为token过期) 单位: 秒
-  activity-timeout: -1
-  # 是否允许同一账号并发登录 (为true时允许一起登录, 为false时新登录挤掉旧登录)
-  is-concurrent: true
-  # 在多人登录同一账号时，是否共用一个token (为true时所有登录共用一个token, 为false时每次登录新建一个token)
-  is-share: false
-  # token风格
-  token-style: random-64
-  # 是否输出操作日志
-  is-log: true
-  is-read-cookie: false
-  is-read-body: false
-  is-read-head: true
-server:
-  port: 7080
-  servlet:
-    context-path: /sell
-knife4j:
-  basic:
-    username: admin
-    password: admin
-sso:
-  grantType: authorization_code
-  clientId: 1
-  clientSecret: M2U5ZklRTVlDVzJHQkxU
+
+
+erupt:
+  csrf-inspect: true
+  redis-session-refresh: true
+  redis-session: true
+erupt-app:
+  pwd-transfer-encrypt: false
+  verify-code-count: 2

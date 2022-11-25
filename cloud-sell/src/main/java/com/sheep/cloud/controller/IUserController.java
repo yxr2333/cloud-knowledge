@@ -121,4 +121,11 @@ public class IUserController {
     public ApiResult<?> doBindMainWebAccount(@RequestBody @Valid BindMainWebAccountParam param) {
         return userService.doBindMainWebAccount(param);
     }
+
+    @ApiOperation(value = "管理员登录", notes = "管理员登录")
+    @ApiImplicitParam(name = "param", value = "管理员登录参数", required = true, dataType = "IUsersLoginVO")
+    @PostMapping("/admin/login")
+    public ApiResult<?> doAdminLogin(@RequestBody @Valid IUsersLoginVO param) {
+        return userService.doAdminLogin(param);
+    }
 }

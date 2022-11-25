@@ -26,7 +26,9 @@ public class SaTokenConfig {
                         "/user/login",
                         "/api/app/go/**",
                         "/user/register",
+                        "/common/**",
                         "/sell/**/**/**/**/**/**/**/**/**",
+                        "/backend/sell/**/**/**/**/**/**/**/**/**",
                         "/user/resetPassword",
                         "/user/find/list/**",
                         "/mail/sendResetCode")
