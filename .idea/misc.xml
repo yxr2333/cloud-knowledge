@@ -12,6 +12,8 @@
         <option value="$PROJECT_DIR$/cloud-eureka-server/pom.xml" />
         <option value="$PROJECT_DIR$/cloud-eureka/pom.xml" />
         <option value="$PROJECT_DIR$/cloud-mail/pom.xml" />
+        <option value="$PROJECT_DIR$/cloud-mq/pom.xml" />
+        <option value="$PROJECT_DIR$/cloud-nacos/pom.xml" />
       </set>
     </option>
   </component>
