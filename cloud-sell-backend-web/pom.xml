@@ -45,12 +45,6 @@
             <groupId>com.qiniu</groupId>
             <artifactId>qiniu-java-sdk</artifactId>
         </dependency>
-        <!--定时任务-->
-        <dependency>
-            <groupId>xyz.erupt</groupId>
-            <artifactId>erupt-job</artifactId>
-            <version>${erupt.version}</version>
-        </dependency>
         <dependency>
             <groupId>com.alibaba.cloud</groupId>
             <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
@@ -59,6 +53,12 @@
             <groupId>com.sheep</groupId>
             <artifactId>cloud-commons</artifactId>
             <version>1.0-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>xyz.erupt</groupId>
+                    <artifactId>erupt-upms</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <!--糊涂工具包-->
         <dependency>
@@ -92,6 +92,10 @@
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
         <!--测试包-->
@@ -109,7 +113,6 @@
         <dependency>
             <groupId>xyz.erupt</groupId>
             <artifactId>erupt-monitor</artifactId>
-            <version>${erupt.version}</version>
         </dependency>
         <!--openfeign-->
         <dependency>

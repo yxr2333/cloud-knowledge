@@ -18,10 +18,10 @@
     </properties>
 
     <dependencies>
+
         <dependency>
             <groupId>xyz.erupt</groupId>
             <artifactId>erupt-upms</artifactId>
-            <version>${erupt.version}</version>
         </dependency>
         <!--redis相关依赖-->
         <dependency>

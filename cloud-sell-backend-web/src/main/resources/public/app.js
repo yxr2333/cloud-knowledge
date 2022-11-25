@@ -12,7 +12,7 @@ window.eruptSiteConfig = {
     //高德地图api key,使用地图组件须指定此属性，amapKey获取地址：https://lbs.amap.com (服务平台为：Web端(JS API))
     amapKey: "6ba79a8d",
     //logo路径
-    logoPath: "https://android-class.oss-cn-hangzhou.aliyuncs.com/imageonline-co-transparentimage.png",
+    logoPath: "https://android-class.oss-cn-hangzhou.aliyuncs.com/20221126030803.png",
     //logo文字
     logoText: "云e购管理系统",
     //注册页地址(仅是一个链接，需要自定义实际样式)

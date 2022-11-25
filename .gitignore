@@ -18,6 +18,14 @@
 /cloud-user/src/main/resources/config/mail.setting
 
 /cloud-sell-backend-web/src/main/resources/application-dev.yml
+/cloud-commons/src/main/resources/application-dev.yml
+/cloud-comment/src/main/resources/application-dev.yml
+/cloud-gateway/src/main/resources/application-dev.yml
+/cloud-oauth/src/main/resources/application-dev.yml
+/cloud-resource/src/main/resources/application-dev.yml
+/cloud-sell/src/main/resources/application-dev.yml
+/cloud-user/src/main/resources/application-dev.yml
+/cloud-wish/src/main/resources/application-dev.yml
 
 .idea
 .idea/**

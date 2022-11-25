@@ -40,7 +40,6 @@ public class ISellUserEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic
     @EruptField
     private Integer id;
 
@@ -122,7 +121,7 @@ public class ISellUserEntity implements Serializable {
             ),
             edit = @Edit(
                     title = "头像",
-                    type = EditType.ATTACHMENT, search = @Search, notNull = true,
+                    type = EditType.ATTACHMENT, notNull = true,
                     attachmentType = @AttachmentType(type = AttachmentType.Type.IMAGE)
             )
     )

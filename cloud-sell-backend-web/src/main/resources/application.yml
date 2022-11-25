@@ -48,6 +48,10 @@ spring:
     nacos:
       discovery:
         server-addr: localhost:8848
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      file-size-threshold: 10MB
 logging:
   level:
     root: info

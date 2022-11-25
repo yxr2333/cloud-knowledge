@@ -79,6 +79,12 @@
             <groupId>com.sheep</groupId>
             <artifactId>cloud-commons</artifactId>
             <version>1.0-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>xyz.erupt</groupId>
+                    <artifactId>erupt-upms</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
 
