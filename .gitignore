@@ -7,7 +7,9 @@
 /cloud-user/target/
 /cloud-wish/target/
 /cloud-sell/target/
+/cloud-sell-backend-web/target/
 /cloud-oauth/target/
+
 
 /cloud-sell/src/main/resources/ding.properties
 /cloud-sell/src/main/resources/config/mail.setting
