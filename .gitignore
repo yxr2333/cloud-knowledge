@@ -13,3 +13,5 @@
 /cloud-user/src/main/resources/cos.properties
 .idea
 .idea/**
+/cloud-user/src/main/resources/config/
+/cloud-sell/src/main/resources/config/
