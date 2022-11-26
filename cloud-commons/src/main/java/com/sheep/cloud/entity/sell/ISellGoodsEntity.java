@@ -83,7 +83,6 @@ public class ISellGoodsEntity implements Serializable {
             edit = @Edit(
                     title = "商品描述",
                     notNull = true,
-                    search = @Search,
                     type = EditType.TEXTAREA,
                     inputType = @InputType
             )

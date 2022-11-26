@@ -18,14 +18,26 @@ window.eruptSiteConfig = {
     //注册页地址(仅是一个链接，需要自定义实际样式)
     registerPage: "",
     //自定义导航栏按钮，配置后将会出现在页面右上角
-    r_tools: [{
-        text: "自定义功能按钮",
-        icon: "fa-eercast",
-        mobileHidden: true,
-        click: function (event) {
-            alert("Function button");
+    r_tools: [
+        {
+            text: "Github后台代码仓库",
+            icon: "fa-github",
+            mobileHidden: true,
+            click: function (event) {
+                // 打开新标签页
+                window.open("https://github.com/yxr2333/cloud-knowledge");
+            }
+        },
+        {
+            text: "Github安卓APP代码仓库",
+            icon: "fa-github-alt",
+            mobileHidden: true,
+            click: function (event) {
+                // 打开新标签页
+                window.open("https://github.com/yxr2333/second-sell-react-native");
+            }
         }
-    }],
+    ],
     //登录成功事件
     login: function (user) {
 

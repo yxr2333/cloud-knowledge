@@ -284,7 +284,6 @@ public class IUserServiceImpl implements IUserService {
      */
     @Override
     public ApiResult<?> doLogin(IUsersLoginVO param) {
-
         ISellUserEntity entity = checkPassword(param.getUsername(), param.getPassword());
         if (entity != null) {
             StpUtil.login(entity.getId() + "");
