@@ -1,5 +1,6 @@
 package com.sheep.cloud.service.impl;
 
+import com.sheep.cloud.os.context.OsStrategyContext;
 import com.sheep.cloud.service.UploadService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,20 +14,26 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 @Slf4j
 public class UploadServiceImpl implements UploadService {
-    private final UploadStrategyContext uploadStrategyContext;
+    private final OsStrategyContext uploadStrategyContext;
 
     @Autowired
-    public UploadServiceImpl(UploadStrategyContext uploadStrategyContext) {
+    public UploadServiceImpl(OsStrategyContext uploadStrategyContext) {
         this.uploadStrategyContext = uploadStrategyContext;
     }
 
     @Override
     public String uploadFile(MultipartFile file, String path, String mode) {
-        return uploadStrategyContext.executeUploadStrategy(file, path, mode);
+        String s = null;
+        try {
+            s = uploadStrategyContext.executeUploadStrategy(file, path, mode);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        return s;
     }
 
     @Override
-    public String deleteFile(String url, String mode) {
-        return uploadStrategyContext.executeDeleteStrategy(url, mode);
+    public void deleteFile(String url, String mode) {
+        uploadStrategyContext.executeDeleteStrategy(url, mode);
     }
 }
