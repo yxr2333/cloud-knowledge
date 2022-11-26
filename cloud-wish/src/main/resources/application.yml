@@ -1,6 +1,8 @@
 server:
   port: 8004
 spring:
+  profiles:
+    active: dev
   application:
     name: cloud-wish-service
   datasource:

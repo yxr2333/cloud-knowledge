@@ -10,27 +10,32 @@ import cn.hutool.http.HttpStatus;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.sheep.cloud.common.CommonFields;
+import com.sheep.cloud.dao.sell.ISellUserEntityRepository;
 import com.sheep.cloud.dto.request.knowledge.IUsersLoginVO;
 import com.sheep.cloud.dto.request.knowledge.IUsersRegisterVO;
-import com.sheep.cloud.dto.request.sell.*;
+import com.sheep.cloud.dto.request.sell.BindDingAccountParam;
+import com.sheep.cloud.dto.request.sell.BindMainWebAccountParam;
+import com.sheep.cloud.dto.request.sell.ResetPasswordParam;
 import com.sheep.cloud.dto.response.ApiResult;
 import com.sheep.cloud.dto.response.OAuth2TokenInfo;
 import com.sheep.cloud.dto.response.knowledge.IUsersBaseInfoDTO;
 import com.sheep.cloud.dto.response.sell.DingUserInfo;
+import com.sheep.cloud.dto.response.sell.IUserEntityBaseInfo;
+import com.sheep.cloud.dto.response.sell.IUserLoginDTO;
 import com.sheep.cloud.dto.response.sell.TokenInfo;
 import com.sheep.cloud.entity.sell.ISellUserEntity;
 import com.sheep.cloud.entity.sell.ISellUserRoleEntity;
-import com.sheep.cloud.dao.sell.ISellUserEntityRepository;
 import com.sheep.cloud.service.IRemoteOAuth2Service;
 import com.sheep.cloud.service.IRemoteUserService;
 import com.sheep.cloud.service.IUserService;
 import com.sheep.cloud.store.RedisUtil;
 import com.sheep.cloud.utils.SignatureUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.PostConstruct;
@@ -64,20 +69,17 @@ public class IUserServiceImpl implements IUserService {
     @Autowired
     private SignatureUtil signatureUtil;
     @Autowired
+    private ModelMapper modelMapper;
+    @Autowired
     private RedisUtil redisUtil;
     @Autowired
-    @Qualifier("normalUser")
     private ISellUserRoleEntity normalUser;
-
     @Value("${sso.grantType}")
     private String grantType;
-
     @Value("${sso.clientId}")
     private String clientId;
-
     @Value("${sso.clientSecret}")
     private String clientSecret;
-
     private String appKey;
     private String appSecret;
 
@@ -89,6 +91,28 @@ public class IUserServiceImpl implements IUserService {
         appKey = properties.getProperty("appKey");
         appSecret = properties.getProperty("appSecret");
         log.info("初始化钉钉配置成功,appKey: {}, appSecret: {}", appKey, appSecret);
+    }
+
+    /**
+     * 管理员后台登录
+     *
+     * @param param 登录参数
+     * @return 登录结果
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public ApiResult<?> doAdminLogin(IUsersLoginVO param) {
+        ISellUserEntity entity = checkPassword(param.getUsername(), param.getPassword());
+        if (entity == null) {
+            throw new RuntimeException("用户名或密码错误");
+        } else {
+            if (entity.getRole().getId().equals(normalUser.getId())) {
+                throw new RuntimeException("该账户无管理员权限");
+            } else {
+                IUserEntityBaseInfo baseInfo = modelMapper.map(entity, IUserEntityBaseInfo.class);
+                return new ApiResult<IUserEntityBaseInfo>().success("登陆成功", baseInfo);
+            }
+        }
     }
 
     @Override
@@ -260,14 +284,15 @@ public class IUserServiceImpl implements IUserService {
      */
     @Override
     public ApiResult<?> doLogin(IUsersLoginVO param) {
-
         ISellUserEntity entity = checkPassword(param.getUsername(), param.getPassword());
         if (entity != null) {
             StpUtil.login(entity.getId() + "");
             String tokenName = StpUtil.getTokenInfo().getTokenName();
             String tokenValue = StpUtil.getTokenInfo().getTokenValue();
             TokenInfo tokenInfo = new TokenInfo(tokenName, tokenValue);
-            return new ApiResult<>().success("登录成功", tokenInfo);
+            IUserEntityBaseInfo baseInfo = modelMapper.map(entity, IUserEntityBaseInfo.class);
+            IUserLoginDTO loginDTO = new IUserLoginDTO(tokenInfo, baseInfo);
+            return new ApiResult<IUserLoginDTO>().success("登录成功", loginDTO);
         } else {
             return new ApiResult<>().error("用户名或密码错误");
         }
@@ -281,7 +306,7 @@ public class IUserServiceImpl implements IUserService {
      * @return 匹配结果, 匹配成功返回用户信息, 匹配失败返回null
      */
     private ISellUserEntity checkPassword(String username, String password) {
-        ISellUserEntity entity = userEntityRepository.findDistinctByUsername(username)
+        ISellUserEntity entity = userEntityRepository.findAllByUsername(username)
                 .orElseThrow(() -> new RuntimeException("用户不存在"));
         String salt = entity.getSalt();
         String pwd = SecureUtil.md5(password + salt);
@@ -344,7 +369,7 @@ public class IUserServiceImpl implements IUserService {
             return new ApiResult<>().error("该邮箱已被其他账户使用");
         }
         ISellUserEntity userEntity = null;
-        Optional<ISellUserEntity> optional = userEntityRepository.findDistinctByUsername(param.getUsername());
+        Optional<ISellUserEntity> optional = userEntityRepository.findAllByUsername(param.getUsername());
         if (optional.isPresent()) {
             userEntity = optional.get();
         }

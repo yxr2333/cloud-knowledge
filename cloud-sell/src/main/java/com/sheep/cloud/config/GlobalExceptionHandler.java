@@ -24,7 +24,8 @@ public class GlobalExceptionHandler {
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(Exception.class)
-    public ApiResult handleException(Exception e) {
+    public ApiResult<?> handleException(Exception e) {
+        e.printStackTrace();
         if (e instanceof MethodArgumentNotValidException) {
             MethodArgumentNotValidException ee = (MethodArgumentNotValidException) e;
             BindingResult bindingResult = ee.getBindingResult();
@@ -35,8 +36,11 @@ public class GlobalExceptionHandler {
                 sb.append(fieldError.getDefaultMessage()).append(";");
             }
             return new ApiResult<>().error(sb.toString());
-        } else {
+        } else if (e instanceof RuntimeException) {
+            System.out.println("运行时异常:" + e.getMessage());
             return new ApiResult<>().error(e.getMessage());
+        } else {
+            return new ApiResult<>().error("系统错误");
         }
     }
 }

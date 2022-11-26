@@ -1,6 +1,8 @@
 server:
   port: 8009
 spring:
+  profiles:
+    active: dev
   application:
     name: cloud-oauth2-service
   redis:

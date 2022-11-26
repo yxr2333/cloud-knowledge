@@ -11,9 +11,11 @@
 
 ### 后端
 
-<img src="http://rk8lx4oxj.hn-bkt.clouddn.com/image-20221120203251604.png" alt="image-20221120203251604" style="zoom:80%;" />
+<img src="https://android-class.oss-cn-hangzhou.aliyuncs.com/20221126035837.png" style="zoom:80%;" />
 
-<img src="http://rk8lx4oxj.hn-bkt.clouddn.com/image-20221120203451858.png" alt="image-20221120203451858" style="zoom: 80%;" />
+<img src="https://android-class.oss-cn-hangzhou.aliyuncs.com/20221126035854.png" alt="image-20221120203451858" style="zoom: 80%;" />
+
+<img src="https://android-class.oss-cn-hangzhou.aliyuncs.com/20221126040002.png" />
 
 后端采用SpringCloud全家桶搭建微服务架构，相关技术选型如下：
 
@@ -33,12 +35,12 @@
 
 ### 前端
 
-<img src="http://rk8lx4oxj.hn-bkt.clouddn.com/image-20221120205004255.png" alt="image-20221120205004255" style="zoom: 50%;" />
+<img src="https://android-class.oss-cn-hangzhou.aliyuncs.com/20221126035905.png" alt="image-20221120205004255" style="zoom: 50%;" />
 
 * **云知星球**模块采用的是`vue.js`技术栈，使用的是`vue3 + typescript + pinia + vuerouter `
-  ![image-20221120210439243](http://rk8lx4oxj.hn-bkt.clouddn.com/image-20221120210439243.png)
+  ![image-20221120210439243](https://android-class.oss-cn-hangzhou.aliyuncs.com/20221126035917.png)
 * **云易购**模块采用的是`React`技术栈，由于需要进行跨端开发，因此使用`React Native + React Navigation + TypeScript`，并结合`MeterialUI`组件库进行开发
-  ![image-20221120210733811](http://rk8lx4oxj.hn-bkt.clouddn.com/image-20221120210733811.png)
+  ![image-20221120210733811](https://android-class.oss-cn-hangzhou.aliyuncs.com/20221126035931.png)
 
 ## 开发情况
 

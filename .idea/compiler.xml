@@ -11,6 +11,7 @@
         <module name="cloud-wish" />
         <module name="cloud-comment" />
         <module name="cloud-oauth" />
+        <module name="cloud-sell-backend-web" />
         <module name="cloud-commons" />
         <module name="cloud-resource" />
         <module name="cloud-gateway" />

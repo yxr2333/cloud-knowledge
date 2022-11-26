@@ -18,6 +18,11 @@
     </properties>
 
     <dependencies>
+
+        <dependency>
+            <groupId>xyz.erupt</groupId>
+            <artifactId>erupt-upms</artifactId>
+        </dependency>
         <!--redis相关依赖-->
         <dependency>
             <groupId>cn.dev33</groupId>

@@ -9,4 +9,5 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 public interface ISellGoodsEntityRepository extends JpaRepository<ISellGoodsEntity, Integer>, JpaSpecificationExecutor<ISellGoodsEntity> {
 
     Page<ISellGoodsEntity> findAllByReleaseUserId(Pageable pageable, Integer uid);
+
 }

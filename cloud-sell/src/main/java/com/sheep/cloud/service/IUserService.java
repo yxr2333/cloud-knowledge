@@ -71,4 +71,13 @@ public interface IUserService {
      * @return 绑定结果
      */
     ApiResult<?> doBindMainWebAccount(BindMainWebAccountParam param);
+
+
+    /**
+     * 管理员后台登录
+     *
+     * @param param 登录参数
+     * @return 登录结果
+     */
+    ApiResult<?> doAdminLogin(IUsersLoginVO param);
 }

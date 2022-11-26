@@ -32,14 +32,13 @@ public enum OrderStatusEnum {
 
     GOODS_DOWN_CANCELED(9, "商品下架，订单取消");
 
-    public Integer code;
-    public String description;
+    public final Integer code;
+    public final String description;
 
-    OrderStatusEnum() {
-    }
 
     OrderStatusEnum(Integer code, String description) {
         this.code = code;
         this.description = description;
     }
+
 }

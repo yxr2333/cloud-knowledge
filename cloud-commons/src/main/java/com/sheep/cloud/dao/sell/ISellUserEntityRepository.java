@@ -2,9 +2,15 @@ package com.sheep.cloud.dao.sell;
 
 import com.sheep.cloud.entity.sell.ISellUserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
+
+/**
+ * @author sheep
+ */
+@Repository
 public interface ISellUserEntityRepository extends JpaRepository<ISellUserEntity, Integer> {
 
     Optional<ISellUserEntity> findByDingAppId(String openId);
@@ -19,5 +25,5 @@ public interface ISellUserEntityRepository extends JpaRepository<ISellUserEntity
 
     Optional<ISellUserEntity> findByMainAccountAppId(String appId);
 
-    Optional<ISellUserEntity> findDistinctByUsername(String username);
+    Optional<ISellUserEntity> findAllByUsername(String username);
 }

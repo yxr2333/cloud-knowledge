@@ -16,6 +16,7 @@
         <module>cloud-gateway</module>
         <module>cloud-oauth</module>
         <module>cloud-sell</module>
+        <module>cloud-sell-backend-web</module>
     </modules>
     <packaging>pom</packaging>
     <properties>
@@ -44,10 +45,54 @@
         <dingtalk.version>1.4.35</dingtalk.version>
         <nacos.version>2.1.0.RELEASE</nacos.version>
         <amqp.version>2.2.4.RELEASE</amqp.version>
+        <erupt.version>1.10.12</erupt.version>
+        <qiniu.version>7.9.3</qiniu.version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
+            <!--七牛云SDK-->
+            <dependency>
+                <groupId>com.qiniu</groupId>
+                <artifactId>qiniu-java-sdk</artifactId>
+                <version>${qiniu.version}</version>
+            </dependency>
+            <!--Erupt后台管理界面依赖-->
+            <!--定时任务-->
+            <dependency>
+                <groupId>xyz.erupt</groupId>
+                <artifactId>erupt-job</artifactId>
+                <version>${erupt.version}</version>
+            </dependency>
+            <!-- 代码生成器模块 -->
+            <dependency>
+                <groupId>xyz.erupt</groupId>
+                <artifactId>erupt-generator</artifactId>
+                <version>${erupt.version}</version>
+            </dependency>
+            <!--服务监控模块-->
+            <dependency>
+                <groupId>xyz.erupt</groupId>
+                <artifactId>erupt-monitor</artifactId>
+                <version>${erupt.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>xyz.erupt</groupId>
+                <artifactId>erupt-upms</artifactId>
+                <version>${erupt.version}</version>
+            </dependency>
+            <!--接口数据安全-->
+            <dependency>
+                <groupId>xyz.erupt</groupId>
+                <artifactId>erupt-security</artifactId>
+                <version>${erupt.version}</version>
+            </dependency>
+            <!--后台WEB界面-->
+            <dependency>
+                <groupId>xyz.erupt</groupId>
+                <artifactId>erupt-web</artifactId>
+                <version>${erupt.version}</version>
+            </dependency>
             <!--RabbitMQ-->
             <dependency>
                 <groupId>org.springframework.cloud</groupId>

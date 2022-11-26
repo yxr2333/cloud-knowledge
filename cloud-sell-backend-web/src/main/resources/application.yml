@@ -1,0 +1,71 @@
+server:
+  port: 6457
+  servlet:
+    context-path: /backend/sell
+spring:
+  profiles:
+    active: dev
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+  application:
+    name: cloud-sell-backend-service
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: admin
+    password: admin
+  redis:
+    database: 5
+    host: localhost
+    port: 6379
+    timeout: 10000
+    lettuce:
+      pool:
+        max-active: 8
+        max-wait: 1000
+        max-idle: 8
+        min-idle: 2
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/summer_training?useUnicode=true&characterEncoding=utf-8&useSSL=false
+    username: root
+    password: 123456
+    hikari:
+      connection-test-query: 'select 1'
+  jpa:
+    hibernate:
+      ddl-auto: update
+    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+    show-sql: true
+    open-in-view: true
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
+        dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      file-size-threshold: 10MB
+logging:
+  level:
+    root: info
+    org.springframework.orm.jpa: DEBUG
+    org.springframework.transaction: DEBUG
+    org.hibernate.engine.QueryParameters: debug
+    org.hibernate.engine.query.HQLQueryPlan: debug
+    org.hibernate.type.descriptor.sql.BasicBinder: trace
+
+
+erupt:
+  csrf-inspect: true
+  redis-session-refresh: true
+  redis-session: true
+erupt-app:
+  pwd-transfer-encrypt: false
+  verify-code-count: 2

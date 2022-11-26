@@ -1,6 +1,8 @@
 server:
   port: 8003
 spring:
+  profiles:
+    active: dev
   application:
     name: cloud-user-service
   redis:

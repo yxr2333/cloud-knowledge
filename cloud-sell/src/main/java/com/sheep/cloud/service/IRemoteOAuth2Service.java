@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
  * @package com.sheep.cloud.service
  * @datetime 2022/9/22 星期四
  */
-@FeignClient(value = "CLOUD-OAUTH2-SERVICE")
+@FeignClient(value = "cloud-oauth2-service")
 @RequestMapping("/oauth2")
 public interface IRemoteOAuth2Service {
 
