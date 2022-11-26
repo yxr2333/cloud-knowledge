@@ -2,6 +2,7 @@ package com.sheep.cloud;
 
 import com.sheep.cloud.dto.request.knowledge.IUsersLoginVO;
 import com.sheep.cloud.service.IGoodsService;
+import com.sheep.cloud.service.IUserInfoService;
 import com.sheep.cloud.service.IUserService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,6 +27,9 @@ public class SecondSellTest {
 
     @Autowired
     private IUserService userService;
+
+    @Autowired
+    private IUserInfoService userInfoService;
 
     @Test
     public void testFindGoodsDetail() {
@@ -53,5 +57,10 @@ public class SecondSellTest {
     public void testUserLogin() {
         IUsersLoginVO param = new IUsersLoginVO("yxr", "123456");
         System.out.println(userService.doLogin(param));
+    }
+
+    @Test
+    public void testFindUserByUserId() {
+        System.out.println(userInfoService.findUserInfoDetail(1));
     }
 }
