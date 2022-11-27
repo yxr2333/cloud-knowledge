@@ -35,7 +35,7 @@ import java.util.Objects;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
+@Entity(name = "sell_t_goods")
 @Table(name = "sell_t_goods")
 @Builder
 @DynamicUpdate
