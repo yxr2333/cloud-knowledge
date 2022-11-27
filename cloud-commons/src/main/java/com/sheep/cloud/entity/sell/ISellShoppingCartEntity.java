@@ -26,12 +26,28 @@ import java.util.List;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
+@Entity(name = "sell_t_shopping_cart")
 @Table(name = "sell_t_shopping_cart")
 @Erupt(
         name = "购物车",
         tree = @Tree(pid = "parent.id", expandLevel = 2),
         linkTree = @LinkTree(field = "goods"))
+@NamedNativeQueries(
+        @NamedNativeQuery(
+                name = "test2",
+                query = "SELECT g.*\n" +
+                        "FROM sell_t_goods g\n" +
+                        "         LEFT JOIN (SELECT tcg.*\n" +
+                        "                    FROM sell_t_shopping_carts_goods tcg\n" +
+                        "                             LEFT JOIN (SELECT cg.goods_id\n" +
+                        "                                        FROM sell_t_shopping_carts_goods cg\n" +
+                        "                                        WHERE cg.shopping_cart_id =\n" +
+                        "                                              (SELECT cart.id FROM sell_t_shopping_cart cart WHERE uid = ?1)) AS t1\n" +
+                        "                                       ON t1.goods_id = tcg.shopping_cart_id) t2 ON g.id = t2.goods_id\n" +
+                        "LIMIT ?2 OFFSET ?3",
+                resultClass = ISellGoodsEntity.class
+        )
+)
 public class ISellShoppingCartEntity {
 
     /*
@@ -48,7 +64,7 @@ public class ISellShoppingCartEntity {
     @JoinColumn(name = "uid", referencedColumnName = "id")
     private ISellUserEntity user;
 
-    @ManyToMany
+    @ManyToMany(fetch=FetchType.EAGER)
     @JoinTable(
             name = "sell_t_shopping_carts_goods",
             joinColumns = @JoinColumn(

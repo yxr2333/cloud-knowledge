@@ -8,18 +8,9 @@
     <file url="file://$PROJECT_DIR$/cloud-commons" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/cloud-commons/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/cloud-commons/src/main/resources" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/cloud-eureka-server" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/cloud-eureka-server/src/main/java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/cloud-eureka-server/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/cloud-gateway" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/cloud-gateway/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/cloud-gateway/src/main/resources" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/cloud-mail/src/main/java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/cloud-mail/src/main/resources" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/cloud-mq/src/main/java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/cloud-mq/src/main/resources" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/cloud-nacos/src/main/java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/cloud-nacos/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/cloud-oauth/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/cloud-oauth/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/cloud-oauth/src/main/resources/application.yml" charset="UTF-8" />
@@ -37,7 +28,5 @@
     <file url="file://$PROJECT_DIR$/cloud-wish" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/cloud-wish/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/cloud-wish/src/main/resources" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/src/main/java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/src/main/resources" charset="UTF-8" />
   </component>
 </project>
