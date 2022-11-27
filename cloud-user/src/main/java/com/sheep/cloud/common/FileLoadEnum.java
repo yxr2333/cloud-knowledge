@@ -13,11 +13,11 @@ public enum FileLoadEnum {
     /**
      * oss
      */
-    OSS("oss", "OssClientServiceImpl"),
+    OSS("oss", "ossClientServiceImpl"),
     /**
      * cos
      */
-    COS("cos", "CosClientServiceImpl");
+    COS("cos", "cosClientServiceImpl");
 
     /**
      * 模式
