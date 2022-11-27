@@ -34,7 +34,7 @@ import java.util.List;
         linkTree = @LinkTree(field = "goods"))
 @NamedNativeQueries(
         @NamedNativeQuery(
-                name = "test2",
+                name = "findShoppingCartGoodsByUid",
                 query = "SELECT g.*\n" +
                         "FROM sell_t_goods g\n" +
                         "         LEFT JOIN (SELECT tcg.*\n" +
@@ -64,7 +64,7 @@ public class ISellShoppingCartEntity {
     @JoinColumn(name = "uid", referencedColumnName = "id")
     private ISellUserEntity user;
 
-    @ManyToMany(fetch=FetchType.EAGER)
+    @ManyToMany
     @JoinTable(
             name = "sell_t_shopping_carts_goods",
             joinColumns = @JoinColumn(
@@ -84,5 +84,6 @@ public class ISellShoppingCartEntity {
                     referenceTreeType = @ReferenceTreeType
             )
     )
+    @ToString.Exclude
     private List<ISellGoodsEntity> goods;
 }

@@ -35,7 +35,7 @@ import java.util.Objects;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
+@Entity(name = "sell_t_goods")
 @Table(name = "sell_t_goods")
 @Builder
 @DynamicUpdate
@@ -83,7 +83,6 @@ public class ISellGoodsEntity implements Serializable {
             edit = @Edit(
                     title = "商品描述",
                     notNull = true,
-                    search = @Search,
                     type = EditType.TEXTAREA,
                     inputType = @InputType
             )

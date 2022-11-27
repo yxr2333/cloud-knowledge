@@ -40,6 +40,10 @@
         </repository>
     </repositories>
     <dependencies>
+        <dependency>
+            <groupId>org.modelmapper</groupId>
+            <artifactId>modelmapper</artifactId>
+        </dependency>
         <!--七牛云SDK-->
         <dependency>
             <groupId>com.qiniu</groupId>

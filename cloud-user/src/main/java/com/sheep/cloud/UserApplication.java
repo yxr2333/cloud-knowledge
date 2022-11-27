@@ -27,7 +27,6 @@ import java.util.Properties;
  * @datetime 2022/8/11 星期四
  */
 @SpringBootApplication
-//@EnableEurekaClient
 @EnableDiscoveryClient
 @EnableFeignClients
 @EntityScan(basePackages = {"com.sheep.cloud.entity.knowledge"})

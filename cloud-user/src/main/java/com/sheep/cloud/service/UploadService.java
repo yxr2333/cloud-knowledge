@@ -11,5 +11,5 @@ public interface UploadService {
     String uploadFile(MultipartFile file, String path, String mode);
 
 
-    String deleteFile(String url, String mode);
+    void deleteFile(String url, String mode);
 }
