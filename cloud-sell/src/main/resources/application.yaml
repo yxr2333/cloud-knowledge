@@ -40,6 +40,7 @@ spring:
         format_sql: true
         show_sql: true
         dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+        spring:
   cloud:
     nacos:
       discovery:

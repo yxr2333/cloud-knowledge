@@ -4,17 +4,16 @@ import com.sheep.cloud.dao.sell.ISellGoodsEntityRepository;
 import com.sheep.cloud.dao.sell.ISellShoppingCartEntityRepository;
 import com.sheep.cloud.dao.sell.ISellUserEntityRepository;
 import com.sheep.cloud.dto.response.ApiResult;
-import com.sheep.cloud.dto.response.PageData;
 import com.sheep.cloud.entity.sell.ISellGoodsEntity;
 import com.sheep.cloud.entity.sell.ISellShoppingCartEntity;
 import com.sheep.cloud.entity.sell.ISellUserEntity;
 import com.sheep.cloud.service.IShoppingCartService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,6 +31,9 @@ public class IShoppingCartServiceImpl implements IShoppingCartService {
 
     @Autowired
     private ISellShoppingCartEntityRepository shoppingCartEntityRepository;
+
+    @Autowired
+    private EntityManager entityManager;
 
     /**
      * 创建一个购物车
@@ -123,25 +125,41 @@ public class IShoppingCartServiceImpl implements IShoppingCartService {
      * 查询购物车所有商品
      *
      * @param id   用户id
-     * @param pageNum  页码
-     * @param pageSize 页大小
+     * @param limit  数据条目数
+     * @param offset 数据偏移量
      * @return 商品列表
      */
     @Override
-    public ApiResult<?> getAll(Integer id,  Integer pageNum, Integer pageSize) {
-        ISellUserEntity iSellUserEntity = userEntityRepository.findById(id).orElseThrow(() -> new RuntimeException("用户不存在"));
-        ISellShoppingCartEntity iSellShoppingCartEntity = shoppingCartEntityRepository.findByUser(iSellUserEntity);
-        List<ISellGoodsEntity> iSellGoodsEntityList = iSellShoppingCartEntity.getGoods();
+    @Transactional(rollbackFor = Exception.class)
+    public ApiResult<?> getAll(Integer id,  Integer limit, Integer offset) {
+//        ISellUserEntity iSellUserEntity = userEntityRepository.findById(id).orElseThrow(() -> new RuntimeException("用户不存在"));
+//        ISellShoppingCartEntity iSellShoppingCartEntity = shoppingCartEntityRepository.findByUser(iSellUserEntity);
+//        List<ISellGoodsEntity> iSellGoodsEntityList = iSellShoppingCartEntity.getGoods();
+//
+//
+////        Page<ISellGoodsEntity> page = (Page<ISellGoodsEntity>) iSellShoppingCartEntity.getGoods();
+//        PageRequest pageable = PageRequest.of(pageNum, pageSize);
+//        Page<ISellGoodsEntity> page = shoppingCartEntityRepository.findAllByUserId(id,pageable);
+//        PageData.PageDataBuilder<ISellGoodsEntity> builder = PageData.builder();
+//        return new ApiResult<PageData<ISellGoodsEntity>>().success(builder.totalPage(page.getTotalPages())
+//                .totalNum(page.getTotalElements())
+//                .data(page.getContent())
+//                .build());
 
+//        ISellUserEntity iSellUserEntity = userEntityRepository.findById(id).orElseThrow(() -> new RuntimeException("用户不存在"));
+//        ISellShoppingCartEntity iSellShoppingCartEntity = shoppingCartEntityRepository.findByUser(iSellUserEntity);
+//        List<ISellGoodsEntity> list1 = iSellShoppingCartEntity.getGoods();
+//        return new ApiResult<List<ISellGoodsEntity>>().success(list1);
 
-//        Page<ISellGoodsEntity> page = (Page<ISellGoodsEntity>) iSellShoppingCartEntity.getGoods();
-        PageRequest pageable = PageRequest.of(pageNum, pageSize);
-        Page<ISellGoodsEntity> page = shoppingCartEntityRepository.findAllByUserId(id,pageable);
-        PageData.PageDataBuilder<ISellGoodsEntity> builder = PageData.builder();
-        return new ApiResult<PageData<ISellGoodsEntity>>().success(builder.totalPage(page.getTotalPages())
-                .totalNum(page.getTotalElements())
-                .data(page.getContent())
-                .build());
+        if (!userEntityRepository.existsById(id)) {
+            throw new RuntimeException("用户不存在");
+        }
+        List<ISellGoodsEntity> list = entityManager.createNamedQuery("findShoppingCartGoodsByUid", ISellGoodsEntity.class)
+                .setParameter(1, id)
+                .setParameter(2, limit)
+                .setParameter(3, offset)
+                .getResultList();
+        return new ApiResult<List<ISellGoodsEntity>>().success(list);
     }
 
     /**

@@ -1,6 +1,7 @@
 package com.sheep.cloud.entity.sell;
 
 import lombok.*;
+import org.hibernate.annotations.Proxy;
 import xyz.erupt.annotation.Erupt;
 import xyz.erupt.annotation.EruptField;
 import xyz.erupt.annotation.sub_erupt.Tree;
@@ -25,6 +26,7 @@ import javax.persistence.*;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
+@Proxy(lazy = false)
 @Entity
 @Table(name = "sell_t_goods_type")
 @Erupt(name = "商品类型", tree = @Tree(pid = "parent.id", expandLevel = 5))

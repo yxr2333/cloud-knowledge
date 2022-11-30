@@ -27,11 +27,15 @@ public class SecondSellBackendTest {
     @Test
     @Transactional(rollbackFor = Exception.class)
     public void test() {
+        System.out.println("=======================================================");
+        System.out.println("=======================================================");
         entityManager.createNamedQuery("findShoppingCartGoodsByUid", ISellGoodsEntity.class)
                 .setParameter(1, 1)
-                .setParameter(2, 1)
-                .setParameter(3, 0)
+                .setParameter(2, 2)
+                .setParameter(3, 1)
                 .getResultList()
                 .forEach(System.out::println);
+        System.out.println("=======================================================");
+        System.out.println("=======================================================");
     }
 }

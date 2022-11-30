@@ -67,14 +67,14 @@ public class IShoppingCartController {
     @ApiOperation(value = "查看用户的购物车", notes = "查看用户的购物车")
     @GetMapping("/shopping")
     public ApiResult<?> findAllGoodsByUserId(@RequestParam(value = "id", required = false) Integer id,
-                                             @RequestParam(value = "pageNum", required = false) Integer pageNum,
-                                             @RequestParam(value = "pageSize", required = false) Integer pageSize) {
+                                             @RequestParam(value = "limit", required = false) Integer limit,
+                                             @RequestParam(value = "offset", required = false) Integer offset) {
         if (id == null) return new ApiResult<>().fail("用户id不能为空");
-        if (pageNum == null || pageSize == null) {
-            pageNum = 1;
-            pageSize = 10;
+        if (limit == null || offset == null) {
+            limit = 3;
+            offset = 0;
         }
-        return iShoppingCartService.getAll(id,pageNum - 1,pageSize);
+        return iShoppingCartService.getAll(id,limit,offset);
     }
 
     @ApiImplicitParam(name = "id", value = "购物车id", required = true, dataType = "Integer")
