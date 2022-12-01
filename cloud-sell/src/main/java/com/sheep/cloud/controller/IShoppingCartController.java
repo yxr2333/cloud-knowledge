@@ -63,17 +63,27 @@ public class IShoppingCartController {
         return iShoppingCartService.deleteOne(sid,gid);
     }
 
+    /**
+     * 查询购物车所有商品
+     *
+     * @param id   用户id
+     * @param page 页号
+     * @param size 页面数据条数
+     * @return 商品列表
+     */
     @ApiImplicitParam(name = "id", value = "用户id", required = true, dataType = "Integer")
     @ApiOperation(value = "查看用户的购物车", notes = "查看用户的购物车")
     @GetMapping("/shopping")
     public ApiResult<?> findAllGoodsByUserId(@RequestParam(value = "id", required = false) Integer id,
-                                             @RequestParam(value = "limit", required = false) Integer limit,
-                                             @RequestParam(value = "offset", required = false) Integer offset) {
+                                             @RequestParam(value = "page", required = false) Integer page,
+                                             @RequestParam(value = "size", required = false) Integer size) {
         if (id == null) return new ApiResult<>().fail("用户id不能为空");
-        if (limit == null || offset == null) {
-            limit = 3;
-            offset = 0;
+        if (page == null || size == null) {
+            page = 3;
+            size = 0;
         }
+        Integer limit = size * (page > 0 ? 1 : 0);
+        Integer offset = page > 0 ? (page - 1) * size : 0;
         return iShoppingCartService.getAll(id,limit,offset);
     }
 

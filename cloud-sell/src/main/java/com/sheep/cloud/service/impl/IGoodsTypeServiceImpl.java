@@ -11,12 +11,9 @@ import io.netty.util.internal.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 
 /**
@@ -124,22 +121,14 @@ public class IGoodsTypeServiceImpl implements IGoodsTypeService {
     /**
      * 分页查询所有商品类别
      *
-     * @param pageable 分页信息
      * @return 查询结果
      */
     @Override
-    public ApiResult<?> getAllIGoodsType(Pageable pageable) {
-        Page<ISellGoodsTypeEntity> page = iSellGoodsTypeEntityRepository.findAll(pageable);
-        List<ISellGoodsTypeEntity> dtoList = page.get()
-                .map(item -> modelMapper.map(item, ISellGoodsTypeEntity.class))
-                .collect(Collectors.toList());
-        return new ApiResult<PageData<ISellGoodsTypeEntity>>().success(builder
-                .totalNum(page.getTotalElements())
-                .totalPage(page.getTotalPages())
-                .data(dtoList)
-                .build()
-        );
+    public ApiResult<?> getAllIGoodsType() {
+        List<ISellGoodsTypeEntity> list = iSellGoodsTypeEntityRepository.findAll();
+        return new ApiResult<>().success(list);
     }
+
 
     /**
      * 查询单个商品类别

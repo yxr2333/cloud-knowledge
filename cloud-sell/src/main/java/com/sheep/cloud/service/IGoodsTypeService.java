@@ -3,7 +3,6 @@ package com.sheep.cloud.service;
 import com.sheep.cloud.dto.request.sell.GoodsTypeInfoParam;
 import com.sheep.cloud.dto.request.sell.GoodsTypeParam;
 import com.sheep.cloud.dto.response.ApiResult;
-import org.springframework.data.domain.Pageable;
 
 public interface IGoodsTypeService {
     /**
@@ -33,10 +32,9 @@ public interface IGoodsTypeService {
     /**
      * 分页查询所有商品类别
      *
-     * @param pageable 分页信息
      * @return 查询结果
      */
-    ApiResult<?> getAllIGoodsType(Pageable pageable);
+    ApiResult<?> getAllIGoodsType();
 
     /**
      * 查询单个商品类别

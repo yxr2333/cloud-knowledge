@@ -9,7 +9,6 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -72,21 +71,12 @@ public class IGoodsTypeComtroller {
     /**
      * 分页查询所有商品类别
      *
-     * @param page 页号
-     * @param size 页面数据条数
      * @return 查询结果
      */
-    @ApiOperation(value = "分页获取所有商品类别", notes = "分页获取所有商品类别")
+    @ApiOperation(value = "获取所有商品类别", notes = "获取所有商品类别")
     @GetMapping("/getAll")
-    public ApiResult<?> getAllIGoodsType(
-            @RequestParam(required = false) Integer page,
-            @RequestParam(required = false) Integer size) {
-        if (page == null || size == null) {
-            page = 1;
-            size = 10;
-        }
-        PageRequest pageable = PageRequest.of(page - 1, size);
-        return iGoodsTypeService.getAllIGoodsType(pageable);
+    public ApiResult<?> getAllIGoodsType() {
+        return iGoodsTypeService.getAllIGoodsType();
     }
 
     /**
