@@ -2,6 +2,7 @@ package com.sheep.cloud.dao.sell;
 
 import com.sheep.cloud.entity.sell.ISellGoodsEntity;
 import com.sheep.cloud.entity.sell.ISellShoppingCartEntity;
+import com.sheep.cloud.entity.sell.ISellUserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -15,6 +16,11 @@ public interface ISellShoppingCartEntityRepository extends JpaRepository<ISellSh
     boolean existsByGoodsId(Integer goodsId);
 
     void deleteAllByGoodsId(Integer goodsId);
+
+    boolean existsByUserId(Integer id);
+
+    ISellShoppingCartEntity findByUser(ISellUserEntity iSellUserEntity);
+
 
     // 对购物车的商品进行分页查询
     @Query(value = "SELECT sell_t_goods.*\n" +

@@ -1,6 +1,7 @@
 package com.sheep.cloud.entity.sell;
 
 import lombok.*;
+import org.hibernate.annotations.Proxy;
 import xyz.erupt.annotation.Erupt;
 import xyz.erupt.annotation.EruptField;
 import xyz.erupt.annotation.sub_erupt.LinkTree;
@@ -26,6 +27,8 @@ import java.util.List;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
+@Proxy(lazy = false)
 @Entity(name = "sell_t_shopping_cart")
 @Table(name = "sell_t_shopping_cart")
 @Erupt(
@@ -64,7 +67,7 @@ public class ISellShoppingCartEntity {
     @JoinColumn(name = "uid", referencedColumnName = "id")
     private ISellUserEntity user;
 
-    @ManyToMany
+    @ManyToMany(fetch=FetchType.EAGER)
     @JoinTable(
             name = "sell_t_shopping_carts_goods",
             joinColumns = @JoinColumn(
