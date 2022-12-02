@@ -5,6 +5,7 @@ import com.sheep.cloud.dto.request.sell.GoodsTypeInfoParam;
 import com.sheep.cloud.dto.request.sell.GoodsTypeParam;
 import com.sheep.cloud.dto.response.ApiResult;
 import com.sheep.cloud.dto.response.PageData;
+import com.sheep.cloud.dto.response.sell.IGoodsTypeEntityBaseInfoDTO;
 import com.sheep.cloud.entity.sell.ISellGoodsTypeEntity;
 import com.sheep.cloud.service.IGoodsTypeService;
 import io.netty.util.internal.StringUtil;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 /**
@@ -29,10 +31,11 @@ public class IGoodsTypeServiceImpl implements IGoodsTypeService {
     private ModelMapper modelMapper;
 
     private final PageData.PageDataBuilder<ISellGoodsTypeEntity> builder = PageData.builder();
+
     /**
      * 添加商品类别
      *
-     * @param goodsTypeParam  商品标签信息
+     * @param goodsTypeParam 商品标签信息
      * @return 添加结果
      */
     @Override
@@ -44,7 +47,7 @@ public class IGoodsTypeServiceImpl implements IGoodsTypeService {
         iSellGoodsTypeEntity.setName(goodsTypeParam.getName());
         if (goodsTypeParam.getFid() == null) {
             iSellGoodsTypeEntity.setTypeLevel(1);
-        } else if (!iSellGoodsTypeEntityRepository.existsById(goodsTypeParam.getFid())){
+        } else if (!iSellGoodsTypeEntityRepository.existsById(goodsTypeParam.getFid())) {
             return new ApiResult<>().warning("父级标签不存在！");
         } else {
             iSellGoodsTypeEntity.setTypeLevel(iSellGoodsTypeEntityRepository.getOne(goodsTypeParam.getFid())
@@ -59,7 +62,7 @@ public class IGoodsTypeServiceImpl implements IGoodsTypeService {
     /**
      * 删除商品类别
      *
-     * @param id  商品标签id
+     * @param id 商品标签id
      * @return 删除结果
      */
     @Override
@@ -72,7 +75,7 @@ public class IGoodsTypeServiceImpl implements IGoodsTypeService {
         }
         List<ISellGoodsTypeEntity> list = iSellGoodsTypeEntityRepository.findAll();
         for (ISellGoodsTypeEntity t : list) {
-            if (t.getParent() != null && t.getParent().getId() == id) {
+            if (t.getParent() != null && t.getParent().getId().equals(id)) {
                 return new ApiResult<>().warning("该标签存在子标签，不允许删除！");
             }
         }
@@ -83,7 +86,7 @@ public class IGoodsTypeServiceImpl implements IGoodsTypeService {
     /**
      * 修改商品类别
      *
-     * @param goodsTypeInfoParam  商品标签信息
+     * @param goodsTypeInfoParam 商品标签信息
      * @return 修改结果
      */
     @Override
@@ -108,7 +111,7 @@ public class IGoodsTypeServiceImpl implements IGoodsTypeService {
             }
             List<ISellGoodsTypeEntity> list = iSellGoodsTypeEntityRepository.findAll();
             for (ISellGoodsTypeEntity t : list) {
-                if (t.getParent() != null && t.getParent().getId() == goodsTypeInfoParam.getId()) {
+                if (t.getParent() != null && t.getParent().getId().equals(goodsTypeInfoParam.getId())) {
                     t.setTypeLevel(iSellGoodsTypeEntity.getTypeLevel() + 1);
                     iSellGoodsTypeEntityRepository.save(t);
                 }
@@ -125,7 +128,10 @@ public class IGoodsTypeServiceImpl implements IGoodsTypeService {
      */
     @Override
     public ApiResult<?> getAllIGoodsType() {
-        List<ISellGoodsTypeEntity> list = iSellGoodsTypeEntityRepository.findAll();
+        List<IGoodsTypeEntityBaseInfoDTO> list = iSellGoodsTypeEntityRepository.findAll()
+                .stream()
+                .map(item -> modelMapper.map(item, IGoodsTypeEntityBaseInfoDTO.class))
+                .collect(Collectors.toList());
         return new ApiResult<>().success(list);
     }
 
@@ -133,7 +139,7 @@ public class IGoodsTypeServiceImpl implements IGoodsTypeService {
     /**
      * 查询单个商品类别
      *
-     * @param id  商品标签id
+     * @param id 商品标签id
      * @return 查询结果
      */
     @Override

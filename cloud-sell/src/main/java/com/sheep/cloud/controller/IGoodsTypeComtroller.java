@@ -32,7 +32,7 @@ public class IGoodsTypeComtroller {
     /**
      * 添加商品类别
      *
-     * @param goodsTypeParam  商品标签信息
+     * @param goodsTypeParam 商品标签信息
      * @return 添加结果
      */
     @ApiImplicitParam(name = "goodsTypeParam", value = "商品类别信息", required = true, dataType = "GoodsTypeParam")
@@ -45,7 +45,7 @@ public class IGoodsTypeComtroller {
     /**
      * 删除商品类别
      *
-     * @param id  商品标签id
+     * @param id 商品标签id
      * @return 删除结果
      */
     @ApiImplicitParam(name = "id", value = "商品类别id", required = true, dataType = "Integer")
@@ -58,7 +58,7 @@ public class IGoodsTypeComtroller {
     /**
      * 修改商品类别
      *
-     * @param goodsTypeInfoParam  商品标签信息
+     * @param goodsTypeInfoParam 商品标签信息
      * @return 修改结果
      */
     @ApiImplicitParam(name = "goodsTypeInfoParam", value = "商品类别信息", required = true, dataType = "GoodsTypeInfoParam")
@@ -75,14 +75,14 @@ public class IGoodsTypeComtroller {
      */
     @ApiOperation(value = "获取所有商品类别", notes = "获取所有商品类别")
     @GetMapping("/getAll")
-    public ApiResult<?> getAllIGoodsType() {
+    public ApiResult<?> getAllGoodsType() {
         return iGoodsTypeService.getAllIGoodsType();
     }
 
     /**
      * 查询单个商品类别
      *
-     * @param id  商品标签id
+     * @param id 商品标签id
      * @return 查询结果
      */
     @ApiOperation(value = "查询指定商品类别", notes = "查询指定商品类别")

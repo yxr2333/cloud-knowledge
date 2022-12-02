@@ -27,6 +27,7 @@ spring:
           uri: lb://cloud-resource-service
           predicates:
             - Path=/resource/**
+
           # 用户模块
         - id: cloud-user-service
           uri: lb://cloud-user-service
@@ -40,6 +41,12 @@ spring:
           uri: lb://cloud-user-service
           predicates:
             - Path=/common/**
+        - id: cloud-user-service-oss
+          uri: lb://cloud-user-service
+          predicates:
+            - Path=/os/**
+
+
           # 心愿墙模块
         - id: cloud-wish-service
           uri: lb://cloud-wish-service

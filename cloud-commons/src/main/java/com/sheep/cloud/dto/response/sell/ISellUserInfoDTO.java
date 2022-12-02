@@ -1,5 +1,6 @@
-package com.sheep.cloud.entity.sell;
+package com.sheep.cloud.dto.response.sell;
 
+import com.sheep.cloud.entity.sell.ISellUserRoleEntity;
 import lombok.*;
 
 import javax.persistence.*;
@@ -14,17 +15,11 @@ import java.io.Serializable;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
-@Table(name = "sell_t_users")
 @Builder
-public class ISellUserInfoEntity implements Serializable {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic
+public class ISellUserInfoDTO implements Serializable {
+
     private Integer id;
 
-    @Basic
-    @Column(unique = true, nullable = false)
     private String username;
 
     private String description;

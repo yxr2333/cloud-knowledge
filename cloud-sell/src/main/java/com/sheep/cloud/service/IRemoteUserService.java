@@ -27,4 +27,8 @@ public interface IRemoteUserService {
 
     @PostMapping(value = "/common/upload", consumes = "multipart/form-data", produces = "application/json")
     ApiResult<?> uploadImg(@RequestPart("file") MultipartFile file) throws IOException;
+
+    @PostMapping(value = "/os/default", consumes = "multipart/form-data", produces = "application/json")
+    ApiResult<?> uploadImgNew(
+            @RequestPart("file") MultipartFile file);
 }

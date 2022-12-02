@@ -50,6 +50,12 @@
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>com.github.xiaoymin</groupId>
+                <artifactId>knife4j-aggregation-spring-boot-starter</artifactId>
+                <!--在引用时请在maven中央仓库搜索aggregation最新版本号-->
+                <version>${knife4j.version}</version>
+            </dependency>
             <!--七牛云SDK-->
             <dependency>
                 <groupId>com.qiniu</groupId>

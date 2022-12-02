@@ -1,11 +1,9 @@
 package com.sheep.cloud.controller;
 
+import com.sheep.cloud.dto.response.ApiResult;
 import com.sheep.cloud.service.UploadService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
@@ -19,8 +17,18 @@ public class OsController {
     private UploadService uploadService;
 
     @PostMapping
-    public String uploadFile(MultipartFile file, String path, String mode) {
-        return uploadService.uploadFile(file, path, mode);
+    public ApiResult<?> uploadFile(
+            @RequestPart("file") MultipartFile file,
+            @RequestParam String path,
+            @RequestParam String mode) {
+        String url = uploadService.uploadFile(file, path, mode);
+        return new ApiResult<>().success(null, url);
+    }
+
+    @PostMapping("/default")
+    public ApiResult<?> uploadFileDefault(@RequestParam("file") MultipartFile file) {
+        String url = uploadService.uploadFile(file, "test", "oss");
+        return new ApiResult<>().success(null, url);
     }
 
     @DeleteMapping

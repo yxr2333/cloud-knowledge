@@ -35,7 +35,6 @@ mybatis:
   mapperLocations: classpath:mapper/*.xml
   type-aliases-package: com.sheep.cloud.entity    # 所有Entity别名类所在包
 
-
 #eureka:
 #  client:
 #    register-with-eureka: true
@@ -63,3 +62,16 @@ sa-token:
   is-read-cookie: false
   is-read-body: false
   is-read-head: true
+logging:
+  level:
+    feign.Logger: debug
+    com.sheep.cloud.feign: debug
+    root: info
+    sql: trace
+feign:
+  client:
+    config:
+      default:
+        connectTimeout: 5000
+        readTimeout: 5000
+        loggerLevel: full

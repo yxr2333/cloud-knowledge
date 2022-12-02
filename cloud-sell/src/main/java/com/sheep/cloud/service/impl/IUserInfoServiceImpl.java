@@ -5,7 +5,7 @@ import com.sheep.cloud.dto.request.sell.UpdateUserEmailParam;
 import com.sheep.cloud.dto.request.sell.UpdateUserInfoParam;
 import com.sheep.cloud.dto.response.ApiResult;
 import com.sheep.cloud.entity.sell.ISellUserEntity;
-import com.sheep.cloud.entity.sell.ISellUserInfoEntity;
+import com.sheep.cloud.dto.response.sell.ISellUserInfoDTO;
 import com.sheep.cloud.service.IUserInfoService;
 import com.sheep.cloud.store.RedisUtil;
 import org.modelmapper.ModelMapper;
@@ -64,7 +64,7 @@ public class IUserInfoServiceImpl implements IUserInfoService {
     public ApiResult<?> findUserInfoDetail(Integer id) {
         ISellUserEntity userEntity = userEntityRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("未查询到用户信息"));
-        ISellUserInfoEntity baseInfoDTO = modelMapper.map(userEntity, ISellUserInfoEntity.class);
+        ISellUserInfoDTO baseInfoDTO = modelMapper.map(userEntity, ISellUserInfoDTO.class);
         return new ApiResult<>().success(baseInfoDTO);
     }
 }

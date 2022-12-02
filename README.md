@@ -59,3 +59,9 @@
   * 首先启动本机的Nacos和RabbitMQ服务
   * 然后再使用IDEA运行SpringBoot服务即可
 
+# 致谢
+
+**感谢Jet Brains公司为开发者提供相关软件支持！**
+
+<img src="https://th.bing.com/th/id/R.f335507db36d014c43d720076fd22524?rik=bXGJCZljWw1fSw&pid=ImgRaw&r=0" alt="查看源图像" style="zoom: 10%;" />
+
