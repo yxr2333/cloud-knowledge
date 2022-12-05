@@ -84,7 +84,7 @@ public class IShoppingCartServiceImpl implements IShoppingCartService {
         ISellGoodsEntity iSellGoodsEntity = goodsEntityRepository.findById(gid).orElseThrow(() -> new RuntimeException("商品不存在!"));
         List<ISellGoodsEntity> list = iSellShoppingCartEntity.getGoods();
         for(ISellGoodsEntity i : list) {
-            if (i.getId() == iSellGoodsEntity.getId()) {
+            if (i.getId().equals(iSellGoodsEntity.getId())) {
                 return new ApiResult<>().warning("请勿重复添加商品！");
             }
         }
@@ -108,8 +108,9 @@ public class IShoppingCartServiceImpl implements IShoppingCartService {
         List<ISellGoodsEntity> list = iSellShoppingCartEntity.getGoods();
         boolean flag = true;
         for(ISellGoodsEntity i : list) {
-            if (i.getId() == iSellGoodsEntity.getId()) {
+            if (i.getId().equals(iSellGoodsEntity.getId())) {
                 flag = false;
+                break;
             }
         }
         if (flag) {

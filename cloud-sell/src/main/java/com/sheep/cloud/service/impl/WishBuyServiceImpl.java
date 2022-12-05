@@ -4,9 +4,11 @@ import com.sheep.cloud.common.CommonFields;
 import com.sheep.cloud.dao.sell.ISellGoodsTypeEntityRepository;
 import com.sheep.cloud.dao.sell.ISellUserEntityRepository;
 import com.sheep.cloud.dao.sell.ISellWishBuyEntityRepository;
+import com.sheep.cloud.dto.request.sell.FindWishBuyConditionParam;
 import com.sheep.cloud.dto.request.sell.PublishWishBuyEntityParam;
 import com.sheep.cloud.dto.request.sell.UpdateWishBuyInfoParam;
 import com.sheep.cloud.dto.response.ApiResult;
+import com.sheep.cloud.dto.response.PageData;
 import com.sheep.cloud.dto.response.sell.IWishBuyEntityBaseInfoDTO;
 import com.sheep.cloud.entity.sell.ISellGoodsTypeEntity;
 import com.sheep.cloud.entity.sell.ISellUserEntity;
@@ -16,10 +18,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.criteria.Predicate;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created By Intellij IDEA
@@ -40,6 +48,8 @@ public class WishBuyServiceImpl implements WishBuyService {
 
     @Autowired
     private ISellGoodsTypeEntityRepository goodsTypeEntityRepository;
+
+    private final PageData.PageDataBuilder<ISellWishBuyEntity> builder = PageData.builder();
 
     @Autowired
     private ModelMapper modelMapper;
@@ -90,6 +100,35 @@ public class WishBuyServiceImpl implements WishBuyService {
         return new ApiResult<>().success(baseInfoDTO);
     }
 
+    @Override
+    public ApiResult<?> findWishBuyDetailConditionally(Pageable pageable, FindWishBuyConditionParam queryParam) {
+        Specification<ISellWishBuyEntity> specification =
+                (root, query, criteriaBuilder) -> {
+                    List<Predicate> predicates = new ArrayList<>();
+                    predicates.add(criteriaBuilder.like(root.get("goodName"), queryParam.getGoodName()));
+                    if (queryParam.getType() != null) {
+                        predicates.add(criteriaBuilder.equal(root.get("type"), queryParam.getType()));
+                    }
+                    if (queryParam.getDescription() != null) {
+                        predicates.add(criteriaBuilder.equal(root.get("describe"), queryParam.getDescription()));
+                    }
+                    if (queryParam.getType() != null) {
+                        ISellGoodsTypeEntity goodsType = goodsTypeEntityRepository.findByName(queryParam.getType());
+                        predicates.add(criteriaBuilder.equal(root.get("type"), goodsType.getId()));
+                    }
+                    return criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()]));
+                };
+        Page<ISellWishBuyEntity> page = wishBuyEntityRepository.findAll(specification, pageable);
+        List<ISellWishBuyEntity> dtoList = page.get()
+                .map(item -> modelMapper.map(item, ISellWishBuyEntity.class))
+                .collect(Collectors.toList());
+        return new ApiResult<PageData<ISellWishBuyEntity>>().success(builder
+                .totalNum(page.getTotalElements())
+                .totalPage(page.getTotalPages())
+                .data(dtoList)
+                .build());
+    }
+
     /**
      * 根据id删除求购信息
      *
@@ -108,6 +147,7 @@ public class WishBuyServiceImpl implements WishBuyService {
         }
         return new ApiResult<>().success("删除成功");
     }
+
     /**
      * 根据id更新求购信息
      *

@@ -14,4 +14,12 @@ public interface IUserInfoService {
     ApiResult<?> updateBasicInfo(UpdateUserInfoParam infoParam);
 
     ApiResult<?> findUserInfoDetail(Integer id);
+
+    ApiResult<?> findUserWishBuyList(Integer id);
+
+    ApiResult<?> findUserOrderList(Integer id);
+
+    ApiResult<?> findUserPublishGoodList(Integer id);
+
+    ApiResult<?> findUserSellOrderList(Integer id);
 }

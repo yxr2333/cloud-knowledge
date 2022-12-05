@@ -1,17 +1,26 @@
 package com.sheep.cloud.service.impl;
 
+import com.sheep.cloud.dao.sell.ISellGoodsEntityRepository;
+import com.sheep.cloud.dao.sell.ISellOrdersEntityRepository;
 import com.sheep.cloud.dao.sell.ISellUserEntityRepository;
+import com.sheep.cloud.dao.sell.ISellWishBuyEntityRepository;
 import com.sheep.cloud.dto.request.sell.UpdateUserEmailParam;
 import com.sheep.cloud.dto.request.sell.UpdateUserInfoParam;
 import com.sheep.cloud.dto.response.ApiResult;
+import com.sheep.cloud.dto.response.sell.*;
+import com.sheep.cloud.entity.sell.ISellGoodsEntity;
+import com.sheep.cloud.entity.sell.ISellOrdersEntity;
 import com.sheep.cloud.entity.sell.ISellUserEntity;
-import com.sheep.cloud.dto.response.sell.ISellUserInfoDTO;
+import com.sheep.cloud.entity.sell.ISellWishBuyEntity;
 import com.sheep.cloud.service.IUserInfoService;
 import com.sheep.cloud.store.RedisUtil;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 /**
  * @author Zhang Jinming
@@ -21,6 +30,15 @@ import org.springframework.transaction.annotation.Transactional;
 public class IUserInfoServiceImpl implements IUserInfoService {
     @Autowired
     private ISellUserEntityRepository userEntityRepository;
+
+    @Autowired
+    private ISellWishBuyEntityRepository wishBuyEntityRepository;
+
+    @Autowired
+    private ISellGoodsEntityRepository goodsEntityRepository;
+
+    @Autowired
+    private ISellOrdersEntityRepository ordersEntityRepository;
 
     @Autowired
     private ModelMapper modelMapper;
@@ -65,6 +83,34 @@ public class IUserInfoServiceImpl implements IUserInfoService {
         ISellUserEntity userEntity = userEntityRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("未查询到用户信息"));
         ISellUserInfoDTO baseInfoDTO = modelMapper.map(userEntity, ISellUserInfoDTO.class);
+        return new ApiResult<>().success(baseInfoDTO);
+    }
+
+    @Override
+    public ApiResult<?> findUserWishBuyList(Integer id) {
+        List<ISellWishBuyEntity> wishBuyEntityList = wishBuyEntityRepository.findAllByPubUserId(id);
+        List<IWishBuyUserInfoDTO> baseInfoDTO = modelMapper.map(wishBuyEntityList, new TypeToken<List<IWishBuyUserInfoDTO>>() {}.getType());
+        return new ApiResult<>().success(baseInfoDTO);
+    }
+
+    @Override
+    public ApiResult<?> findUserOrderList(Integer id) {
+        List<ISellOrdersEntity> ordersEntityList = ordersEntityRepository.findAllByBuyerId(id);
+        List<IOrderUserInfoDTO> baseInfoDTO = modelMapper.map(ordersEntityList, new TypeToken<List<IOrderUserInfoDTO>>() {}.getType());
+        return new ApiResult<>().success(baseInfoDTO);
+    }
+
+    @Override
+    public ApiResult<?> findUserPublishGoodList(Integer id) {
+        List<ISellGoodsEntity> goodsEntityList = goodsEntityRepository.findAllByReleaseUserId(id);
+        List<IGoodsEntityBaseInfoDTO> baseInfoDTO = modelMapper.map(goodsEntityList, new TypeToken<List<IGoodsEntityBaseInfoDTO>>() {}.getType());
+        return new ApiResult<>().success(baseInfoDTO);
+    }
+
+    @Override
+    public ApiResult<?> findUserSellOrderList(Integer id) {
+        List<ISellOrdersEntity> ordersEntityList = ordersEntityRepository.findAllBySellerId(id);
+        List<IOrderUserInfoDTO> baseInfoDTO = modelMapper.map(ordersEntityList, new TypeToken<List<IOrderUserInfoDTO>>() {}.getType());
         return new ApiResult<>().success(baseInfoDTO);
     }
 }
