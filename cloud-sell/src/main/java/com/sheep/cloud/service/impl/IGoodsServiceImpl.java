@@ -7,6 +7,7 @@ import com.sheep.cloud.dto.request.sell.UpdateGoodsInfoParam;
 import com.sheep.cloud.dto.response.ApiResult;
 import com.sheep.cloud.dto.response.PageData;
 import com.sheep.cloud.dto.response.sell.IGoodsEntityBaseInfoDTO;
+import com.sheep.cloud.dto.response.sell.IGoodsSimpleInfoDTO;
 import com.sheep.cloud.entity.sell.ISellGoodsEntity;
 import com.sheep.cloud.entity.sell.ISellGoodsTypeEntity;
 import com.sheep.cloud.entity.sell.ISellUserEntity;
@@ -37,33 +38,38 @@ public class IGoodsServiceImpl implements IGoodsService {
 
     @Autowired
     private ISellGoodsEntityRepository goodsEntityRepository;
-
     @Autowired
     private ISellGoodsTypeEntityRepository goodsTypeEntityRepository;
-
     @Autowired
     private ISellUserEntityRepository userEntityRepository;
-
     @Autowired
     private ISellImageEntityRepository imageEntityRepository;
-
     @Autowired
     private ISellOrdersEntityRepository ordersEntityRepository;
-
     @Autowired
     private ISellShoppingCartEntityRepository shoppingCartEntityRepository;
-
     @Autowired
     private ISellSpikeDetailsEntityRepository spikeDetailsEntityRepository;
-
     @Autowired
     private ISellWishBuyEntityRepository wishBuyEntityRepository;
-
     @Autowired
     private ModelMapper modelMapper;
 
     private final PageData.PageDataBuilder<IGoodsEntityBaseInfoDTO> builder = PageData.builder();
 
+    /**
+     * 随机抽取size个商品
+     *
+     * @param size 数量
+     * @return 商品列表
+     */
+    @Override
+    public ApiResult<?> randomFindGoods(Integer size) {
+        List<IGoodsSimpleInfoDTO> list = goodsEntityRepository.randomFindGoods(size).stream()
+                .map(goodsEntity -> modelMapper.map(goodsEntity, IGoodsSimpleInfoDTO.class))
+                .collect(Collectors.toList());
+        return new ApiResult<>().success("ok", list);
+    }
 
     /**
      * 发布一个商品

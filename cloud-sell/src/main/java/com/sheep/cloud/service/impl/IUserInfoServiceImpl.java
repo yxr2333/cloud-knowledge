@@ -1,26 +1,19 @@
 package com.sheep.cloud.service.impl;
 
-import com.sheep.cloud.dao.sell.ISellGoodsEntityRepository;
-import com.sheep.cloud.dao.sell.ISellOrdersEntityRepository;
+import cn.hutool.crypto.SecureUtil;
 import com.sheep.cloud.dao.sell.ISellUserEntityRepository;
-import com.sheep.cloud.dao.sell.ISellWishBuyEntityRepository;
+import com.sheep.cloud.dto.request.sell.UpdateLoginPasswordParam;
 import com.sheep.cloud.dto.request.sell.UpdateUserEmailParam;
 import com.sheep.cloud.dto.request.sell.UpdateUserInfoParam;
 import com.sheep.cloud.dto.response.ApiResult;
-import com.sheep.cloud.dto.response.sell.*;
-import com.sheep.cloud.entity.sell.ISellGoodsEntity;
-import com.sheep.cloud.entity.sell.ISellOrdersEntity;
 import com.sheep.cloud.entity.sell.ISellUserEntity;
-import com.sheep.cloud.entity.sell.ISellWishBuyEntity;
+import com.sheep.cloud.dto.response.sell.ISellUserInfoDTO;
 import com.sheep.cloud.service.IUserInfoService;
 import com.sheep.cloud.store.RedisUtil;
 import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 /**
  * @author Zhang Jinming
@@ -30,19 +23,8 @@ import java.util.List;
 public class IUserInfoServiceImpl implements IUserInfoService {
     @Autowired
     private ISellUserEntityRepository userEntityRepository;
-
-    @Autowired
-    private ISellWishBuyEntityRepository wishBuyEntityRepository;
-
-    @Autowired
-    private ISellGoodsEntityRepository goodsEntityRepository;
-
-    @Autowired
-    private ISellOrdersEntityRepository ordersEntityRepository;
-
     @Autowired
     private ModelMapper modelMapper;
-
     @Autowired
     private RedisUtil redisUtil;
 
@@ -86,31 +68,51 @@ public class IUserInfoServiceImpl implements IUserInfoService {
         return new ApiResult<>().success(baseInfoDTO);
     }
 
+    /**
+     * 更新用户的邮箱
+     *
+     * @param email  新的邮箱地址
+     * @param userId 用户编号
+     * @return 更新结果
+     */
     @Override
-    public ApiResult<?> findUserWishBuyList(Integer id) {
-        List<ISellWishBuyEntity> wishBuyEntityList = wishBuyEntityRepository.findAllByPubUserId(id);
-        List<IWishBuyUserInfoDTO> baseInfoDTO = modelMapper.map(wishBuyEntityList, new TypeToken<List<IWishBuyUserInfoDTO>>() {}.getType());
-        return new ApiResult<>().success(baseInfoDTO);
+    public ApiResult<?> updateSimpleEmail(String email, Integer userId) {
+        ISellUserEntity userEntity = userEntityRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("未查询到用户信息"));
+        userEntity.setEmail(email);
+        userEntityRepository.save(userEntity);
+        return new ApiResult<>().success("邮箱更新成功！");
     }
 
+    /**
+     * 更新用户的登录密码
+     *
+     * @param param 更新参数
+     * @return 更新结果
+     */
     @Override
-    public ApiResult<?> findUserOrderList(Integer id) {
-        List<ISellOrdersEntity> ordersEntityList = ordersEntityRepository.findAllByBuyerId(id);
-        List<IOrderUserInfoDTO> baseInfoDTO = modelMapper.map(ordersEntityList, new TypeToken<List<IOrderUserInfoDTO>>() {}.getType());
-        return new ApiResult<>().success(baseInfoDTO);
-    }
-
-    @Override
-    public ApiResult<?> findUserPublishGoodList(Integer id) {
-        List<ISellGoodsEntity> goodsEntityList = goodsEntityRepository.findAllByReleaseUserId(id);
-        List<IGoodsEntityBaseInfoDTO> baseInfoDTO = modelMapper.map(goodsEntityList, new TypeToken<List<IGoodsEntityBaseInfoDTO>>() {}.getType());
-        return new ApiResult<>().success(baseInfoDTO);
-    }
-
-    @Override
-    public ApiResult<?> findUserSellOrderList(Integer id) {
-        List<ISellOrdersEntity> ordersEntityList = ordersEntityRepository.findAllBySellerId(id);
-        List<IOrderUserInfoDTO> baseInfoDTO = modelMapper.map(ordersEntityList, new TypeToken<List<IOrderUserInfoDTO>>() {}.getType());
-        return new ApiResult<>().success(baseInfoDTO);
+    public ApiResult<?> updateLoginPassword(UpdateLoginPasswordParam param) {
+        Object o = redisUtil.get(param.getRequestKey());
+        if (o == null) {
+            return new ApiResult<>().error("未获取验证码或验证码已过期");
+        }
+        String code = o.toString();
+        if (code.equals(param.getCode())) {
+            // 删除验证码
+            ISellUserEntity userEntity = userEntityRepository.findById(param.getUserId()).orElseThrow(() -> new RuntimeException("未查询到用户信息"));
+            String salt = userEntity.getSalt();
+            String oldPassword = userEntity.getPassword();
+            String md5 = SecureUtil.md5(param.getOldPassword() + salt);
+            if (!oldPassword.equals(md5)) {
+                throw new RuntimeException("旧密码不正确");
+            }
+            String newPassword = SecureUtil.md5(param.getNewPassword() + salt);
+            userEntity.setPassword(newPassword);
+            userEntityRepository.save(userEntity);
+            redisUtil.delete(param.getRequestKey());
+            return new ApiResult<>().success("密码更新成功！");
+        } else {
+            return new ApiResult<>().error("验证码不正确！");
+        }
     }
 }

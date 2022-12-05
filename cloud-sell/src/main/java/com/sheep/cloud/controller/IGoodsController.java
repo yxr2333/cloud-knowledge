@@ -57,6 +57,13 @@ public class IGoodsController {
         return goodsService.findGoodsDetail(gid);
     }
 
+    @ApiOperation(value = "随机获取商品信息", notes = "随机获取商品信息")
+    @ApiImplicitParam(name = "size", value = "数量", required = true, dataType = "Integer")
+    @GetMapping("/random")
+    public ApiResult<?> findRandomGoods(@RequestParam Integer size) {
+        return goodsService.randomFindGoods(size);
+    }
+
 
     @ApiImplicitParams(
             value = {
