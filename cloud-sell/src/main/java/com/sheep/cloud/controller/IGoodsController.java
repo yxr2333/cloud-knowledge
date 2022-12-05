@@ -1,5 +1,6 @@
 package com.sheep.cloud.controller;
 
+import com.sheep.cloud.dto.request.sell.FindGoodsSortConditionParam;
 import com.sheep.cloud.dto.request.sell.SaveOneGoodParam;
 import com.sheep.cloud.dto.request.sell.UpdateGoodsInfoParam;
 import com.sheep.cloud.dto.response.ApiResult;
@@ -119,20 +120,22 @@ public class IGoodsController {
             value = {
                     @ApiImplicitParam(name = "page", value = "页码", defaultValue = "1", dataType = "Integer"),
                     @ApiImplicitParam(name = "size", value = "每页数量", defaultValue = "10", dataType = "Integer"),
-                    @ApiImplicitParam(name = "keyWord", value = "商品关键字", required = true, dataType = "String")
+                    @ApiImplicitParam(name = "keyWord", value = "商品关键字", dataType = "String"),
+                    @ApiImplicitParam(name = "conditionParam", value = "搜索条件", dataType = "FindGoodsSortConditionParam")
             }
     )
-    @ApiOperation(value = "根据关键字查询商品", notes = "根据关键字查询商品,关键字搜索范围为商品名称，描述，商家用户名，商家描述")
+    @ApiOperation(value = "根据关键字查询商品", notes = "根据关键字查询商品,关键字搜索范围为商品名称，描述，商家用户名，商家描述,并根据条件对结果进行排序")
     @GetMapping("/key")
     public ApiResult<?> findAllGoodsByKeyWord(@RequestParam(required = false) Integer page,
                                               @RequestParam(required = false) Integer size,
-                                              @RequestParam String keyWord) {
+                                              @RequestParam String keyWord,
+                                              FindGoodsSortConditionParam conditionParam) {
         if (page == null || size == null) {
             page = 1;
             size = 10;
         }
         PageRequest pageable = PageRequest.of(page - 1, size);
-        return goodsService.findAllGoodsByKeyWord(keyWord, pageable);
+        return goodsService.findAllGoodsByKeyWord(keyWord, conditionParam, pageable);
     }
 
 }

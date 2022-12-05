@@ -1,5 +1,6 @@
 package com.sheep.cloud.service;
 
+import com.sheep.cloud.dto.request.sell.FindGoodsSortConditionParam;
 import com.sheep.cloud.dto.request.sell.SaveOneGoodParam;
 import com.sheep.cloud.dto.request.sell.UpdateGoodsInfoParam;
 import com.sheep.cloud.dto.response.ApiResult;
@@ -73,5 +74,5 @@ public interface IGoodsService {
      */
     ApiResult<?> randomFindGoods(Integer size);
 
-    ApiResult<?> findAllGoodsByKeyWord(String keyWord, Pageable pageable);
+    ApiResult<?> findAllGoodsByKeyWord(String keyWord, FindGoodsSortConditionParam conditionParam, Pageable pageable);
 }
