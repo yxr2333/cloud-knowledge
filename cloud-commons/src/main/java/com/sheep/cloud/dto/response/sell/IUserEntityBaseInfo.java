@@ -16,4 +16,5 @@ public class IUserEntityBaseInfo implements Serializable {
     private String description;
     private String email;
     private String avatar;
+    private String phone;
 }

@@ -115,6 +115,17 @@ public class ISellUserEntity implements Serializable {
     )
     private String email;
 
+    @Basic
+    @EruptField(
+            views = @View(title = "手机号"),
+            edit = @Edit(
+                    title = "手机号",
+                    type = EditType.INPUT,
+                    inputType = @InputType(type = "tel")
+            )
+    )
+    private String phone;
+
     @EruptField(
             views = @View(
                     title = "头像"
