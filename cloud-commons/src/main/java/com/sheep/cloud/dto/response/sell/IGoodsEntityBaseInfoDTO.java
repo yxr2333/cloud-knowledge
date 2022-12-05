@@ -9,9 +9,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
-/**
- * A DTO for the {@link com.sheep.cloud.model.IGoodsEntity} entity
- */
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Data

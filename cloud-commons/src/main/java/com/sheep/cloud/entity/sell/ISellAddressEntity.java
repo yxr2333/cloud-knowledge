@@ -3,6 +3,7 @@ package com.sheep.cloud.entity.sell;
 import lombok.*;
 import xyz.erupt.annotation.Erupt;
 import xyz.erupt.annotation.EruptField;
+import xyz.erupt.annotation.config.Comment;
 import xyz.erupt.annotation.sub_erupt.LinkTree;
 import xyz.erupt.annotation.sub_erupt.Power;
 import xyz.erupt.annotation.sub_erupt.Tree;
@@ -65,4 +66,35 @@ public class ISellAddressEntity {
             )
     )
     private String address;
+
+    @Basic
+    @Column(nullable = false)
+    @EruptField(
+            views = @View(title = "收货人"),
+            edit = @Edit(
+                    title = "收货人",
+                    notNull = true,
+                    type = EditType.INPUT,
+                    inputType = @InputType,
+                    desc = "收货人"
+            )
+    )
+    @Comment("收货人")
+    private String name;
+
+    @Basic
+    @Column(nullable = false)
+    @EruptField(
+            views = @View(title = "电话"),
+            edit = @Edit(
+                    title = "电话",
+                    notNull = true,
+                    type = EditType.INPUT,
+                    inputType = @InputType,
+                    desc = "电话"
+            )
+    )
+    @Comment("电话")
+    private String phone;
+
 }

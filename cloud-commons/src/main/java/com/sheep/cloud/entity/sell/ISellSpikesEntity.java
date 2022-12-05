@@ -33,6 +33,7 @@ import java.time.LocalDate;
 @Erupt(
         name = "秒杀活动"
 )
+@Builder
 public class ISellSpikesEntity implements Serializable {
 
     @Id

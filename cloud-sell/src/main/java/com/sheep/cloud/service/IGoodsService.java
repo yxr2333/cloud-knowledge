@@ -64,4 +64,12 @@ public interface IGoodsService {
      * @return 更新结果
      */
     ApiResult<?> updateGoodsInfo(UpdateGoodsInfoParam param);
+
+    /**
+     * 随机抽取size个商品
+     *
+     * @param size 数量
+     * @return 商品列表
+     */
+    ApiResult<?> randomFindGoods(Integer size);
 }
