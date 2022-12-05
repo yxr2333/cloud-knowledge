@@ -32,4 +32,13 @@ public interface IUserInfoService {
      * @return 更新结果
      */
     ApiResult<?> updateLoginPassword(UpdateLoginPasswordParam param);
+
+    
+    ApiResult<?> findUserWishBuyList(Integer id);
+
+    ApiResult<?> findUserOrderList(Integer id);
+
+    ApiResult<?> findUserPublishGoodList(Integer id);
+
+    ApiResult<?> findUserSellOrderList(Integer id);
 }

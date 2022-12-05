@@ -19,4 +19,6 @@ public interface ISellGoodsEntityRepository extends JpaRepository<ISellGoodsEnti
     @Query(nativeQuery = true, value = "select * from sell_t_goods where is_deleted = 0 and is_down = 0 order by rand() limit ?1")
     List<ISellGoodsEntity> randomFindGoods(Integer size);
 
+    List<ISellGoodsEntity> findAllByReleaseUserId(Integer id);
+
 }
