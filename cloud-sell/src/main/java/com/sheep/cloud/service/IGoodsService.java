@@ -72,4 +72,6 @@ public interface IGoodsService {
      * @return 商品列表
      */
     ApiResult<?> randomFindGoods(Integer size);
+
+    ApiResult<?> findAllGoodsByKeyWord(String keyWord, Pageable pageable);
 }

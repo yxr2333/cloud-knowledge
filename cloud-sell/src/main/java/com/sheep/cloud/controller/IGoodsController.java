@@ -115,4 +115,24 @@ public class IGoodsController {
     }
 
 
+    @ApiImplicitParams(
+            value = {
+                    @ApiImplicitParam(name = "page", value = "页码", defaultValue = "1", dataType = "Integer"),
+                    @ApiImplicitParam(name = "size", value = "每页数量", defaultValue = "10", dataType = "Integer"),
+                    @ApiImplicitParam(name = "keyWord", value = "商品关键字", required = true, dataType = "String")
+            }
+    )
+    @ApiOperation(value = "根据关键字查询商品", notes = "根据关键字查询商品,关键字搜索范围为商品名称，描述，商家用户名，商家描述")
+    @GetMapping("/key")
+    public ApiResult<?> findAllGoodsByKeyWord(@RequestParam(required = false) Integer page,
+                                              @RequestParam(required = false) Integer size,
+                                              @RequestParam String keyWord) {
+        if (page == null || size == null) {
+            page = 1;
+            size = 10;
+        }
+        PageRequest pageable = PageRequest.of(page - 1, size);
+        return goodsService.findAllGoodsByKeyWord(keyWord, pageable);
+    }
+
 }

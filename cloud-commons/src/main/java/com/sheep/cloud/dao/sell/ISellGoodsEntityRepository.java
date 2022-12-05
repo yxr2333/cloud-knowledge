@@ -21,4 +21,12 @@ public interface ISellGoodsEntityRepository extends JpaRepository<ISellGoodsEnti
 
     List<ISellGoodsEntity> findAllByReleaseUserId(Integer id);
 
+    @Query("SELECT s FROM sell_t_goods s " +
+            "WHERE s.name " +
+            "LIKE %?1% OR s.description LIKE %?1% OR s.releaseUser.id IN " +
+            "(SELECT u.id FROM s.releaseUser u " +
+            "WHERE u.username " +
+            "LIKE %?1% OR u.description LIKE %?1%)")
+    Page<ISellGoodsEntity> findAllByKeyWord(String keyword, Pageable pageable);
+
 }

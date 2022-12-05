@@ -14,6 +14,7 @@ import com.sheep.cloud.entity.sell.ISellUserEntity;
 import com.sheep.cloud.service.IGoodsService;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -69,6 +70,20 @@ public class IGoodsServiceImpl implements IGoodsService {
                 .map(goodsEntity -> modelMapper.map(goodsEntity, IGoodsSimpleInfoDTO.class))
                 .collect(Collectors.toList());
         return new ApiResult<>().success("ok", list);
+    }
+
+    @Override
+    public ApiResult<?> findAllGoodsByKeyWord(String keyWord, Pageable pageable) {
+        Page<ISellGoodsEntity> page = goodsEntityRepository.findAllByKeyWord(keyWord, pageable);
+        List<IGoodsEntityBaseInfoDTO> dtoList = page.get()
+                .map(item -> modelMapper.map(item, IGoodsEntityBaseInfoDTO.class))
+                .collect(Collectors.toList());
+        return new ApiResult<PageData<IGoodsEntityBaseInfoDTO>>().success(builder
+                .totalNum(page.getTotalElements())
+                .totalPage(page.getTotalPages())
+                .data(dtoList)
+                .build()
+        );
     }
 
     /**
@@ -236,5 +251,6 @@ public class IGoodsServiceImpl implements IGoodsService {
         goodsEntityRepository.save(entity);
         return new ApiResult<>().success("更新成功");
     }
+
 }
 
