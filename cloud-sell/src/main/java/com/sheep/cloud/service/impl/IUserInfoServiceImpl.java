@@ -159,7 +159,6 @@ public class IUserInfoServiceImpl implements IUserInfoService {
         List<IGoodsEntityBaseInfoDTO> baseInfoDTO = modelMapper.map(goodsEntityList, new TypeToken<List<IGoodsEntityBaseInfoDTO>>() {}.getType());
         return new ApiResult<>().success(baseInfoDTO);
     }
-
     @Override
     public ApiResult<?> findUserSellOrderList(Integer id) {
         List<ISellOrdersEntity> ordersEntityList = ordersEntityRepository.findAllBySellerId(id);
