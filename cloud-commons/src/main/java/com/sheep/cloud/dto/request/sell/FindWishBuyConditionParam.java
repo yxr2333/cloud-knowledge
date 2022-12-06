@@ -12,10 +12,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class FindWishBuyConditionParam {
+    private Integer userId;
 
     private String goodName;
 
-    private String type;
+    private Integer typeId;
 
     private String description;
 

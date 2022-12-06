@@ -82,8 +82,6 @@ public class IGoodsServiceImpl implements IGoodsService {
         flag += conditionParam.isPriceAsc() ? 1 : 0;
         flag += conditionParam.isHistory() ? 1 : 0;
         assert flag <= 1 : "条件最多选择一个";
-        System.out.println(flag);
-        System.out.println(conditionParam);
         if (conditionParam.isPriceAsc()) {
             pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by(Sort.Direction.ASC, "price"));
         }

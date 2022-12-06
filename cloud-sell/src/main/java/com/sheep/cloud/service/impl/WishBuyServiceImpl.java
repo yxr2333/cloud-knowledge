@@ -102,19 +102,27 @@ public class WishBuyServiceImpl implements WishBuyService {
 
     @Override
     public ApiResult<?> findWishBuyDetailConditionally(Pageable pageable, FindWishBuyConditionParam queryParam) {
+        if (queryParam.getUserId() == null) {
+            throw new RuntimeException("用户编号不能为空");
+        }
         Specification<ISellWishBuyEntity> specification =
                 (root, query, criteriaBuilder) -> {
                     List<Predicate> predicates = new ArrayList<>();
-                    predicates.add(criteriaBuilder.like(root.get("goodName"), queryParam.getGoodName()));
-                    if (queryParam.getType() != null) {
-                        predicates.add(criteriaBuilder.equal(root.get("type"), queryParam.getType()));
+                    predicates.add(criteriaBuilder.equal(root.get("pubUser").get("id"), queryParam.getUserId()));
+                    if (queryParam.getGoodName() != null && !"".equals(queryParam.getGoodName())) {
+                        predicates.add(criteriaBuilder.like(root.get("goodName"), queryParam.getGoodName()));
                     }
-                    if (queryParam.getDescription() != null) {
-                        predicates.add(criteriaBuilder.equal(root.get("describe"), queryParam.getDescription()));
+                    if (queryParam.getTypeId() != null) {
+                        predicates.add(criteriaBuilder.equal(root.get("type").get("id"), queryParam.getTypeId()));
                     }
-                    if (queryParam.getType() != null) {
-                        ISellGoodsTypeEntity goodsType = goodsTypeEntityRepository.findByName(queryParam.getType());
-                        predicates.add(criteriaBuilder.equal(root.get("type"), goodsType.getId()));
+                    if (queryParam.getDescription() != null && !"".equals(queryParam.getDescription())) {
+                        predicates.add(criteriaBuilder.like(root.get("describe"), queryParam.getDescription()));
+                    }
+                    if (queryParam.getBeginTime() != null && !"".equals(queryParam.getBeginTime())) {
+                        predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("pubTime"), queryParam.getBeginTime()));
+                    }
+                    if (queryParam.getEndTime() != null && !"".equals(queryParam.getEndTime())) {
+                        predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("pubTime"), queryParam.getEndTime()));
                     }
                     return criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()]));
                 };
