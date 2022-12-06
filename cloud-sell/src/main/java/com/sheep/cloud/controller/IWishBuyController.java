@@ -1,13 +1,16 @@
 package com.sheep.cloud.controller;
 
+import com.sheep.cloud.dto.request.sell.FindWishBuyConditionParam;
 import com.sheep.cloud.dto.request.sell.PublishWishBuyEntityParam;
 import com.sheep.cloud.dto.request.sell.UpdateWishBuyInfoParam;
 import com.sheep.cloud.dto.response.ApiResult;
 import com.sheep.cloud.service.WishBuyService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -62,4 +65,23 @@ public class IWishBuyController {
         return wishBuyService.updateWishBuyDetail(param);
     }
 
+    @ApiImplicitParams(
+            value = {
+                    @ApiImplicitParam(name = "wishBuyConditionParam", value = "查询条件", dataType = "FindWishBuyConditionParam"),
+                    @ApiImplicitParam(name = "page", value = "页码", defaultValue = "1", dataType = "Integer"),
+                    @ApiImplicitParam(name = "size", value = "每页数量", defaultValue = "10", dataType = "Integer")
+            }
+    )
+    @ApiOperation(value = "分页获取所有商品", notes = "分页获取所有商品")
+    @GetMapping("/list")
+    public ApiResult<?> findAllWishBuyDetail(FindWishBuyConditionParam wishBuyConditionParam,
+                                             @RequestParam(required = false) Integer page,
+                                             @RequestParam(required = false) Integer size) {
+        if (page == null || size == null) {
+            page = 1;
+            size = 10;
+        }
+        PageRequest pageable = PageRequest.of(page - 1, size);
+        return wishBuyService.findWishBuyDetailConditionally(pageable,wishBuyConditionParam);
+    }
 }

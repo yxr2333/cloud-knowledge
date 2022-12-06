@@ -1,19 +1,31 @@
 package com.sheep.cloud.service.impl;
 
 import cn.hutool.crypto.SecureUtil;
+import com.sheep.cloud.dao.sell.ISellGoodsEntityRepository;
+import com.sheep.cloud.dao.sell.ISellOrdersEntityRepository;
 import com.sheep.cloud.dao.sell.ISellUserEntityRepository;
+import com.sheep.cloud.dao.sell.ISellWishBuyEntityRepository;
 import com.sheep.cloud.dto.request.sell.UpdateLoginPasswordParam;
 import com.sheep.cloud.dto.request.sell.UpdateUserEmailParam;
 import com.sheep.cloud.dto.request.sell.UpdateUserInfoParam;
 import com.sheep.cloud.dto.response.ApiResult;
+import com.sheep.cloud.dto.response.sell.IGoodsEntityBaseInfoDTO;
+import com.sheep.cloud.dto.response.sell.IOrderUserInfoDTO;
+import com.sheep.cloud.dto.response.sell.IWishBuyUserInfoDTO;
+import com.sheep.cloud.entity.sell.ISellGoodsEntity;
+import com.sheep.cloud.entity.sell.ISellOrdersEntity;
 import com.sheep.cloud.entity.sell.ISellUserEntity;
 import com.sheep.cloud.dto.response.sell.ISellUserInfoDTO;
+import com.sheep.cloud.entity.sell.ISellWishBuyEntity;
 import com.sheep.cloud.service.IUserInfoService;
 import com.sheep.cloud.store.RedisUtil;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 /**
  * @author Zhang Jinming
@@ -23,6 +35,17 @@ import org.springframework.transaction.annotation.Transactional;
 public class IUserInfoServiceImpl implements IUserInfoService {
     @Autowired
     private ISellUserEntityRepository userEntityRepository;
+
+    @Autowired
+    private ISellWishBuyEntityRepository wishBuyEntityRepository;
+
+    @Autowired
+    private ISellGoodsEntityRepository goodsEntityRepository;
+
+    @Autowired
+    private ISellOrdersEntityRepository ordersEntityRepository;
+
+
     @Autowired
     private ModelMapper modelMapper;
     @Autowired
@@ -114,5 +137,33 @@ public class IUserInfoServiceImpl implements IUserInfoService {
         } else {
             return new ApiResult<>().error("验证码不正确！");
         }
+    }
+    
+    @Override
+    public ApiResult<?> findUserWishBuyList(Integer id) {
+        List<ISellWishBuyEntity> wishBuyEntityList = wishBuyEntityRepository.findAllByPubUserId(id);
+        List<IWishBuyUserInfoDTO> baseInfoDTO = modelMapper.map(wishBuyEntityList, new TypeToken<List<IWishBuyUserInfoDTO>>() {}.getType());
+        return new ApiResult<>().success(baseInfoDTO);
+    }
+
+    @Override
+    public ApiResult<?> findUserOrderList(Integer id) {
+        List<ISellOrdersEntity> ordersEntityList = ordersEntityRepository.findAllByBuyerId(id);
+        List<IOrderUserInfoDTO> baseInfoDTO = modelMapper.map(ordersEntityList, new TypeToken<List<IOrderUserInfoDTO>>() {}.getType());
+        return new ApiResult<>().success(baseInfoDTO);
+    }
+
+    @Override
+    public ApiResult<?> findUserPublishGoodList(Integer id) {
+        List<ISellGoodsEntity> goodsEntityList = goodsEntityRepository.findAllByReleaseUserId(id);
+        List<IGoodsEntityBaseInfoDTO> baseInfoDTO = modelMapper.map(goodsEntityList, new TypeToken<List<IGoodsEntityBaseInfoDTO>>() {}.getType());
+        return new ApiResult<>().success(baseInfoDTO);
+    }
+
+    @Override
+    public ApiResult<?> findUserSellOrderList(Integer id) {
+        List<ISellOrdersEntity> ordersEntityList = ordersEntityRepository.findAllBySellerId(id);
+        List<IOrderUserInfoDTO> baseInfoDTO = modelMapper.map(ordersEntityList, new TypeToken<List<IOrderUserInfoDTO>>() {}.getType());
+        return new ApiResult<>().success(baseInfoDTO);
     }
 }

@@ -67,4 +67,46 @@ public class IUserInfoController {
     public ApiResult<?> updateLoginPassword(@RequestBody @Valid UpdateLoginPasswordParam param) {
         return userInfoService.updateLoginPassword(param);
     }
+
+
+    @ApiImplicitParam(name = "id", value = "用户的id", required = true, dataType = "Integer")
+    @ApiOperation(value = "查询用户求购列表", notes = "查询用户求购列表")
+    @GetMapping("/wish")
+    public ApiResult<?> findUserWishBuyInfo(@RequestParam Integer id){
+        if (id == null) {
+            return new ApiResult<>().error("id不能为空");
+        }
+        return userInfoService.findUserWishBuyList(id);
+    }
+
+    @ApiImplicitParam(name = "id", value = "用户的id", required = true, dataType = "Integer")
+    @ApiOperation(value = "查询用户订单列表", notes = "查询用户订单列表")
+    @GetMapping("/order")
+    public ApiResult<?> findUserOrderInfo(@RequestParam Integer id){
+        if (id == null) {
+            return new ApiResult<>().error("id不能为空");
+        }
+        return userInfoService.findUserOrderList(id);
+    }
+
+    @ApiImplicitParam(name = "id", value = "商家的id", required = true, dataType = "Integer")
+    @ApiOperation(value = "查询商家出售订单列表", notes = "查询商家出售订单列表")
+    @GetMapping("/order/sell")
+    public ApiResult<?> findSellerOrderInfo(@RequestParam Integer id){
+        if (id == null) {
+            return new ApiResult<>().error("id不能为空");
+        }
+        return userInfoService.findUserSellOrderList(id);
+    }
+
+    @ApiImplicitParam(name = "id", value = "商家的id", required = true, dataType = "Integer")
+    @ApiOperation(value = "查询商家商品表", notes = "查询商家商品表")
+    @GetMapping("/goods")
+    public ApiResult<?> findSellerGoodsInfo(@RequestParam Integer id){
+        if (id == null) {
+            return new ApiResult<>().error("id不能为空");
+        }
+        return userInfoService.findUserPublishGoodList(id);
+    }
+
 }

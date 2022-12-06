@@ -1,8 +1,10 @@
 package com.sheep.cloud.service;
 
+import com.sheep.cloud.dto.request.sell.FindWishBuyConditionParam;
 import com.sheep.cloud.dto.request.sell.PublishWishBuyEntityParam;
 import com.sheep.cloud.dto.request.sell.UpdateWishBuyInfoParam;
 import com.sheep.cloud.dto.response.ApiResult;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -46,4 +48,6 @@ public interface WishBuyService {
      * @return 修改结果
      */
     ApiResult<?> updateWishBuyDetail(UpdateWishBuyInfoParam param);
+
+    ApiResult<?> findWishBuyDetailConditionally(Pageable pageable, FindWishBuyConditionParam wishBuyConditionParam);
 }

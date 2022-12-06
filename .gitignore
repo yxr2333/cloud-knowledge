@@ -34,3 +34,5 @@
 /cloud-user/src/main/resources/oss.properties
 /.idea/
 /.erupt/
+/cloud-resource/cloud-resource.iml
+/cloud-commons/cloud-commons.iml

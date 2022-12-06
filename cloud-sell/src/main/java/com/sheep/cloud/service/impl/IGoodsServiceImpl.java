@@ -2,6 +2,7 @@ package com.sheep.cloud.service.impl;
 
 import com.sheep.cloud.aspect.CheckGoodsRelation;
 import com.sheep.cloud.dao.sell.*;
+import com.sheep.cloud.dto.request.sell.FindGoodsSortConditionParam;
 import com.sheep.cloud.dto.request.sell.SaveOneGoodParam;
 import com.sheep.cloud.dto.request.sell.UpdateGoodsInfoParam;
 import com.sheep.cloud.dto.response.ApiResult;
@@ -16,7 +17,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -69,6 +72,38 @@ public class IGoodsServiceImpl implements IGoodsService {
                 .map(goodsEntity -> modelMapper.map(goodsEntity, IGoodsSimpleInfoDTO.class))
                 .collect(Collectors.toList());
         return new ApiResult<>().success("ok", list);
+    }
+
+    @Override
+    public ApiResult<?> findAllGoodsByKeyWord(String keyWord, FindGoodsSortConditionParam conditionParam, Pageable pageable) {
+        Page<ISellGoodsEntity> page;
+        int flag = 0;
+        flag += conditionParam.isPriceDesc() ? 1 : 0;
+        flag += conditionParam.isPriceAsc() ? 1 : 0;
+        flag += conditionParam.isHistory() ? 1 : 0;
+        assert flag <= 1 : "条件最多选择一个";
+        System.out.println(flag);
+        System.out.println(conditionParam);
+        if (conditionParam.isPriceAsc()) {
+            pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by(Sort.Direction.ASC, "price"));
+        }
+        if (conditionParam.isPriceDesc()) {
+            pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by(Sort.Direction.DESC, "price"));
+        }
+        if (conditionParam.isHistory()) {
+            pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by(Sort.Direction.DESC, "releaseTime"));
+        }
+        page = goodsEntityRepository.findAllByKeyWord(keyWord, pageable);
+        assert page != null : "错误！";
+        List<IGoodsEntityBaseInfoDTO> dtoList = page.get()
+                .map(item -> modelMapper.map(item, IGoodsEntityBaseInfoDTO.class))
+                .collect(Collectors.toList());
+        return new ApiResult<PageData<IGoodsEntityBaseInfoDTO>>().success(builder
+                .totalNum(page.getTotalElements())
+                .totalPage(page.getTotalPages())
+                .data(dtoList)
+                .build()
+        );
     }
 
     /**
@@ -236,5 +271,6 @@ public class IGoodsServiceImpl implements IGoodsService {
         goodsEntityRepository.save(entity);
         return new ApiResult<>().success("更新成功");
     }
+
 }
 
