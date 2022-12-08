@@ -24,7 +24,7 @@ import javax.validation.Valid;
 @RestController
 @RequestMapping("/goodsType")
 @Api(tags = "商品类别模块")
-public class IGoodsTypeComtroller {
+public class IGoodsTypeController {
     @Autowired
     IGoodsTypeService iGoodsTypeService;
 

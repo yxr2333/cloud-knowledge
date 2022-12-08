@@ -138,4 +138,25 @@ public class IGoodsController {
         return goodsService.findAllGoodsByKeyWord(keyWord, conditionParam, pageable);
     }
 
+    @ApiImplicitParams(
+            value = {
+                    @ApiImplicitParam(name = "page", value = "页码", defaultValue = "1", dataType = "Integer", required = false),
+                    @ApiImplicitParam(name = "size", value = "每页数量", defaultValue = "10", dataType = "Integer"),
+                    @ApiImplicitParam(name = "typeId", value = "类型编号", dataType = "Integer", required = true),
+            }
+    )
+    @ApiOperation(value = "获取某个商品分类下的所有商品", notes = "获取某个商品分类下的所有商品")
+    @GetMapping("/byType")
+    public ApiResult<?> findAllGoodsByType(
+            @RequestParam Integer typeId,
+            @RequestParam(required = false) Integer page,
+            @RequestParam(required = false) Integer size) {
+        if (page == null || size == null) {
+            page = 1;
+            size = 10;
+        }
+        PageRequest pageable = PageRequest.of(page - 1, size);
+        return goodsService.findAllGoodsByType(typeId, pageable);
+    }
+
 }

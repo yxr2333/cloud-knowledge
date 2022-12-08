@@ -74,6 +74,27 @@ public class IGoodsServiceImpl implements IGoodsService {
         return new ApiResult<>().success("ok", list);
     }
 
+    /**
+     * 查询某个商品类别下的所有商品
+     *
+     * @param typeId   类别id
+     * @param pageable 分页信息
+     * @return 查询结果
+     */
+    @Override
+    public ApiResult<?> findAllGoodsByType(Integer typeId, Pageable pageable) {
+        goodsTypeEntityRepository.findById(typeId).orElseThrow(() -> new RuntimeException("商品类别不存在"));
+        Page<ISellGoodsEntity> page = goodsEntityRepository.findAllByTypeId(typeId, pageable);
+        List<IGoodsEntityBaseInfoDTO> list = page.getContent().stream()
+                .map(goodsEntity -> modelMapper.map(goodsEntity, IGoodsEntityBaseInfoDTO.class))
+                .collect(Collectors.toList());
+        PageData<IGoodsEntityBaseInfoDTO> pageData = builder.data(list)
+                .totalNum(page.getTotalElements())
+                .totalPage(page.getTotalPages())
+                .build();
+        return new ApiResult<>().success("ok", pageData);
+    }
+
     @Override
     public ApiResult<?> findAllGoodsByKeyWord(String keyWord, FindGoodsSortConditionParam conditionParam, Pageable pageable) {
         Page<ISellGoodsEntity> page;

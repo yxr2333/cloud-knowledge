@@ -35,7 +35,7 @@ import java.util.Objects;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity(name = "sell_t_goods")
+@Entity
 @Table(name = "sell_t_goods")
 @Builder
 @DynamicUpdate
@@ -234,16 +234,16 @@ public class ISellGoodsEntity implements Serializable {
 
     @PrePersist
     public void prePersist() {
-        this.releaseTime = LocalDateTime.now();
-        if (!cover.startsWith(domain)) {
-            cover = domain + cover;
-        }
+//        this.releaseTime = LocalDateTime.now();
+//        if (!cover.startsWith(domain)) {
+//            cover = domain + cover;
+//        }
     }
 
     @PreUpdate
     public void preUpdate() {
-        if (!cover.startsWith(domain)) {
-            cover = domain + cover;
-        }
+//        if (!cover.startsWith(domain)) {
+//            cover = domain + cover;
+//        }
     }
 }

@@ -75,4 +75,13 @@ public interface IGoodsService {
     ApiResult<?> randomFindGoods(Integer size);
 
     ApiResult<?> findAllGoodsByKeyWord(String keyWord, FindGoodsSortConditionParam conditionParam, Pageable pageable);
+
+    /**
+     * 查询某个商品类别下的所有商品
+     *
+     * @param typeId   类别id
+     * @param pageable 分页信息
+     * @return 查询结果
+     */
+    ApiResult<?> findAllGoodsByType(Integer typeId, Pageable pageable);
 }
