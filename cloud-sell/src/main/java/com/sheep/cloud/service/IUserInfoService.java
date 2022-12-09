@@ -33,12 +33,52 @@ public interface IUserInfoService {
      */
     ApiResult<?> updateLoginPassword(UpdateLoginPasswordParam param);
 
-    
+    /**
+     * 查询用户发布的求购信息
+     *
+     * @param id 用户编号
+     * @return 查询结果
+     */
     ApiResult<?> findUserWishBuyList(Integer id);
 
+    /**
+     * 查询用户订单列表
+     *
+     * @param id 用户编号
+     * @return 查询结果
+     */
     ApiResult<?> findUserOrderList(Integer id);
 
+    /**
+     * 查询用户发布的商品列表
+     *
+     * @param id 商品编号
+     * @return 查询结果
+     */
     ApiResult<?> findUserPublishGoodList(Integer id);
 
+    /**
+     * 查询用户卖出的订单列表
+     *
+     * @param id 用户编号
+     * @return 查询结果
+     */
     ApiResult<?> findUserSellOrderList(Integer id);
+
+
+    /**
+     * 查询用户卖出的商品列表
+     *
+     * @param userId 用户编号
+     * @return 查询结果
+     */
+    ApiResult<?> findUserSellGoodsList(Integer userId);
+
+    /**
+     * 查询用户买到的商品列表
+     *
+     * @param userId 用户编号
+     * @return 查询结果
+     */
+    ApiResult<?> findUserBuyGoodsList(Integer userId);
 }

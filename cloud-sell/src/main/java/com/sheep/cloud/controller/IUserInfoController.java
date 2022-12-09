@@ -72,7 +72,7 @@ public class IUserInfoController {
     @ApiImplicitParam(name = "id", value = "用户的id", required = true, dataType = "Integer")
     @ApiOperation(value = "查询用户求购列表", notes = "查询用户求购列表")
     @GetMapping("/wish")
-    public ApiResult<?> findUserWishBuyInfo(@RequestParam Integer id){
+    public ApiResult<?> findUserWishBuyInfo(@RequestParam Integer id) {
         if (id == null) {
             return new ApiResult<>().error("id不能为空");
         }
@@ -82,7 +82,7 @@ public class IUserInfoController {
     @ApiImplicitParam(name = "id", value = "用户的id", required = true, dataType = "Integer")
     @ApiOperation(value = "查询用户订单列表", notes = "查询用户订单列表")
     @GetMapping("/order")
-    public ApiResult<?> findUserOrderInfo(@RequestParam Integer id){
+    public ApiResult<?> findUserOrderInfo(@RequestParam Integer id) {
         if (id == null) {
             return new ApiResult<>().error("id不能为空");
         }
@@ -92,7 +92,7 @@ public class IUserInfoController {
     @ApiImplicitParam(name = "id", value = "商家的id", required = true, dataType = "Integer")
     @ApiOperation(value = "查询商家出售订单列表", notes = "查询商家出售订单列表")
     @GetMapping("/order/sell")
-    public ApiResult<?> findSellerOrderInfo(@RequestParam Integer id){
+    public ApiResult<?> findSellerOrderInfo(@RequestParam Integer id) {
         if (id == null) {
             return new ApiResult<>().error("id不能为空");
         }
@@ -102,11 +102,31 @@ public class IUserInfoController {
     @ApiImplicitParam(name = "id", value = "商家的id", required = true, dataType = "Integer")
     @ApiOperation(value = "查询商家商品表", notes = "查询商家商品表")
     @GetMapping("/goods")
-    public ApiResult<?> findSellerGoodsInfo(@RequestParam Integer id){
+    public ApiResult<?> findSellerGoodsInfo(@RequestParam Integer id) {
         if (id == null) {
             return new ApiResult<>().error("id不能为空");
         }
         return userInfoService.findUserPublishGoodList(id);
     }
 
+    @GetMapping("/goods/sell")
+    @ApiImplicitParam(name = "userId", value = "用户的id", required = true, dataType = "Integer")
+    @ApiOperation(value = "查询商家出售商品表", notes = "查询商家出售商品表")
+    public ApiResult<?> findUserSellGoodsList(@RequestParam(required = false) Integer userId) {
+        if (userId == null) {
+            return new ApiResult<>().error("id不能为空");
+        }
+        return userInfoService.findUserSellGoodsList(userId);
+    }
+
+
+    @GetMapping("/goods/buy")
+    @ApiImplicitParam(name = "userId", value = "用户的id", required = true, dataType = "Integer")
+    @ApiOperation(value = "查询用户购买商品表", notes = "查询用户购买商品表")
+    public ApiResult<?> findUserBuyGoodsList(@RequestParam(required = false) Integer userId) {
+        if (userId == null) {
+            return new ApiResult<>().error("id不能为空");
+        }
+        return userInfoService.findUserBuyGoodsList(userId);
+    }
 }

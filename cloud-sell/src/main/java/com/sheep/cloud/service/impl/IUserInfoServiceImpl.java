@@ -138,32 +138,88 @@ public class IUserInfoServiceImpl implements IUserInfoService {
             return new ApiResult<>().error("验证码不正确！");
         }
     }
-    
+
+    /**
+     * 查询用户发布的求购信息
+     *
+     * @param id 用户编号
+     * @return 查询结果
+     */
     @Override
     public ApiResult<?> findUserWishBuyList(Integer id) {
         List<ISellWishBuyEntity> wishBuyEntityList = wishBuyEntityRepository.findAllByPubUserId(id);
-        List<IWishBuyUserInfoDTO> baseInfoDTO = modelMapper.map(wishBuyEntityList, new TypeToken<List<IWishBuyUserInfoDTO>>() {}.getType());
+        List<IWishBuyUserInfoDTO> baseInfoDTO = modelMapper.map(wishBuyEntityList, new TypeToken<List<IWishBuyUserInfoDTO>>() {
+        }.getType());
         return new ApiResult<>().success(baseInfoDTO);
     }
 
+    /**
+     * 查询用户订单列表
+     *
+     * @param id 用户编号
+     * @return 查询结果
+     */
     @Override
     public ApiResult<?> findUserOrderList(Integer id) {
         List<ISellOrdersEntity> ordersEntityList = ordersEntityRepository.findAllByBuyerId(id);
-        List<IOrderUserInfoDTO> baseInfoDTO = modelMapper.map(ordersEntityList, new TypeToken<List<IOrderUserInfoDTO>>() {}.getType());
+        List<IOrderUserInfoDTO> baseInfoDTO = modelMapper.map(ordersEntityList, new TypeToken<List<IOrderUserInfoDTO>>() {
+        }.getType());
         return new ApiResult<>().success(baseInfoDTO);
     }
 
+    /**
+     * 查询用户发布的商品列表
+     *
+     * @param id 商品编号
+     * @return 查询结果
+     */
     @Override
     public ApiResult<?> findUserPublishGoodList(Integer id) {
         List<ISellGoodsEntity> goodsEntityList = goodsEntityRepository.findAllByReleaseUserId(id);
-        List<IGoodsEntityBaseInfoDTO> baseInfoDTO = modelMapper.map(goodsEntityList, new TypeToken<List<IGoodsEntityBaseInfoDTO>>() {}.getType());
+        List<IGoodsEntityBaseInfoDTO> baseInfoDTO = modelMapper.map(goodsEntityList, new TypeToken<List<IGoodsEntityBaseInfoDTO>>() {
+        }.getType());
         return new ApiResult<>().success(baseInfoDTO);
     }
 
+    /**
+     * 查询用户卖出的订单列表
+     *
+     * @param id 用户编号
+     * @return 查询结果
+     */
     @Override
     public ApiResult<?> findUserSellOrderList(Integer id) {
         List<ISellOrdersEntity> ordersEntityList = ordersEntityRepository.findAllBySellerId(id);
-        List<IOrderUserInfoDTO> baseInfoDTO = modelMapper.map(ordersEntityList, new TypeToken<List<IOrderUserInfoDTO>>() {}.getType());
+        List<IOrderUserInfoDTO> baseInfoDTO = modelMapper.map(ordersEntityList, new TypeToken<List<IOrderUserInfoDTO>>() {
+        }.getType());
+        return new ApiResult<>().success(baseInfoDTO);
+    }
+
+    /**
+     * 查询用户卖出的商品列表
+     *
+     * @param userId 用户编号
+     * @return 查询结果
+     */
+    @Override
+    public ApiResult<?> findUserSellGoodsList(Integer userId) {
+        List<ISellGoodsEntity> goodsList = ordersEntityRepository.findUserSellGoodsList(userId);
+        List<IGoodsEntityBaseInfoDTO> baseInfoDTO = modelMapper.map(goodsList, new TypeToken<List<IGoodsEntityBaseInfoDTO>>() {
+        }.getType());
+        return new ApiResult<>().success(baseInfoDTO);
+    }
+
+    /**
+     * 查询用户买到的商品列表
+     *
+     * @param userId 用户编号
+     * @return 查询结果
+     */
+    @Override
+    public ApiResult<?> findUserBuyGoodsList(Integer userId) {
+        List<ISellGoodsEntity> goodsList = ordersEntityRepository.findUserBuyGoodsList(userId);
+        List<IGoodsEntityBaseInfoDTO> baseInfoDTO = modelMapper.map(goodsList, new TypeToken<List<IGoodsEntityBaseInfoDTO>>() {
+        }.getType());
         return new ApiResult<>().success(baseInfoDTO);
     }
 }
