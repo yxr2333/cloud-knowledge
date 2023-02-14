@@ -155,6 +155,8 @@ public class IGoodsServiceImpl implements IGoodsService {
                 .cover(param.getCover())
                 .releaseUser(releaseUser)
                 .isDiscount(param.getIsDiscount())
+                .isDown(false)
+                .isDeleted(false)
                 .discountPercent(param.getDiscountPercent())
                 .releaseTime(LocalDateTime.now()).build();
 

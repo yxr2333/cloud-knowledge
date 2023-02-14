@@ -18,6 +18,8 @@ public interface ISellOrdersEntityRepository extends JpaRepository<ISellOrdersEn
      */
     Optional<ISellOrdersEntity> findByOid(String orderId);
 
+
+
     Boolean existsByGoodId(Integer goodsId);
 
     /**
