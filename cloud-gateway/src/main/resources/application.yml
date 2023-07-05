@@ -4,7 +4,7 @@ spring:
   application:
     name: cloud-gateway
   redis:
-    database: 5
+    database: 0
     host: 8.130.124.43
     port: 6379
     connect-timeout: 2000
