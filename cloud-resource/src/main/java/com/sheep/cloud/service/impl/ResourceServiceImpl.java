@@ -333,8 +333,6 @@ public class ResourceServiceImpl implements ResourceService {
                     .orElseThrow(() -> new RuntimeException("标签不存在"));
             labels.add(labelsEntity);
         });
-
-
         Sort sort = null;
         PageRequest pageable = null;
         if (order == 0) {
@@ -348,9 +346,7 @@ public class ResourceServiceImpl implements ResourceService {
         } else {
             return new ApiResult<>().warning("请输入正确的排序规则！");
         }
-
         Page<IResourcesEntity> page = iResourcesEntityRepository.findDistinctAllByIsPaidAndAndLabelsIn(isFree, labels, pageable);
-
         PageData.PageDataBuilder<IResourcesEntity> builder = PageData.builder();
         return new ApiResult<PageData<IResourcesEntity>>().success(builder.totalPage(page.getTotalPages())
                 .totalNum(page.getTotalElements())

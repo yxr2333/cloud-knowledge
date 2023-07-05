@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
  * @datetime 2022/8/13 星期六
  */
 @Entity
-@Table(name = "t_collect_lists", schema = "summer_training")
+@Table(name = "t_collect_lists")
 @Data
 @NoArgsConstructor
 public class ICollectListsEntity {

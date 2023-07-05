@@ -29,7 +29,6 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-
     @PostMapping("/login")
     public ApiResult<?> doLogin(@RequestBody @Valid IUsersLoginVO vo) {
         return userService.doLogin(vo);

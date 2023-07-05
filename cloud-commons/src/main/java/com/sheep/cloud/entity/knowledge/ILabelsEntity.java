@@ -18,7 +18,7 @@ import java.util.Objects;
 @Getter
 @Setter
 @Entity
-@Table(name = "t_labels", schema = "summer_training")
+@Table(name = "t_labels")
 public class ILabelsEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id

@@ -3,6 +3,14 @@ package com.sheep.cloud.entity.knowledge;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
+import xyz.erupt.annotation.EruptField;
+import xyz.erupt.annotation.sub_field.Edit;
+import xyz.erupt.annotation.sub_field.EditType;
+import xyz.erupt.annotation.sub_field.View;
+import xyz.erupt.annotation.sub_field.ViewType;
+import xyz.erupt.annotation.sub_field.sub_edit.AttachmentType;
+import xyz.erupt.annotation.sub_field.sub_edit.InputType;
+import xyz.erupt.annotation.sub_field.sub_edit.Search;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -21,24 +29,67 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
-@Table(name = "t_resources", schema = "summer_training")
+@Table(name = "t_resources")
+//@Erupt(name = "资源", power = @Power(importable = true, export = true))
 public class IResourcesEntity {
+
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "id")
-    private int id;
+    private Integer id;
+
     @Basic
     @Column(name = "name")
+    @EruptField(
+            views = @View(title = "资源名称", sortable = true),
+            edit = @Edit(title = "资源名称", notNull = true, search = @Search, type = EditType.INPUT)
+    )
     private String name;
+
     @Basic
     @Column(name = "description")
+    @EruptField(
+            views = @View(
+                    title = "资源描述"
+            ),
+            edit = @Edit(
+                    title = "资源描述",
+                    notNull = true,
+                    type = EditType.TEXTAREA,
+                    inputType = @InputType
+            )
+    )
     private String description;
+
     @Basic
     @Column(name = "link")
+    @EruptField(
+            views = @View(
+                    title = "资源链接",
+                    type = ViewType.LINK
+            ),
+            edit = @Edit(
+                    title = "资源链接",
+                    notNull = true,
+                    type = EditType.INPUT,
+                    inputType = @InputType
+            )
+    )
     private String link;
     @Basic
     @Column(name = "icon")
+    @EruptField(
+            views = @View(
+                    title = "资源图片"
+            ),
+            edit = @Edit(
+                    title = "资源图片",
+                    type = EditType.ATTACHMENT, notNull = true,
+                    attachmentType = @AttachmentType(type = AttachmentType.Type.IMAGE)
+            )
+    )
     private String icon;
+
     @Basic
     @Column(name = "content")
     private String content;

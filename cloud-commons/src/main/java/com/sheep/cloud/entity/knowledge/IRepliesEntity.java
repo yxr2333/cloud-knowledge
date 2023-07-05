@@ -22,7 +22,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Entity
-@Table(name = "t_replies", schema = "summer_training")
+@Table(name = "t_replies")
 public class IRepliesEntity {
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)

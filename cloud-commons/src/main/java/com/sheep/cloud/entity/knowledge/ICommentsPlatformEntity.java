@@ -22,7 +22,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Entity
-@Table(name = "t_comments_platform", schema = "summer_training")
+@Table(name = "t_comments_platform")
 public class ICommentsPlatformEntity {
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)

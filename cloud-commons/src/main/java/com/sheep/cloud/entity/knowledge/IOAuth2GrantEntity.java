@@ -17,7 +17,7 @@ import javax.persistence.*;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "t_oauth2_grants", schema = "summer_training")
+@Table(name = "t_oauth2_grants")
 public class IOAuth2GrantEntity {
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)

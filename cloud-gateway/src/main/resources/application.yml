@@ -5,13 +5,13 @@ spring:
     name: cloud-gateway
   redis:
     database: 5
-    host: localhost
+    host: 8.130.124.43
     port: 6379
     connect-timeout: 2000
   cloud:
     nacos:
       discovery:
-        server-addr: localhost:8848
+        server-addr: 8.130.124.43:8848
     gateway:
       discovery:
         locator:
@@ -45,8 +45,6 @@ spring:
           uri: lb://cloud-user-service
           predicates:
             - Path=/os/**
-
-
           # 心愿墙模块
         - id: cloud-wish-service
           uri: lb://cloud-wish-service
@@ -62,15 +60,7 @@ spring:
           uri: lb://cloud-sell-backend-service
           predicates:
             - Path=/backend/sell/**
-#eureka:
-#  instance:
-#    prefer-ip-address: true
-#    instance-id: gateway-service-9527
-#  client:
-#    register-with-eureka: true
-#    fetch-registry: true
-#    service-url:
-#      defaultZone: http://localhost:7001/eureka
+
 sa-token:
   # token 名称 (同时也是cookie名称)
   token-name: token

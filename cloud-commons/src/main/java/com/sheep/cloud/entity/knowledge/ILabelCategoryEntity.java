@@ -13,7 +13,7 @@ import java.util.List;
  * @datetime 2022/8/15 星期一
  */
 
-@Table(name = "t_label_category", schema = "summer_training")
+@Table(name = "t_label_category")
 @Entity
 @Getter
 @Setter

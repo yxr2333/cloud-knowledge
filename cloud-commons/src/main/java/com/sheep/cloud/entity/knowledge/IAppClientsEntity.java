@@ -17,7 +17,7 @@ import javax.persistence.*;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "t_app_clients", schema = "summer_training")
+@Table(name = "t_app_clients")
 public class IAppClientsEntity {
 
     @Id
